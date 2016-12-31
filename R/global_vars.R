@@ -1,0 +1,13 @@
+globalVariables(c("A",
+                  "Q",
+                  "X1",
+                  "X2",
+                  "category",
+                  "date.downloaded",
+                  "index.components",
+                  "index.option",
+                  "period",
+                  "retrieve",
+                  "type",
+                  "value",
+                  "x_fun"))
