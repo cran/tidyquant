@@ -12,6 +12,7 @@
 
 <meta name="author" content="Matt Dancho" />
 
+<meta name="date" content="2017-01-07" />
 
 <title>Introduction to tidyquant</title>
 
@@ -69,6 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Introduction to tidyquant</h1>
 <h4 class="author"><em>Matt Dancho</em></h4>
+<h4 class="date"><em>2017-01-07</em></h4>
 
 
 <div id="TOC">
@@ -90,10 +92,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </blockquote>
 <div id="overview" class="section level1">
 <h1>Overview</h1>
-<p><code>tidyquant</code> integrates the best quantitative resources for collecting and analyzing quantitative data, <code>xts</code>, <code>quantmod</code> and <code>TTR</code>, with the tidy data infrastructure of the <code>tidyverse</code> allowing for seamless interaction between each and working within the <code>tidyverse</code>.</p>
+<p><code>tidyquant</code> integrates the best quantitative resources for collecting and analyzing quantitative data, <code>xts</code> and <code>zoo</code>, <code>quantmod</code> and <code>TTR</code>, with the tidy data infrastructure of the <code>tidyverse</code> allowing for seamless interaction between each and working within the <code>tidyverse</code>.</p>
 <p>The three primary quantitative packages that are the backbone for quantitative financial analysis in <em>R programming</em> are:</p>
 <ul>
-<li><a href="https://CRAN.R-project.org/package=xts">xts</a>, or <a href="http://joshuaulrich.github.io/xts/index.html">eXtensible time series</a>: The data structure for handling time-series data.</li>
+<li><a href="https://CRAN.R-project.org/package=xts">xts</a>, or <a href="http://joshuaulrich.github.io/xts/index.html">eXtensible time series</a>: The data structure for handling time-series data. The underlying time-series structure is <code>zoo</code>, which is also integrated.</li>
 <li><a href="https://CRAN.R-project.org/package=quantmod">quantmod</a>, or <a href="http://www.quantmod.com/">Quantitative Financial Modelling &amp; Trading Framework for R</a>: A package designed for retrieving, manipulating, and modeling and quantitative data.</li>
 <li><a href="https://CRAN.R-project.org/package=TTR">TTR</a>, or Technical Trading Rules: A package that includes various functions to compute technical trading equations for quantitative or trading data.</li>
 </ul>
@@ -128,7 +130,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>The <code>tq_get()</code> function is used to collect all data by changing the <code>get</code> argument. The options include stock lists for 18 stock indexes from marketvolume.com, stock prices, dividends and splits from Yahoo Finance, financial statements from Google Finance, metal prices and exchange rates from Oanda, and economic data from the FRED database. To see the full list, execute <code>tq_get_options()</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tq_get_options</span>()</code></pre></div>
 <pre><code>## [1] &quot;stock.prices&quot;   &quot;stock.index&quot;    &quot;dividends&quot;      &quot;splits&quot;        
-## [5] &quot;financials&quot;     &quot;economic.data&quot;  &quot;exchange.rates&quot; &quot;metal.prices&quot;</code></pre>
+## [5] &quot;financials&quot;     &quot;key.ratios&quot;     &quot;economic.data&quot;  &quot;exchange.rates&quot;
+## [9] &quot;metal.prices&quot;</code></pre>
 <p><strong>Stock Index</strong>:</p>
 <p>A wide range of stock index / exchange lists can be retrieved using <code>get = &quot;stock.index&quot;</code>. To get a full list of the options, use <code>tq_get_stock_index_options()</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tq_get_stock_index_options</span>()</code></pre></div>
@@ -157,7 +160,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>The stock prices can be retrieved succinctly using <code>get = &quot;stock.prices&quot;</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aapl_prices  &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>, <span class="dt">from =</span> <span class="st">&quot; 1990-01-01&quot;</span>)
 aapl_prices </code></pre></div>
-<pre><code>## # A tibble: 6,805 × 7
+<pre><code>## # A tibble: 6,809 × 7
 ##          date   open   high   low  close   volume adjusted
 ##        &lt;date&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
 ## 1  1990-01-02 35.250 37.500 35.00 37.250 45799600 1.132075
@@ -170,7 +173,7 @@ aapl_prices </code></pre></div>
 ## 8  1990-01-11 36.250 36.250 34.50 34.500 52763200 1.048499
 ## 9  1990-01-12 34.250 34.750 33.75 34.500 42974400 1.048499
 ## 10 1990-01-15 34.500 35.750 34.25 34.250 40434800 1.040901
-## # ... with 6,795 more rows</code></pre>
+## # ... with 6,799 more rows</code></pre>
 <p>Dividends are obtained using <code>get = &quot;dividends&quot;</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aapl_divs &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;dividends&quot;</span>, <span class="dt">from =</span> <span class="st">&quot;1990-01-01&quot;</span>)
 aapl_divs</code></pre></div>
@@ -200,8 +203,8 @@ aapl_splits</code></pre></div>
 <p>The data source is <a href="https://finance.yahoo.com/">yahoo finance</a>.</p>
 <p><strong>Financial Statements</strong>:</p>
 <p>For any given stock, a total of six financials statements are retrieved as nested tibbles, one for each combination of statement type (Income Statement, Balance Sheet, and Cash Flow) and period (by annual and quarter).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fb_financials &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;FB&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;financials&quot;</span>)
-fb_financials</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aapl_financials &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;financials&quot;</span>)
+aapl_financials</code></pre></div>
 <pre><code>## # A tibble: 3 × 3
 ##    type             annual            quarter
 ## * &lt;chr&gt;             &lt;list&gt;             &lt;list&gt;
@@ -209,63 +212,115 @@ fb_financials</code></pre></div>
 ## 2    CF  &lt;tibble [76 × 4]&gt;  &lt;tibble [76 × 4]&gt;
 ## 3    IS &lt;tibble [196 × 4]&gt; &lt;tibble [245 × 4]&gt;</code></pre>
 <p>The statement information can be extracted by selecting (<code>dplyr::select()</code>) and filtering (<code>dplyr::filter()</code>) to the desired statement and unnesting (<code>tidyr::unnest()</code>) the results.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fb_financials %&gt;%
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aapl_financials %&gt;%
 <span class="st">    </span><span class="kw">filter</span>(type ==<span class="st"> &quot;IS&quot;</span>) %&gt;%
 <span class="st">    </span><span class="kw">select</span>(annual) %&gt;%
 <span class="st">    </span><span class="kw">unnest</span>()</code></pre></div>
 <pre><code>## # A tibble: 196 × 4
-##    group             category       date value
-##    &lt;int&gt;                &lt;chr&gt;     &lt;date&gt; &lt;dbl&gt;
-## 1      1              Revenue 2015-12-31 17928
-## 2      1              Revenue 2014-12-31 12466
-## 3      1              Revenue 2013-12-31  7872
-## 4      1              Revenue 2012-12-31  5089
-## 5      2 Other Revenue, Total 2015-12-31    NA
-## 6      2 Other Revenue, Total 2014-12-31    NA
-## 7      2 Other Revenue, Total 2013-12-31    NA
-## 8      2 Other Revenue, Total 2012-12-31    NA
-## 9      3        Total Revenue 2015-12-31 17928
-## 10     3        Total Revenue 2014-12-31 12466
+##    group             category       date  value
+##    &lt;int&gt;                &lt;chr&gt;     &lt;date&gt;  &lt;dbl&gt;
+## 1      1              Revenue 2016-09-24 215639
+## 2      1              Revenue 2015-09-26 233715
+## 3      1              Revenue 2014-09-27 182795
+## 4      1              Revenue 2013-09-28 170910
+## 5      2 Other Revenue, Total 2016-09-24     NA
+## 6      2 Other Revenue, Total 2015-09-26     NA
+## 7      2 Other Revenue, Total 2014-09-27     NA
+## 8      2 Other Revenue, Total 2013-09-28     NA
+## 9      3        Total Revenue 2016-09-24 215639
+## 10     3        Total Revenue 2015-09-26 233715
 ## # ... with 186 more rows</code></pre>
 <p>A slightly more powerful example is looking at all quarterly statements together. This is easy to do with <code>unnest</code> and <code>spread</code> from the <code>tidyr</code> package.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fb_financials %&gt;%
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aapl_financials %&gt;%
 <span class="st">    </span><span class="kw">unnest</span>(quarter) %&gt;%<span class="st"> </span>
 <span class="st">    </span><span class="kw">spread</span>(<span class="dt">key =</span> date, <span class="dt">value =</span> value)</code></pre></div>
 <pre><code>## # A tibble: 110 × 8
-##     type group                         category `2015-09-30` `2015-12-31`
+##     type group                         category `2015-09-26` `2015-12-26`
 ## *  &lt;chr&gt; &lt;int&gt;                            &lt;chr&gt;        &lt;dbl&gt;        &lt;dbl&gt;
-## 1     BS     1               Cash &amp; Equivalents         1621         2409
-## 2     BS     2           Short Term Investments        11526        14322
-## 3     BS     3  Cash and Short Term Investments        15834        18434
-## 4     BS     4 Accounts Receivable - Trade, Net         2010         2559
+## 1     BS     1               Cash &amp; Equivalents         9731         5537
+## 2     BS     2           Short Term Investments        20590        21660
+## 3     BS     3  Cash and Short Term Investments        41710        38349
+## 4     BS     4 Accounts Receivable - Trade, Net        16849        12953
 ## 5     BS     5              Receivables - Other           NA           NA
-## 6     BS     6           Total Receivables, Net         2010         2559
-## 7     BS     7                  Total Inventory           NA           NA
-## 8     BS     8                 Prepaid Expenses         1295          659
-## 9     BS     9      Other Current Assets, Total           NA           NA
-## 10    BS    10             Total Current Assets        19139        21652
-## # ... with 100 more rows, and 3 more variables: `2016-03-31` &lt;dbl&gt;,
-## #   `2016-06-30` &lt;dbl&gt;, `2016-09-30` &lt;dbl&gt;</code></pre>
+## 6     BS     6           Total Receivables, Net        30343        24621
+## 7     BS     7                  Total Inventory         2349         2451
+## 8     BS     8                 Prepaid Expenses           NA           NA
+## 9     BS     9      Other Current Assets, Total        14976        10798
+## 10    BS    10             Total Current Assets        89378        76219
+## # ... with 100 more rows, and 3 more variables: `2016-03-26` &lt;dbl&gt;,
+## #   `2016-06-25` &lt;dbl&gt;, `2016-09-24` &lt;dbl&gt;</code></pre>
 <p>The data source is <a href="https://www.google.com/finance">google finance</a>.</p>
+<p><strong>Key Ratios</strong>:</p>
+<p>For any given stock, the key ratios are available for 10 years that are classified into the following sections:</p>
+<ul>
+<li><strong>Financials</strong>: These ratios include gross margin %, operating margin %, EPS, book value per share, and more.</li>
+<li><strong>Profitability</strong>: These ratios include margin as a percentage of sales (gross margin, operating margin, EBT margin, etc) and profitability metrics such as tax rate %, asset turnover, ROA, financial leverage, ROE, return on invested capital, and more.</li>
+<li><strong>Growth</strong>: These ratios include year over year, 3-year average, 5-year average, and 10-year average growth rates for revenue, operating income, net income, and EPS.</li>
+<li><strong>Cash Flow</strong>: These ratios include operating cash flow growth % YOY, free cash flow growth % YOY, capital expenditure as a % of sales, and more.</li>
+<li><strong>Financial Health</strong>: These ratios include balance sheet items as a percentage of total assets and liabilities, and liquidty/financial health metrics such as current ratio, quick ratio, debt/equity, and financial leverage.</li>
+<li><strong>Efficiency Ratios</strong>: These ratios include days sales outstanding, days inventory, inventory turnover, asset turnover and more.</li>
+<li><strong>Valuation Ratios</strong>: These ratios include price to earnings (P/E), price to sales (P/S), price to book (P/B), and price to operating cash flow.</li>
+</ul>
+<p>To get the key ratios:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aapl_key_ratios &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;key.ratios&quot;</span>)
+aapl_key_ratios</code></pre></div>
+<pre><code>## # A tibble: 7 × 2
+##             section               data
+##               &lt;chr&gt;             &lt;list&gt;
+## 1        Financials &lt;tibble [150 × 5]&gt;
+## 2     Profitability &lt;tibble [170 × 5]&gt;
+## 3            Growth &lt;tibble [160 × 5]&gt;
+## 4         Cash Flow  &lt;tibble [50 × 5]&gt;
+## 5  Financial Health &lt;tibble [240 × 5]&gt;
+## 6 Efficiency Ratios  &lt;tibble [80 × 5]&gt;
+## 7  Valuation Ratios  &lt;tibble [40 × 5]&gt;</code></pre>
+<p>The ratios can be filtered and unnested to peel away the hierarchical nesting layers and access the underlying data:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aapl_key_ratios %&gt;%
+<span class="st">    </span><span class="kw">filter</span>(section ==<span class="st"> &quot;Valuation Ratios&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">unnest</span>()</code></pre></div>
+<pre><code>## # A tibble: 40 × 6
+##             section      sub.section group          category       date
+##               &lt;chr&gt;            &lt;chr&gt; &lt;dbl&gt;             &lt;chr&gt;     &lt;date&gt;
+## 1  Valuation Ratios Valuation Ratios    86 Price to Earnings 2007-12-31
+## 2  Valuation Ratios Valuation Ratios    86 Price to Earnings 2008-12-31
+## 3  Valuation Ratios Valuation Ratios    86 Price to Earnings 2009-12-31
+## 4  Valuation Ratios Valuation Ratios    86 Price to Earnings 2010-12-31
+## 5  Valuation Ratios Valuation Ratios    86 Price to Earnings 2011-12-30
+## 6  Valuation Ratios Valuation Ratios    86 Price to Earnings 2012-12-31
+## 7  Valuation Ratios Valuation Ratios    86 Price to Earnings 2013-12-31
+## 8  Valuation Ratios Valuation Ratios    86 Price to Earnings 2014-12-31
+## 9  Valuation Ratios Valuation Ratios    86 Price to Earnings 2015-12-31
+## 10 Valuation Ratios Valuation Ratios    86 Price to Earnings 2016-12-30
+## # ... with 30 more rows, and 1 more variables: value &lt;dbl&gt;</code></pre>
+<p>Once we have a section, we can quickly visualize the ratios:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aapl_key_ratios %&gt;%
+<span class="st">    </span><span class="kw">filter</span>(section ==<span class="st"> &quot;Valuation Ratios&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">unnest</span>() %&gt;%
+<span class="st">    </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> date, <span class="dt">y =</span> value)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">col =</span> forcats::<span class="kw">fct_reorder2</span>(category, date, value))) +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;10-Year Historical Valuation Ratios for AAPL&quot;</span>, <span class="dt">x =</span> <span class="st">&quot;&quot;</span>, 
+         <span class="dt">y =</span> <span class="st">&quot;&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;&quot;</span>) </code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The data source is <a href="http://www.morningstar.com/">Morningstar</a>.</p>
 <p><a class="anchor" id="economic-data"></a></p>
 <p><strong>Economic Data</strong>:</p>
 <p>A wealth of economic data can be extracted from the Federal Reserve Economic Data (FRED) database. The <a href="https://fred.stlouisfed.org/series/DCOILWTICO">WTI Crude Oil Prices</a> are shown below.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wti_price_usd &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;DCOILWTICO&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;economic.data&quot;</span>)
 wti_price_usd </code></pre></div>
-<pre><code>## # A tibble: 2,867 × 2
+<pre><code>## # A tibble: 2,612 × 2
 ##          date price
 ##        &lt;date&gt; &lt;dbl&gt;
-## 1  2006-01-02    NA
-## 2  2006-01-03 63.11
-## 3  2006-01-04 63.41
-## 4  2006-01-05 62.81
-## 5  2006-01-06 64.21
-## 6  2006-01-09 63.56
-## 7  2006-01-10 63.41
-## 8  2006-01-11 63.91
-## 9  2006-01-12 63.96
-## 10 2006-01-13 63.86
-## # ... with 2,857 more rows</code></pre>
+## 1  2007-01-01    NA
+## 2  2007-01-02 60.77
+## 3  2007-01-03 58.31
+## 4  2007-01-04 55.65
+## 5  2007-01-05 56.29
+## 6  2007-01-08 56.08
+## 7  2007-01-09 55.65
+## 8  2007-01-10 53.95
+## 9  2007-01-11 51.91
+## 10 2007-01-12 52.96
+## # ... with 2,602 more rows</code></pre>
 <p>The FRED contains literally over 10K data sets that are free to use. See the <a href="https://fred.stlouisfed.org/categories">FRED categories</a> to narrow down the data base and to get data codes.</p>
 <p><strong>Exchange Rates</strong>:</p>
 <p>Exchange rates are entered as currency pairs using “/” notation (e.g <code>&quot;EUR/USD&quot;</code>), and by setting <code>get = &quot;exchange.rates&quot;</code>.</p>
@@ -274,16 +329,16 @@ eur_usd </code></pre></div>
 <pre><code>## # A tibble: 1,827 × 2
 ##          date exchange.rate
 ##        &lt;date&gt;         &lt;dbl&gt;
-## 1  2011-12-31       1.29618
-## 2  2012-01-01       1.29590
-## 3  2012-01-02       1.29375
-## 4  2012-01-03       1.30038
-## 5  2012-01-04       1.30036
-## 6  2012-01-05       1.28717
-## 7  2012-01-06       1.27698
-## 8  2012-01-07       1.27195
-## 9  2012-01-08       1.27151
-## 10 2012-01-09       1.27272
+## 1  2012-01-07       1.27195
+## 2  2012-01-08       1.27151
+## 3  2012-01-09       1.27272
+## 4  2012-01-10       1.27795
+## 5  2012-01-11       1.27334
+## 6  2012-01-12       1.27520
+## 7  2012-01-13       1.27777
+## 8  2012-01-14       1.26809
+## 9  2012-01-15       1.26760
+## 10 2012-01-16       1.26576
 ## # ... with 1,817 more rows</code></pre>
 <p>The data source is <a href="https://www.oanda.com/">Oanda</a>, and list of currencies to compare can be found on <a href="https://www.oanda.com/currency/converter/">Oanda’s currency converter</a>. It may make more sense to get this data from the FRED (See <a href="#economic-data">Economic Data</a>) since the max period for Oanda is 5-years.</p>
 <p><strong>Metal Prices</strong>:</p>
@@ -294,16 +349,16 @@ plat_price_eur </code></pre></div>
 <pre><code>## # A tibble: 1,827 × 2
 ##          date   price
 ##        &lt;date&gt;   &lt;dbl&gt;
-## 1  2011-12-31 1080.87
-## 2  2012-01-01 1081.11
-## 3  2012-01-02 1085.99
-## 4  2012-01-03 1080.45
-## 5  2012-01-04 1080.47
-## 6  2012-01-05 1091.55
-## 7  2012-01-06 1100.26
-## 8  2012-01-07 1104.61
-## 9  2012-01-08 1097.12
-## 10 2012-01-09 1096.08
+## 1  2012-01-07 1104.61
+## 2  2012-01-08 1097.12
+## 3  2012-01-09 1096.08
+## 4  2012-01-10 1091.59
+## 5  2012-01-11 1095.54
+## 6  2012-01-12 1093.95
+## 7  2012-01-13 1091.75
+## 8  2012-01-14 1100.09
+## 9  2012-01-15 1171.90
+## 10 2012-01-16 1173.60
 ## # ... with 1,817 more rows</code></pre>
 <p>The data source is <a href="https://www.oanda.com/">Oanda</a>. It may make more sense to get this data from the FRED (See <a href="#economic-data">Economic Data</a>) since the max period for Oanda is 5-years.</p>
 <p><a class="anchor" id="tq-transform"></a></p>
@@ -315,8 +370,8 @@ plat_price_eur </code></pre></div>
 <p>Transforms the results of <code>tq_get()</code>. The result is typically a different shape than the input (hence “transformed”), although this is not a requirement. An example is periodicity aggregation from daily to monthly.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fb_prices &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;FB&quot;</span>) 
 fb_prices %&gt;%
-<span class="st">    </span><span class="kw">tq_transform</span>(<span class="dt">x_fun =</span> OHLCV, <span class="dt">transform_fun =</span> to.monthly)</code></pre></div>
-<pre><code>## # A tibble: 56 × 6
+<span class="st">    </span><span class="kw">tq_transform</span>(<span class="dt">ohlc_fun =</span> OHLCV, <span class="dt">transform_fun =</span> to.monthly)</code></pre></div>
+<pre><code>## # A tibble: 57 × 6
 ##        date  open  high   low close    volume
 ##       &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;
 ## 1  May 2012 28.55 29.67 26.83 29.60 111639200
@@ -329,13 +384,13 @@ fb_prices %&gt;%
 ## 8  Dec 2012 26.20 26.99 26.11 26.62  60374500
 ## 9  Jan 2013 29.15 31.47 28.74 30.98 190744900
 ## 10 Feb 2013 26.84 27.30 26.34 27.25  83027800
-## # ... with 46 more rows</code></pre>
-<p>Let’s go through what happened. <code>x_fun</code> is one of the various quantmod Open, High, Low, Close (OHLC) functions (see <code>?quantmod::OHLC</code>). The function returns a column or set of columns from data that are passed to the <code>transform_fun</code>. In example above, <code>OHLCV</code> selects the full list of prices and volumes from <code>data</code>, and sends this to the transform function, <code>to.monthly</code>, which transforms the periodicity from daily to monthly. Additional arguments can be passed to the <code>transform_fun</code> by way of <code>...</code>.</p>
+## # ... with 47 more rows</code></pre>
+<p>Let’s go through what happened. <code>ohlc_fun</code> is one of the various quantmod Open, High, Low, Close (OHLC) functions (see <code>?quantmod::OHLC</code>). The function returns a column or set of columns from data that are passed to the <code>transform_fun</code>. In example above, <code>OHLCV</code> selects the full list of prices and volumes from <code>data</code>, and sends this to the transform function, <code>to.monthly</code>, which transforms the periodicity from daily to monthly. Additional arguments can be passed to the <code>transform_fun</code> by way of <code>...</code>.</p>
 <p><strong>Mutate Quantitative Data, <code>tq_mutate()</code></strong>:</p>
 <p>Adds a column or set of columns to the tibble with the calculated attributes (hence the original tibble is returned, mutated with the additional columns). An example is getting the <code>MACD</code> from <code>Cl</code> (close price), which mutates the original input by adding MACD and Signal columns.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fb_prices %&gt;%
-<span class="st">    </span><span class="kw">tq_mutate</span>(<span class="dt">x_fun =</span> Cl, <span class="dt">mutate_fun =</span> MACD)</code></pre></div>
-<pre><code>## # A tibble: 1,163 × 9
+<span class="st">    </span><span class="kw">tq_mutate</span>(<span class="dt">ohlc_fun =</span> Cl, <span class="dt">mutate_fun =</span> MACD)</code></pre></div>
+<pre><code>## # A tibble: 1,167 × 9
 ##          date  open  high   low close    volume adjusted  macd signal
 ##        &lt;date&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
 ## 1  2012-05-18 42.05 45.00 38.00 38.23 573576400    38.23    NA     NA
@@ -348,7 +403,7 @@ fb_prices %&gt;%
 ## 8  2012-05-30 28.70 29.55 27.86 28.19  57267900    28.19    NA     NA
 ## 9  2012-05-31 28.55 29.67 26.83 29.60 111639200    29.60    NA     NA
 ## 10 2012-06-01 28.89 29.15 27.39 27.72  41855500    27.72    NA     NA
-## # ... with 1,153 more rows</code></pre>
+## # ... with 1,157 more rows</code></pre>
 <p>Note that a mutation can occur if, and only if, the mutation has the same structure of the original tibble. In other words, the calculation must have the same number of rows and row.names (or date fields), otherwise the mutation cannot be performed.</p>
 <p><strong>xy Variants, <code>tq_transform_xy</code> and <code>tq_mutate_xy</code></strong>:</p>
 <p>Enables working with:</p>
@@ -357,11 +412,11 @@ fb_prices %&gt;%
 <li>Data that is not in OHLC format.</li>
 </ol>
 <p><em>Transformation with two primary inputs</em>:</p>
-<p>EVWMA (exponential volume-weighted moving average) requires two inputs, price and volume, that are not in OHLC code format. To work with these columns, we can switch to the xy variants, <code>tq_transform_xy()</code> and <code>tq_mutate_xy()</code>. The only difference is instead of an <code>x_fun</code> argument, you use <code>.x</code> and <code>.y</code> arguments to pass the columns needed based on the <code>transform_fun</code> or <code>mutate_fun</code> documentation.</p>
+<p>EVWMA (exponential volume-weighted moving average) requires two inputs, price and volume, that are not in OHLC code format. To work with these columns, we can switch to the xy variants, <code>tq_transform_xy()</code> and <code>tq_mutate_xy()</code>. The only difference is instead of an <code>ohlc_fun</code> argument, you use <code>x</code> and <code>y</code> arguments to pass the columns needed based on the <code>transform_fun</code> or <code>mutate_fun</code> documentation.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fb_prices %&gt;%
-<span class="st">    </span><span class="kw">tq_mutate_xy</span>(<span class="dt">.x =</span> close, <span class="dt">.y =</span> volume, <span class="dt">mutate_fun =</span> EVWMA)</code></pre></div>
-<pre><code>## # A tibble: 1,163 × 8
-##          date  open  high   low close    volume adjusted    V1
+<span class="st">    </span><span class="kw">tq_mutate_xy</span>(<span class="dt">x =</span> close, <span class="dt">y =</span> volume, <span class="dt">mutate_fun =</span> EVWMA)</code></pre></div>
+<pre><code>## # A tibble: 1,167 × 8
+##          date  open  high   low close    volume adjusted    v1
 ##        &lt;date&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;
 ## 1  2012-05-18 42.05 45.00 38.00 38.23 573576400    38.23    NA
 ## 2  2012-05-21 36.53 36.66 33.00 34.03 168192700    34.03    NA
@@ -373,27 +428,27 @@ fb_prices %&gt;%
 ## 8  2012-05-30 28.70 29.55 27.86 28.19  57267900    28.19    NA
 ## 9  2012-05-31 28.55 29.67 26.83 29.60 111639200    29.60    NA
 ## 10 2012-06-01 28.89 29.15 27.39 27.72  41855500    27.72 27.72
-## # ... with 1,153 more rows</code></pre>
+## # ... with 1,157 more rows</code></pre>
 <p><em>Working with non-OHLC data</em>:</p>
-<p>Returns from FRED, Oanda, and other sources do not have open, high, low, close, and volume (OHLCV) format. The following example shows how to transform WTI Crude daily prices to monthly prices. Since we only have a single column to pass, set the <code>.x = price</code> and leave the <code>.y = NULL</code>. This sends the price column to the <code>to.period</code> transformation fuction.</p>
+<p>Returns from FRED, Oanda, and other sources do not have open, high, low, close, and volume (OHLCV) format. The following example shows how to transform WTI Crude daily prices to monthly prices. Since we only have a single column to pass, set the <code>x = price</code> and leave the <code>y = NULL</code>. This sends the price column to the <code>to.period</code> transformation fuction.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wti_prices &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;DCOILWTICO&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;economic.data&quot;</span>) 
 wti_prices %&gt;%<span class="st">    </span>
-<span class="st">    </span><span class="kw">tq_transform_xy</span>(<span class="dt">.x =</span> price, <span class="dt">transform_fun =</span> to.period,
+<span class="st">    </span><span class="kw">tq_transform_xy</span>(<span class="dt">x =</span> price, <span class="dt">transform_fun =</span> to.period,
                     <span class="dt">period =</span> <span class="st">&quot;months&quot;</span>)</code></pre></div>
-<pre><code>## # A tibble: 132 × 2
+<pre><code>## # A tibble: 121 × 2
 ##          date price
 ##        &lt;dttm&gt; &lt;dbl&gt;
-## 1  2006-01-31 67.86
-## 2  2006-02-28 61.37
-## 3  2006-03-31 66.25
-## 4  2006-04-28 71.80
-## 5  2006-05-31 71.42
-## 6  2006-06-30 73.94
-## 7  2006-07-31 74.56
-## 8  2006-08-31 70.38
-## 9  2006-09-29 62.90
-## 10 2006-10-31 58.72
-## # ... with 122 more rows</code></pre>
+## 1  2007-01-31 58.17
+## 2  2007-02-28 61.78
+## 3  2007-03-30 65.94
+## 4  2007-04-30 65.78
+## 5  2007-05-31 64.02
+## 6  2007-06-29 70.47
+## 7  2007-07-31 78.20
+## 8  2007-08-31 73.98
+## 9  2007-09-28 81.64
+## 10 2007-10-31 94.16
+## # ... with 111 more rows</code></pre>
 <p><a class="anchor" id="tq-coerce"></a></p>
 </div>
 <div id="coercing-time-series-objects-to-and-from-tibble" class="section level3">
@@ -445,25 +500,25 @@ time_series_xts</code></pre></div>
 </div>
 <div id="working-in-the-tidyverse" class="section level2">
 <h2>Working in the tidyverse</h2>
-<p>You probably already know and love <code>tidyverse</code> packages like <code>dplyr</code>, <code>tidyr</code>, <code>purrr</code>, <code>readr</code>, and <code>tibble</code> along with <code>lubridate</code> for working with date and datetime. <code>tidyquant</code> works solely in tibbles, so all of the <code>tidyverse</code> functionality is intact.</p>
+<p>You probably already know and love <code>tidyverse</code> packages like <code>ggplot2</code>, <code>dplyr</code>, <code>tidyr</code>, <code>purrr</code>, <code>readr</code>, and <code>tibble</code> along with <code>lubridate</code> for working with date and datetime. <code>tidyquant</code> works solely in tibbles, so all of the <code>tidyverse</code> functionality is intact.</p>
 <p>A simple example inspired by <a href="https://blog.exploratory.io/introducing-time-series-analysis-with-dplyr-60683587cf8a#.w6pvyi3d2">Kan Nishida’s blog</a> shows the <code>dplyr</code> and <code>lubridate</code> capability: Say we want the growth in the stock over the past year. We can do this with <code>dplyr</code> operations.</p>
 <p>Getting the last year is simple with <code>dplyr</code> and <code>lubridate</code>. We first <code>select</code> the date and adjusted price (adjusted for stock splits). We then <code>filter</code> using <code>lubridate</code> date functions.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aapl_prices %&gt;%
 <span class="st">    </span><span class="kw">select</span>(date, adjusted) %&gt;%
 <span class="st">    </span><span class="kw">filter</span>(date &gt;=<span class="st"> </span><span class="kw">today</span>() -<span class="st"> </span><span class="kw">years</span>(<span class="dv">1</span>))</code></pre></div>
 <pre><code>## # A tibble: 253 × 2
-##          date  adjusted
-##        &lt;date&gt;     &lt;dbl&gt;
-## 1  2015-12-31 102.96903
-## 2  2016-01-04 103.05706
-## 3  2016-01-05 100.47452
-## 4  2016-01-06  98.50827
-## 5  2016-01-07  94.35077
-## 6  2016-01-08  94.84967
-## 7  2016-01-11  96.38550
-## 8  2016-01-12  97.78438
-## 9  2016-01-13  95.27031
-## 10 2016-01-14  97.35395
+##          date adjusted
+##        &lt;date&gt;    &lt;dbl&gt;
+## 1  2016-01-07 94.35077
+## 2  2016-01-08 94.84967
+## 3  2016-01-11 96.38550
+## 4  2016-01-12 97.78438
+## 5  2016-01-13 95.27031
+## 6  2016-01-14 97.35395
+## 7  2016-01-15 95.01597
+## 8  2016-01-19 94.55621
+## 9  2016-01-20 94.68337
+## 10 2016-01-21 94.20404
 ## # ... with 243 more rows</code></pre>
 <p>We can also get a baseline price using the <code>first</code> function. Adding to our workflow, this looks like:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aapl_prices %&gt;%
@@ -471,51 +526,79 @@ time_series_xts</code></pre></div>
 <span class="st">    </span><span class="kw">filter</span>(date &gt;=<span class="st"> </span><span class="kw">today</span>() -<span class="st"> </span><span class="kw">years</span>(<span class="dv">1</span>)) %&gt;%
 <span class="st">    </span><span class="kw">mutate</span>(<span class="dt">baseline =</span> <span class="kw">first</span>(adjusted))</code></pre></div>
 <pre><code>## # A tibble: 253 × 3
-##          date  adjusted baseline
-##        &lt;date&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1  2015-12-31 102.96903  102.969
-## 2  2016-01-04 103.05706  102.969
-## 3  2016-01-05 100.47452  102.969
-## 4  2016-01-06  98.50827  102.969
-## 5  2016-01-07  94.35077  102.969
-## 6  2016-01-08  94.84967  102.969
-## 7  2016-01-11  96.38550  102.969
-## 8  2016-01-12  97.78438  102.969
-## 9  2016-01-13  95.27031  102.969
-## 10 2016-01-14  97.35395  102.969
+##          date adjusted baseline
+##        &lt;date&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1  2016-01-07 94.35077 94.35077
+## 2  2016-01-08 94.84967 94.35077
+## 3  2016-01-11 96.38550 94.35077
+## 4  2016-01-12 97.78438 94.35077
+## 5  2016-01-13 95.27031 94.35077
+## 6  2016-01-14 97.35395 94.35077
+## 7  2016-01-15 95.01597 94.35077
+## 8  2016-01-19 94.55621 94.35077
+## 9  2016-01-20 94.68337 94.35077
+## 10 2016-01-21 94.20404 94.35077
 ## # ... with 243 more rows</code></pre>
-<p>Growth and growth percent versus baseline columns can be added now. We tack on a final select statement to remove unnecessary columns. The final workflow looks like this:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aapl_prices %&gt;%
+<p>Growth and growth percent versus baseline columns can be added now. We tack on a final <code>select</code> statement to remove unnecessary columns. The final workflow looks like this:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aapl_growth &lt;-<span class="st"> </span>aapl_prices %&gt;%
 <span class="st">    </span><span class="kw">select</span>(date, adjusted) %&gt;%
 <span class="st">    </span><span class="kw">filter</span>(date &gt;=<span class="st"> </span><span class="kw">today</span>() -<span class="st"> </span><span class="kw">years</span>(<span class="dv">1</span>)) %&gt;%
 <span class="st">    </span><span class="kw">mutate</span>(<span class="dt">baseline =</span> <span class="kw">first</span>(adjusted),
            <span class="dt">growth =</span> adjusted -<span class="st"> </span>baseline,
-           <span class="dt">growth_pct =</span> growth /<span class="st"> </span>baseline *<span class="st"> </span><span class="dv">100</span>) %&gt;%
-<span class="st">    </span><span class="kw">select</span>(-(baseline:growth))</code></pre></div>
+           <span class="dt">growth.pct =</span> growth /<span class="st"> </span>baseline) %&gt;%
+<span class="st">    </span><span class="kw">select</span>(-(baseline:growth))
+aapl_growth</code></pre></div>
 <pre><code>## # A tibble: 253 × 3
-##          date  adjusted growth_pct
-##        &lt;date&gt;     &lt;dbl&gt;      &lt;dbl&gt;
-## 1  2015-12-31 102.96903  0.0000000
-## 2  2016-01-04 103.05706  0.0854995
-## 3  2016-01-05 100.47452 -2.4225751
-## 4  2016-01-06  98.50827 -4.3321348
-## 5  2016-01-07  94.35077 -8.3697559
-## 6  2016-01-08  94.84967 -7.8852393
-## 7  2016-01-11  96.38550 -6.3936946
-## 8  2016-01-12  97.78438 -5.0351540
-## 9  2016-01-13  95.27031 -7.4767271
-## 10 2016-01-14  97.35395 -5.4531690
+##          date adjusted   growth.pct
+##        &lt;date&gt;    &lt;dbl&gt;        &lt;dbl&gt;
+## 1  2016-01-07 94.35077  0.000000000
+## 2  2016-01-08 94.84967  0.005287736
+## 3  2016-01-11 96.38550  0.021565601
+## 4  2016-01-12 97.78438  0.036391934
+## 5  2016-01-13 95.27031  0.009746004
+## 6  2016-01-14 97.35395  0.031829958
+## 7  2016-01-15 95.01597  0.007050287
+## 8  2016-01-19 94.55621  0.002177364
+## 9  2016-01-20 94.68337  0.003525186
+## 10 2016-01-21 94.20404 -0.001555144
 ## # ... with 243 more rows</code></pre>
+<p>And, we can quickly plot using <code>ggplot2</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aapl_growth %&gt;%
+<span class="st">    </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> date, <span class="dt">y =</span> growth.pct)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_line</span>() +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;AAPL: Growth Over One Year&quot;</span>, <span class="dt">x =</span> <span class="st">&quot;&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Growth&quot;</span>) +
+<span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales::percent)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 <p><a class="anchor" id="quant-power"></a></p>
 </div>
 <div id="leverage-the-quantitative-power-of-xts-quantmod-and-ttr" class="section level2">
 <h2>Leverage the Quantitative Power of xts, quantmod and TTR</h2>
-<p>You may already know and love <code>xts</code>, <code>quantmod</code> and <code>TTR</code>, which is why the core functionality is fully intact. Using <code>tq_transform()</code> and <code>tq_mutate()</code>, we can apply the <code>xts</code>, <code>quantmod</code> and <code>TTR</code> functions. Entering <code>tq_transform_fun_options()</code> returns a list the transform functions by each package. We’ll discuss these options by package briefly.</p>
+<p>You may already know and love <code>xts</code> / <code>zoo</code>, <code>quantmod</code> and <code>TTR</code>, which is why the core functionality is fully intact. Using <code>tq_transform()</code> and <code>tq_mutate()</code>, we can apply the <code>zoo</code>, <code>xts</code>, <code>quantmod</code> and <code>TTR</code> functions. Entering <code>tq_transform_fun_options()</code> returns a list the transform functions by each package. We’ll discuss these options by package briefly.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tq_transform_fun_options</span>() %&gt;%<span class="st"> </span><span class="kw">str</span>()</code></pre></div>
-<pre><code>## List of 3
+<pre><code>## List of 4
+##  $ zoo     : chr [1:14] &quot;rollapply&quot; &quot;rollapplyr&quot; &quot;rollmax&quot; &quot;rollmax.default&quot; ...
 ##  $ xts     : chr [1:27] &quot;apply.daily&quot; &quot;apply.monthly&quot; &quot;apply.quarterly&quot; &quot;apply.weekly&quot; ...
 ##  $ quantmod: chr [1:25] &quot;allReturns&quot; &quot;annualReturn&quot; &quot;ClCl&quot; &quot;dailyReturn&quot; ...
 ##  $ TTR     : chr [1:61] &quot;adjRatios&quot; &quot;ADX&quot; &quot;ALMA&quot; &quot;aroon&quot; ...</code></pre>
+<div id="zoo-functionality" class="section level3">
+<h3>zoo Functionality</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get zoo functions that work with tq_transform and tq_mutate</span>
+<span class="kw">tq_transform_fun_options</span>()$zoo</code></pre></div>
+<pre><code>##  [1] &quot;rollapply&quot;          &quot;rollapplyr&quot;         &quot;rollmax&quot;           
+##  [4] &quot;rollmax.default&quot;    &quot;rollmaxr&quot;           &quot;rollmean&quot;          
+##  [7] &quot;rollmean.default&quot;   &quot;rollmeanr&quot;          &quot;rollmedian&quot;        
+## [10] &quot;rollmedian.default&quot; &quot;rollmedianr&quot;        &quot;rollsum&quot;           
+## [13] &quot;rollsum.default&quot;    &quot;rollsumr&quot;</code></pre>
+<p>The <code>zoo</code> functions that are compatible are listed above. Generally speaking, these are the:</p>
+<ul>
+<li>Roll Apply Functions:
+<ul>
+<li>A generic function for applying a function to rolling margins.</li>
+<li>Form: <code>rollapply(data, width, FUN, ..., by = 1, by.column = TRUE, fill = if (na.pad) NA, na.pad = FALSE, partial = FALSE, align = c(&quot;center&quot;, &quot;left&quot;, &quot;right&quot;), coredata = TRUE)</code>.</li>
+<li>Options include <code>rollmax</code>, <code>rollmean</code>, <code>rollmedian</code>, <code>rollsum</code>, etc.</li>
+</ul></li>
+</ul>
+</div>
 <div id="xts-functionality" class="section level3">
 <h3>xts Functionality</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get xts functions that work with tq_transform and tq_mutate</span>
@@ -669,46 +752,46 @@ time_series_xts</code></pre></div>
 <p>We’ll go through some examples, but first let’s get some data. The default for <code>tq_get()</code> is <code>get = &quot;stock.prices&quot;</code>, so all we need is to give <code>x</code> a stock symbol.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">AAPL &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;AAPL&quot;</span>)</code></pre></div>
 <div id="example-1-getting-the-max-close-price-for-each-quarter." class="section level4">
-<h4>Example 1: Getting the max close price for each quarter.</h4>
-<p>The <code>xts::apply.quarterly()</code> function that is part of the period apply group can be used to apply functions by quarterly time segments. Because we are seeking a return structure that is on a different time scale than the input (quarterly versus daily), we need to use a transform function. We select <code>tq_transform</code> and pass the close price using OHLC format via <code>x_fun = Cl</code>, and we send this subset of the data to the <code>apply.quarterly</code> function via the <code>transform_fun</code> argument. Looking at the documentation for <code>apply.quarterly</code>, we see that we can pass a function to the argument, <code>FUN</code>. We want the maximum values, so we set <code>FUN = max</code>. The result is the quarters returned as a date and the maximum closing price during the quarter returned as a double.</p>
+<h4>Example 1: Getting the Max Close Price for Each Quarter.</h4>
+<p>The <code>xts::apply.quarterly()</code> function that is part of the period apply group can be used to apply functions by quarterly time segments. Because we are seeking a return structure that is on a different time scale than the input (quarterly versus daily), we need to use a transform function. We select <code>tq_transform</code> and pass the close price using OHLC format via <code>ohlc_fun = Cl</code>, and we send this subset of the data to the <code>apply.quarterly</code> function via the <code>transform_fun</code> argument. Looking at the documentation for <code>apply.quarterly</code>, we see that we can pass a function to the argument, <code>FUN</code>. We want the maximum values, so we set <code>FUN = max</code>. The result is the quarters returned as a date and the maximum closing price during the quarter returned as a double.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">AAPL %&gt;%
-<span class="st">    </span><span class="kw">tq_transform</span>(<span class="dt">x_fun =</span> Cl, <span class="dt">transform_fun =</span> apply.quarterly, <span class="dt">FUN =</span> max)</code></pre></div>
-<pre><code>## # A tibble: 44 × 2
+<span class="st">    </span><span class="kw">tq_transform</span>(<span class="dt">ohlc_fun =</span> Cl, <span class="dt">transform_fun =</span> apply.quarterly, <span class="dt">FUN =</span> max)</code></pre></div>
+<pre><code>## # A tibble: 41 × 2
 ##          date  close
 ##        &lt;dttm&gt;  &lt;dbl&gt;
-## 1  2006-03-31  85.59
-## 2  2006-06-30  71.89
-## 3  2006-09-29  77.61
-## 4  2006-12-29  91.81
-## 5  2007-03-30  97.10
-## 6  2007-06-29 125.09
-## 7  2007-09-28 154.50
-## 8  2007-12-31 199.83
-## 9  2008-03-31 194.93
-## 10 2008-06-30 189.96
-## # ... with 34 more rows</code></pre>
-<p>Note that as an alternative you could use the xy form, replacing <code>x_fun = Cl</code> with <code>.x = close</code>.</p>
+## 1  2007-03-30  97.10
+## 2  2007-06-29 125.09
+## 3  2007-09-28 154.50
+## 4  2007-12-31 199.83
+## 5  2008-03-31 194.93
+## 6  2008-06-30 189.96
+## 7  2008-09-30 179.55
+## 8  2008-12-31 111.04
+## 9  2009-03-31 109.87
+## 10 2009-06-30 144.67
+## # ... with 31 more rows</code></pre>
+<p>Note that as an alternative you could use the xy form, replacing <code>ohlc_fun = Cl</code> with <code>x = close</code>.</p>
 </div>
 <div id="example-2-getting-daily-log-returns" class="section level4">
-<h4>Example 2: Getting daily log returns</h4>
-<p>The <code>quantmod::periodReturn()</code> function generates returns by periodicity. We have a few options here. Normally I go with a transform function, <code>tq_transform</code>, because the <code>periodReturn</code> function accepts different periodicity options, and anything other than daily will blow up a mutation. But, in our situation the period returns periodicity is the same as the stock prices periodicity (both daily), so we can use either. We want to use the adjusted closing prices column (adjusted for stock splits, which can make it appear that a stock is performing poorly if a split is included), so we set <code>x_fun = Ad</code>. We researched the <code>periodReturn</code> function, and we found that it accepts <code>type = &quot;log&quot;</code> and <code>period = &quot;daily&quot;</code>, which returns the daily log returns.</p>
+<h4>Example 2: Getting Daily Log Returns</h4>
+<p>The <code>quantmod::periodReturn()</code> function generates returns by periodicity. We have a few options here. Normally I go with a transform function, <code>tq_transform</code>, because the <code>periodReturn</code> function accepts different periodicity options, and anything other than daily will blow up a mutation. But, in our situation the period returns periodicity is the same as the stock prices periodicity (both daily), so we can use either. We want to use the adjusted closing prices column (adjusted for stock splits, which can make it appear that a stock is performing poorly if a split is included), so we set <code>ohlc_fun = Ad</code>. We researched the <code>periodReturn</code> function, and we found that it accepts <code>type = &quot;log&quot;</code> and <code>period = &quot;daily&quot;</code>, which returns the daily log returns.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">AAPL %&gt;%
-<span class="st">    </span><span class="kw">tq_transform</span>(<span class="dt">x_fun =</span> Ad, <span class="dt">transform_fun =</span> periodReturn, 
+<span class="st">    </span><span class="kw">tq_transform</span>(<span class="dt">ohlc_fun =</span> Ad, <span class="dt">transform_fun =</span> periodReturn, 
                  <span class="dt">type =</span> <span class="st">&quot;log&quot;</span>, <span class="dt">period =</span> <span class="st">&quot;daily&quot;</span>)</code></pre></div>
-<pre><code>## # A tibble: 2,769 × 2
+<pre><code>## # A tibble: 2,522 × 2
 ##          date daily.returns
 ##        &lt;dttm&gt;         &lt;dbl&gt;
-## 1  2006-01-03   0.000000000
-## 2  2006-01-04   0.002938752
-## 3  2006-01-05  -0.007900889
-## 4  2006-01-06   0.025485766
-## 5  2006-01-09  -0.003281888
-## 6  2006-01-10   0.061328315
-## 7  2006-01-11   0.036906288
-## 8  2006-01-12   0.004637594
-## 9  2006-01-13   0.015305252
-## 10 2006-01-17  -0.010334731
-## # ... with 2,759 more rows</code></pre>
+## 1  2007-01-03   0.000000000
+## 2  2007-01-04   0.021952915
+## 3  2007-01-05  -0.007146656
+## 4  2007-01-08   0.004926215
+## 5  2007-01-09   0.079799676
+## 6  2007-01-10   0.046745766
+## 7  2007-01-11  -0.012448172
+## 8  2007-01-12  -0.012393888
+## 9  2007-01-16   0.025872526
+## 10 2007-01-17  -0.022390960
+## # ... with 2,512 more rows</code></pre>
 </div>
 <div id="example-3-adding-macd-and-bollinger-bands-to-a-ohlc-data-set" class="section level4">
 <h4>Example 3: Adding MACD and Bollinger Bands to a OHLC data set</h4>
@@ -716,63 +799,91 @@ time_series_xts</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">AAPL %&gt;%
 <span class="st">    </span><span class="kw">tq_mutate</span>(Cl, MACD) %&gt;%
 <span class="st">    </span><span class="kw">tq_mutate</span>(HLC, BBands)</code></pre></div>
-<pre><code>## # A tibble: 2,769 × 13
-##          date  open  high   low close    volume  adjusted  macd signal
-##        &lt;date&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
-## 1  2006-01-03 72.38 74.75 72.25 74.75 201808600  9.726565    NA     NA
-## 2  2006-01-04 75.13 75.98 74.50 74.97 154900900  9.755191    NA     NA
-## 3  2006-01-05 74.83 74.90 73.75 74.38 112355600  9.678420    NA     NA
-## 4  2006-01-06 75.25 76.70 74.55 76.30 176114400  9.928252    NA     NA
-## 5  2006-01-09 76.73 77.20 75.74 76.05 168760200  9.895722    NA     NA
-## 6  2006-01-10 76.25 81.89 75.83 80.86 569967300 10.521606    NA     NA
-## 7  2006-01-11 83.84 84.80 82.59 83.90 373448600 10.917174    NA     NA
-## 8  2006-01-12 84.97 86.40 83.62 84.29 320202400 10.967921    NA     NA
-## 9  2006-01-13 84.99 86.01 84.60 85.59 194076400 11.137079    NA     NA
-## 10 2006-01-17 85.70 86.38 83.87 84.71 208905900 11.022573    NA     NA
-## # ... with 2,759 more rows, and 4 more variables: dn &lt;dbl&gt;, mavg &lt;dbl&gt;,
-## #   up &lt;dbl&gt;, pctB &lt;dbl&gt;</code></pre>
-<p>Note that for the MACD, we could have used <code>tq_mutate_xy()</code>, setting <code>.x = close</code>. However, for the BBands, we are forced to use <code>tq_mutate()</code> because of the HLC input.</p>
+<pre><code>## # A tibble: 2,522 × 13
+##          date  open  high   low close    volume adjusted  macd signal
+##        &lt;date&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1  2007-01-03 86.29 86.58 81.90 83.80 309579900 10.90416    NA     NA
+## 2  2007-01-04 84.05 85.95 83.82 85.66 211815100 11.14619    NA     NA
+## 3  2007-01-05 85.77 86.20 84.40 85.05 208685400 11.06681    NA     NA
+## 4  2007-01-08 85.96 86.53 85.28 85.47 199276700 11.12147    NA     NA
+## 5  2007-01-09 86.45 92.98 85.15 92.57 837324600 12.04533    NA     NA
+## 6  2007-01-10 94.75 97.80 93.45 97.00 738220000 12.62176    NA     NA
+## 7  2007-01-11 95.94 96.78 95.10 95.80 360063200 12.46562    NA     NA
+## 8  2007-01-12 94.59 95.06 93.23 94.62 328172600 12.31207    NA     NA
+## 9  2007-01-16 95.68 97.25 95.45 97.10 311019100 12.63477    NA     NA
+## 10 2007-01-17 97.56 97.60 94.82 94.95 411565000 12.35501    NA     NA
+## # ... with 2,512 more rows, and 4 more variables: dn &lt;dbl&gt;, mavg &lt;dbl&gt;,
+## #   up &lt;dbl&gt;, pctb &lt;dbl&gt;</code></pre>
+<p>Note that for the MACD, we could have used <code>tq_mutate_xy()</code>, setting <code>x = close</code>. However, for the BBands, we are forced to use <code>tq_mutate()</code> because of the HLC input.</p>
 </div>
 <div id="example-4-getting-the-percentage-difference-between-open-and-close-from-zero-to-five-periods" class="section level4">
 <h4>Example 4: Getting the Percentage Difference Between Open and Close from Zero to Five Periods</h4>
-<p>We can’t use the <code>OpCl</code> function for this task since it only returns the percentage difference for a period lag of zero. We keep digging and we find the base <code>Delt</code> function from quantmod. In researching the function, we see that <code>Delt</code> takes one or two inputs, <code>k</code> a series of lags, and the type of difference, either arithmetic or log. We will set <code>.x = open</code> and <code>.y = close</code> and <code>k = 0:5</code> to get zero through five periods. The default <code>type = &quot;arithmetic&quot;</code> is acceptable, so there is no need to specify. The result is the percentage difference between the open and close prices for periods zero to five.</p>
+<p>We can’t use the <code>OpCl</code> function for this task since it only returns the percentage difference for a period lag of zero. We keep digging and we find the base <code>Delt</code> function from quantmod. In researching the function, we see that <code>Delt</code> takes one or two inputs, <code>k</code> a series of lags, and the type of difference, either arithmetic or log. We will set <code>x = open</code> and <code>y = close</code> and <code>k = 0:5</code> to get zero through five periods. The default <code>type = &quot;arithmetic&quot;</code> is acceptable, so there is no need to specify. The result is the percentage difference between the open and close prices for periods zero to five.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">AAPL %&gt;%
-<span class="st">    </span><span class="kw">tq_mutate_xy</span>(<span class="dt">.x =</span> open, <span class="dt">.y =</span> close, <span class="dt">mutate_fun =</span> Delt, <span class="dt">k =</span> <span class="dv">0</span>:<span class="dv">5</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_mutate_xy</span>(<span class="dt">x =</span> open, <span class="dt">y =</span> close, <span class="dt">mutate_fun =</span> Delt, <span class="dt">k =</span> <span class="dv">0</span>:<span class="dv">5</span>) %&gt;%
 <span class="st">    </span><span class="kw">select</span>(-<span class="kw">c</span>(high, low, volume, adjusted))</code></pre></div>
-<pre><code>## # A tibble: 2,769 × 9
-##          date  open close Delt.0.arithmetic Delt.1.arithmetic
+<pre><code>## # A tibble: 2,522 × 9
+##          date  open close delt.0.arithmetic delt.1.arithmetic
 ##        &lt;date&gt; &lt;dbl&gt; &lt;dbl&gt;             &lt;dbl&gt;             &lt;dbl&gt;
-## 1  2006-01-03 72.38 74.75      0.0327438653                NA
-## 2  2006-01-04 75.13 74.97     -0.0021296021       0.035783351
-## 3  2006-01-05 74.83 74.38     -0.0060135910      -0.009982657
-## 4  2006-01-06 75.25 76.30      0.0139534485       0.019644528
-## 5  2006-01-09 76.73 76.05     -0.0088622703       0.010631203
-## 6  2006-01-10 76.25 80.86      0.0604590009       0.053825127
-## 7  2006-01-11 83.84 83.90      0.0007155892       0.100327799
-## 8  2006-01-12 84.97 84.29     -0.0080028479       0.005367330
-## 9  2006-01-13 84.99 85.59      0.0070596538       0.007296705
-## 10 2006-01-17 85.70 84.71     -0.0115518788      -0.003294505
-## # ... with 2,759 more rows, and 4 more variables: Delt.2.arithmetic &lt;dbl&gt;,
-## #   Delt.3.arithmetic &lt;dbl&gt;, Delt.4.arithmetic &lt;dbl&gt;,
-## #   Delt.5.arithmetic &lt;dbl&gt;</code></pre>
+## 1  2007-01-03 86.29 83.80     -0.0288561482                NA
+## 2  2007-01-04 84.05 85.66      0.0191552288      -0.007300974
+## 3  2007-01-05 85.77 85.05     -0.0083945785       0.011897632
+## 4  2007-01-08 85.96 85.47     -0.0057003026      -0.003497726
+## 5  2007-01-09 86.45 92.57      0.0707923631       0.076896291
+## 6  2007-01-10 94.75 97.00      0.0237466810       0.122035785
+## 7  2007-01-11 95.94 95.80     -0.0014592141       0.011081837
+## 8  2007-01-12 94.59 94.62      0.0003171688      -0.013758568
+## 9  2007-01-16 95.68 97.10      0.0148411267       0.026535542
+## 10 2007-01-17 97.56 94.95     -0.0267528282      -0.007629630
+## # ... with 2,512 more rows, and 4 more variables: delt.2.arithmetic &lt;dbl&gt;,
+## #   delt.3.arithmetic &lt;dbl&gt;, delt.4.arithmetic &lt;dbl&gt;,
+## #   delt.5.arithmetic &lt;dbl&gt;</code></pre>
 <p>For comparison we’ll inspect the output from the <code>OpCl()</code> function using <code>tq_mutate()</code>. We send OHLC prices to the OpCl function. As expected the <code>OpCl..</code> column returned is the same as <code>Delt.0.arithmetic</code> from above.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">AAPL %&gt;%
 <span class="st">    </span><span class="kw">tq_mutate</span>(OHLC, OpCl) %&gt;%
 <span class="st">    </span><span class="kw">select</span>(-<span class="kw">c</span>(high, low, volume, adjusted))</code></pre></div>
-<pre><code>## # A tibble: 2,769 × 4
-##          date  open close        OpCl..
+<pre><code>## # A tibble: 2,522 × 4
+##          date  open close        opcl..
 ##        &lt;date&gt; &lt;dbl&gt; &lt;dbl&gt;         &lt;dbl&gt;
-## 1  2006-01-03 72.38 74.75  0.0327438653
-## 2  2006-01-04 75.13 74.97 -0.0021296021
-## 3  2006-01-05 74.83 74.38 -0.0060135910
-## 4  2006-01-06 75.25 76.30  0.0139534485
-## 5  2006-01-09 76.73 76.05 -0.0088622703
-## 6  2006-01-10 76.25 80.86  0.0604590009
-## 7  2006-01-11 83.84 83.90  0.0007155892
-## 8  2006-01-12 84.97 84.29 -0.0080028479
-## 9  2006-01-13 84.99 85.59  0.0070596538
-## 10 2006-01-17 85.70 84.71 -0.0115518788
-## # ... with 2,759 more rows</code></pre>
+## 1  2007-01-03 86.29 83.80 -0.0288561482
+## 2  2007-01-04 84.05 85.66  0.0191552288
+## 3  2007-01-05 85.77 85.05 -0.0083945785
+## 4  2007-01-08 85.96 85.47 -0.0057003026
+## 5  2007-01-09 86.45 92.57  0.0707923631
+## 6  2007-01-10 94.75 97.00  0.0237466810
+## 7  2007-01-11 95.94 95.80 -0.0014592141
+## 8  2007-01-12 94.59 94.62  0.0003171688
+## 9  2007-01-16 95.68 97.10  0.0148411267
+## 10 2007-01-17 97.56 94.95 -0.0267528282
+## # ... with 2,512 more rows</code></pre>
+</div>
+<div id="example-4-get-the-5-10-15-day-rolling-minimum-and-maximum-values-of-the-adjusted-prices" class="section level4">
+<h4>Example 4: Get the 5, 10, 15-Day Rolling Minimum and Maximum Values of the Adjusted Prices</h4>
+<p>Rolling functions come from the <code>zoo</code> package. In reviewing the available options, we see that <code>rollmax</code> is present but no there is no <code>rollmin</code>. However, the generic <code>rollapply</code> function will work with any function, so let’s use that. In reviewing the documentation, the <code>rollapply()</code> function takes three primary arguments: <code>data</code>, <code>width</code> and <code>FUN</code>. The <code>data</code> is passed using the <code>ohlc_fun</code> argument, so we don’t need to worry about this. The <code>width</code> is the number of periods to apply the function, and for our situation this is 5, 10, and 15. The <code>FUN</code> is the function to apply, and for our situation this is <code>min</code> and <code>max</code>. We want the result to add columns to our data set, so we use the <code>tq_mutate()</code> function, which allows us to pipe (<code>%&gt;%</code>) each mutation. Putting it all together:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">AAPL %&gt;%
+<span class="st">    </span><span class="kw">tq_mutate</span>(Ad, rollapply, <span class="dt">width =</span> <span class="dv">5</span>, <span class="dt">FUN =</span> min) %&gt;%
+<span class="st">    </span><span class="kw">tq_mutate</span>(Ad, rollapply, <span class="dt">width =</span> <span class="dv">10</span>, <span class="dt">FUN =</span> min) %&gt;%
+<span class="st">    </span><span class="kw">tq_mutate</span>(Ad, rollapply, <span class="dt">width =</span> <span class="dv">15</span>, <span class="dt">FUN =</span> min) %&gt;%
+<span class="st">    </span><span class="kw">tq_mutate</span>(Ad, rollapply, <span class="dt">width =</span> <span class="dv">5</span>, <span class="dt">FUN =</span> max) %&gt;%
+<span class="st">    </span><span class="kw">tq_mutate</span>(Ad, rollapply, <span class="dt">width =</span> <span class="dv">10</span>, <span class="dt">FUN =</span> max) %&gt;%
+<span class="st">    </span><span class="kw">tq_mutate</span>(Ad, rollapply, <span class="dt">width =</span> <span class="dv">15</span>, <span class="dt">FUN =</span> max)</code></pre></div>
+<pre><code>## # A tibble: 2,522 × 13
+##          date  open  high   low close    volume adjusted rollapply
+##        &lt;date&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1  2007-01-03 86.29 86.58 81.90 83.80 309579900 10.90416        NA
+## 2  2007-01-04 84.05 85.95 83.82 85.66 211815100 11.14619        NA
+## 3  2007-01-05 85.77 86.20 84.40 85.05 208685400 11.06681        NA
+## 4  2007-01-08 85.96 86.53 85.28 85.47 199276700 11.12147        NA
+## 5  2007-01-09 86.45 92.98 85.15 92.57 837324600 12.04533  10.90416
+## 6  2007-01-10 94.75 97.80 93.45 97.00 738220000 12.62176  11.06681
+## 7  2007-01-11 95.94 96.78 95.10 95.80 360063200 12.46562  11.06681
+## 8  2007-01-12 94.59 95.06 93.23 94.62 328172600 12.31207  11.12147
+## 9  2007-01-16 95.68 97.25 95.45 97.10 311019100 12.63477  12.04533
+## 10 2007-01-17 97.56 97.60 94.82 94.95 411565000 12.35501  12.31207
+## # ... with 2,512 more rows, and 5 more variables: rollapply.1 &lt;dbl&gt;,
+## #   rollapply.2 &lt;dbl&gt;, rollapply.3 &lt;dbl&gt;, rollapply.4 &lt;dbl&gt;,
+## #   rollapply.5 &lt;dbl&gt;</code></pre>
+<p>Note that the new column names for the rolling minimums and maximums are just the <code>mutate_fun</code> name with a sequential suffix added, which is likely not descriptive enough for our applications. These can be renamed using the <code>rename</code> function (e.g. <code>rename(rolling.min.5 = rollapply)</code> for the five period rolling minimum).</p>
 <p><a class="anchor" id="built-for-scale"></a></p>
 </div>
 </div>
@@ -791,13 +902,13 @@ time_series_xts</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">my_stock_analysis_fun &lt;-<span class="st"> </span>function(stock.symbol) {
     period.returns &lt;-<span class="st"> </span>stock.symbol %&gt;%
 <span class="st">        </span><span class="kw">tq_get</span>(<span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>) %&gt;%
-<span class="st">        </span><span class="kw">tq_transform</span>(<span class="dt">x_fun =</span> Ad, <span class="dt">transform_fun =</span> periodReturn, 
+<span class="st">        </span><span class="kw">tq_transform</span>(<span class="dt">ohlc_fun =</span> Ad, <span class="dt">transform_fun =</span> periodReturn, 
                      <span class="dt">type =</span> <span class="st">&quot;log&quot;</span>, <span class="dt">period =</span> <span class="st">&quot;monthly&quot;</span>)
     <span class="kw">mean</span>(period.returns$monthly.returns)
 }</code></pre></div>
 <p>And, let’s test it out. We now have the mean monthly log returns over the past ten years.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">my_stock_analysis_fun</span>(<span class="st">&quot;AAPL&quot;</span>)</code></pre></div>
-<pre><code>## [1] 0.01876649</code></pre>
+<pre><code>## [1] 0.01967584</code></pre>
 </div>
 <div id="extrapolate-to-many-stocks-using-tidyverse" class="section level3">
 <h3>Extrapolate to Many Stocks using <code>tidyverse</code></h3>
@@ -827,16 +938,16 @@ stocks</code></pre></div>
 <pre><code>## # A tibble: 10 × 3
 ##    symbol            company         mmlr
 ##     &lt;chr&gt;              &lt;chr&gt;        &lt;dbl&gt;
-## 1    FLIR       FLIR SYSTEMS  0.009359061
-## 2     CNP CENTERPOINT ENERGY  0.008680819
-## 3     IVZ            INVESCO  0.007007588
-## 4      SE     SPECTRA ENERGY  0.006579937
-## 5    XRAY      DENTSPLY INTL  0.006211669
-## 6     EMC                EMC  0.006210331
-## 7    INTC              INTEL  0.005163667
-## 8       L              LOEWS  0.003371969
-## 9     MNK   MALLINCKRODT PLC  0.002366373
-## 10    AIG      AMERICAN INTL -0.021078924</code></pre>
+## 1    INTC              INTEL  0.007399353
+## 2    FLIR       FLIR SYSTEMS  0.007324195
+## 3     EMC                EMC  0.007208655
+## 4     CNP CENTERPOINT ENERGY  0.007100799
+## 5      SE     SPECTRA ENERGY  0.006802450
+## 6    XRAY      DENTSPLY INTL  0.005952766
+## 7     IVZ            INVESCO  0.004606504
+## 8     MNK   MALLINCKRODT PLC  0.003611393
+## 9       L              LOEWS  0.001577270
+## 10    AIG      AMERICAN INTL -0.023182725</code></pre>
 <p>And, we’re done! We now have the MMLR for 10-years of stock data for 10 stocks. And, we can easily extend this to larger lists or stock indexes. For example, the entire S&amp;P500 could be analyzed removing the <code>sample_n()</code> following the call to <code>tq_get(&quot;SP500&quot;, get = &quot;stock.index&quot;)</code>.</p>
 </div>
 <div id="function-tq_get-designed-to-handle-errors-gracefully" class="section level3">
@@ -861,7 +972,7 @@ stocks</code></pre></div>
                <span class="st">&quot;AVGO&quot;</span>, <span class="st">&quot;SWKS&quot;</span>,<span class="st">&quot;NVDA&quot;</span>, <span class="st">&quot;V&quot;</span>, <span class="st">&quot;MA&quot;</span>)
 )
 stock_list_with_one_bad_apple &lt;-<span class="st"> </span>stock_list_with_one_bad_apple %&gt;%
-<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">stock.prices =</span> <span class="kw">map</span>(<span class="dt">.x =</span> symbol, ~<span class="st"> </span><span class="kw">tq_get</span>(.x, <span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>)))</code></pre></div>
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">stock.prices =</span> <span class="kw">map</span>(<span class="dt">.x =</span> symbol, ~<span class="st"> </span><span class="kw">tq_get</span>(<span class="dt">x =</span> .x, <span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>)))</code></pre></div>
 <pre><code>## Warning in value[[3L]](cond): Error at stock symbol BAD APPLE during call
 ## to quantmod::getSymbols.</code></pre>
 <p>We get warned that there was an issue in the operation. With that said, we still get the full list of stocks.</p>
@@ -869,22 +980,22 @@ stock_list_with_one_bad_apple &lt;-<span class="st"> </span>stock_list_with_one_
 <pre><code>## # A tibble: 10 × 2
 ##       symbol         stock.prices
 ##        &lt;chr&gt;               &lt;list&gt;
-## 1       AAPL &lt;tibble [2,769 × 7]&gt;
-## 2       GOOG &lt;tibble [2,769 × 7]&gt;
-## 3       AMZN &lt;tibble [2,769 × 7]&gt;
-## 4         FB &lt;tibble [1,163 × 7]&gt;
+## 1       AAPL &lt;tibble [2,522 × 7]&gt;
+## 2       GOOG &lt;tibble [2,522 × 7]&gt;
+## 3       AMZN &lt;tibble [2,522 × 7]&gt;
+## 4         FB &lt;tibble [1,167 × 7]&gt;
 ## 5  BAD APPLE            &lt;lgl [1]&gt;
-## 6       AVGO &lt;tibble [1,865 × 7]&gt;
-## 7       SWKS &lt;tibble [2,769 × 7]&gt;
-## 8       NVDA &lt;tibble [2,769 × 7]&gt;
-## 9          V &lt;tibble [2,214 × 7]&gt;
-## 10        MA &lt;tibble [2,670 × 7]&gt;</code></pre>
+## 6       AVGO &lt;tibble [1,869 × 7]&gt;
+## 7       SWKS &lt;tibble [2,522 × 7]&gt;
+## 8       NVDA &lt;tibble [2,522 × 7]&gt;
+## 9          V &lt;tibble [2,218 × 7]&gt;
+## 10        MA &lt;tibble [2,522 × 7]&gt;</code></pre>
 <p>Say hypothetically we didn’t recognize the error message. An error shows up during the next operation. As an example, we’ll attempt to get yearly period returns using <code>tq_transform</code>. The operation is wrapped in a <code>tryCatch()</code> statement to enable printing the error message.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tryCatch</span>({
     stock_list_with_one_bad_apple %&gt;%
 <span class="st">    </span><span class="kw">mutate</span>(<span class="dt">annual.returns =</span> <span class="kw">map</span>(<span class="dt">.x =</span> stock.prices, 
-                                ~<span class="st"> </span><span class="kw">tq_transform</span>(.x,
-                                               <span class="dt">x_fun =</span> Ad, 
+                                ~<span class="st"> </span><span class="kw">tq_transform</span>(<span class="dt">x =</span> .x,
+                                               <span class="dt">ohlc_fun =</span> Ad, 
                                                <span class="dt">transform_fun =</span> periodReturn, 
                                                <span class="dt">period =</span> <span class="st">&quot;yearly&quot;</span>)
                                 )
@@ -892,7 +1003,7 @@ stock_list_with_one_bad_apple &lt;-<span class="st"> </span>stock_list_with_one_
 }, <span class="dt">error =</span> function(e) {
     <span class="kw">print</span>(e)
 })</code></pre></div>
-<pre><code>## &lt;Rcpp::eval_error in eval(substitute(expr), envir, enclos): `data` must be a tibble or data.frame.&gt;</code></pre>
+<pre><code>## &lt;Rcpp::eval_error in eval(substitute(expr), envir, enclos): argument &quot;data&quot; is missing, with no default&gt;</code></pre>
 <p>The operation grinds to a hault because the <code>BAD APPLE</code> tried to send its value for stock.prices of <code>NA</code> to the <code>tq_transform()</code> function. The error message tells us that <code>data</code> is not a <code>tibble</code> or <code>data.frame</code>.</p>
 <p>The rationale behind the error handling approach is that long-running scripts should not fail during minor issues. For example, if you have a list of 3000 stocks and the 3000th is bad, the program could take 20+ minutes to fail. This is disheartening. We allow <code>tq_get()</code> to continue to fetch data even if an error is encountered. Failure occurs during <code>tq_transform()</code> and <code>tq_mutate()</code> to prevent the error from getting too far downstream.</p>
 <p>Recognizing how <code>tq_get()</code> works (and gracefully fails), we can adjust our workflow. It’s a good idea to collect stock information in one independent step, review any warnings / errors, and remove “bad apples” if present before moving on to any transformations or mutations.</p>
@@ -902,15 +1013,15 @@ stock_list_with_one_bad_apple &lt;-<span class="st"> </span>stock_list_with_one_
                <span class="st">&quot;AVGO&quot;</span>, <span class="st">&quot;SWKS&quot;</span>,<span class="st">&quot;NVDA&quot;</span>, <span class="st">&quot;V&quot;</span>, <span class="st">&quot;MA&quot;</span>)
     ) %&gt;%
 <span class="st">    </span><span class="co"># Step 1: Get stock prices</span>
-<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">stock.prices =</span> <span class="kw">map</span>(<span class="dt">.x =</span> symbol, ~<span class="st"> </span><span class="kw">tq_get</span>(.x, <span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>)),
-           <span class="dt">class =</span> <span class="kw">map_chr</span>(stock.prices, ~<span class="st"> </span><span class="kw">class</span>(.x)[[<span class="dv">1</span>]])) %&gt;%
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">stock.prices =</span> <span class="kw">map</span>(<span class="dt">.x =</span> symbol, ~<span class="st"> </span><span class="kw">tq_get</span>(<span class="dt">x =</span> .x, <span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>)),
+           <span class="dt">class =</span> <span class="kw">map_chr</span>(<span class="dt">.x =</span> stock.prices, ~<span class="st"> </span><span class="kw">class</span>(.x)[[<span class="dv">1</span>]])) %&gt;%
 <span class="st">    </span><span class="co"># Step 2: Filter out errors; errors have a class of &quot;logical&quot;</span>
 <span class="st">    </span><span class="kw">filter</span>(class !=<span class="st"> &quot;logical&quot;</span>) %&gt;%
 <span class="st">    </span><span class="kw">select</span>(-class) %&gt;%
 <span class="st">    </span><span class="co"># Step 3: Perform period returns</span>
 <span class="st">    </span><span class="kw">mutate</span>(<span class="dt">annual.returns =</span> <span class="kw">map</span>(<span class="dt">.x =</span> stock.prices, 
-                                ~<span class="st"> </span><span class="kw">tq_transform</span>(.x,
-                                               <span class="dt">x_fun =</span> Ad, 
+                                ~<span class="st"> </span><span class="kw">tq_transform</span>(<span class="dt">data =</span> .x,
+                                               <span class="dt">ohlc_fun =</span> Ad, 
                                                <span class="dt">transform_fun =</span> periodReturn, 
                                                <span class="dt">period =</span> <span class="st">&quot;yearly&quot;</span>)
                                 )
@@ -919,15 +1030,15 @@ stock_list_with_one_bad_apple</code></pre></div>
 <pre><code>## # A tibble: 9 × 3
 ##   symbol         stock.prices    annual.returns
 ##    &lt;chr&gt;               &lt;list&gt;            &lt;list&gt;
-## 1   AAPL &lt;tibble [2,769 × 7]&gt; &lt;tibble [11 × 2]&gt;
-## 2   GOOG &lt;tibble [2,769 × 7]&gt; &lt;tibble [11 × 2]&gt;
-## 3   AMZN &lt;tibble [2,769 × 7]&gt; &lt;tibble [11 × 2]&gt;
-## 4     FB &lt;tibble [1,163 × 7]&gt;  &lt;tibble [5 × 2]&gt;
-## 5   AVGO &lt;tibble [1,865 × 7]&gt;  &lt;tibble [8 × 2]&gt;
-## 6   SWKS &lt;tibble [2,769 × 7]&gt; &lt;tibble [11 × 2]&gt;
-## 7   NVDA &lt;tibble [2,769 × 7]&gt; &lt;tibble [11 × 2]&gt;
-## 8      V &lt;tibble [2,214 × 7]&gt;  &lt;tibble [9 × 2]&gt;
-## 9     MA &lt;tibble [2,670 × 7]&gt; &lt;tibble [11 × 2]&gt;</code></pre>
+## 1   AAPL &lt;tibble [2,522 × 7]&gt; &lt;tibble [11 × 2]&gt;
+## 2   GOOG &lt;tibble [2,522 × 7]&gt; &lt;tibble [11 × 2]&gt;
+## 3   AMZN &lt;tibble [2,522 × 7]&gt; &lt;tibble [11 × 2]&gt;
+## 4     FB &lt;tibble [1,167 × 7]&gt;  &lt;tibble [6 × 2]&gt;
+## 5   AVGO &lt;tibble [1,869 × 7]&gt;  &lt;tibble [9 × 2]&gt;
+## 6   SWKS &lt;tibble [2,522 × 7]&gt; &lt;tibble [11 × 2]&gt;
+## 7   NVDA &lt;tibble [2,522 × 7]&gt; &lt;tibble [11 × 2]&gt;
+## 8      V &lt;tibble [2,218 × 7]&gt; &lt;tibble [10 × 2]&gt;
+## 9     MA &lt;tibble [2,522 × 7]&gt; &lt;tibble [11 × 2]&gt;</code></pre>
 <p><strong>Fall Back for Stock Indexes</strong>:</p>
 <p>There’s a fallback for the stock indexes too. Since the source, www.marketvolume.com, could change over time, an option is provided to pull stored data within the <code>tidyquant</code> package. The downside is that the data is only as accurate as the last update to <code>tidyquant</code>. Here’s how to get the stock indexes locally if for some reason the website is down or has changed.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tq_get</span>(<span class="st">&quot;SP500&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;stock.index&quot;</span>, <span class="dt">use_fallback =</span> <span class="ot">TRUE</span>)</code></pre></div>
@@ -951,13 +1062,7 @@ stock_list_with_one_bad_apple</code></pre></div>
 </div>
 <div id="recap" class="section level1">
 <h1>Recap</h1>
-<p>Hopefully now you see how <code>tidyquant</code> helps to integrate the best quantitative financial analysis packages with the <code>tidyverse</code>. The benefits are:</p>
-<ul>
-<li>A few core functions with a lot of power, that</li>
-<li>leverage the quantitative analysis power of <code>xts</code>, <code>quantmod</code> and <code>TTR</code>, and are</li>
-<li>designed to be scaled with the <code>tidyverse</code> workflow.</li>
-</ul>
-<p>With a few, easy-to-use core functions, you can efficiently leverage the quantitative power of <code>xts</code>, <code>quantmod</code> and <code>TTR</code> with the data management infrastructure and scale-ability of the <code>tidyverse</code>.</p>
+<p>Hopefully now you see how <code>tidyquant</code> helps to integrate the best quantitative financial analysis packages with the <code>tidyverse</code>. With a few, easy-to-use core functions, you can efficiently leverage the quantitative power of <code>xts</code> and <code>zoo</code>, <code>quantmod</code> and <code>TTR</code> with the data management infrastructure and scale-ability of the <code>tidyverse</code>.</p>
 </div>
 
 

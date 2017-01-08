@@ -8,20 +8,20 @@
 \alias{tq_transform_xy_}
 \title{Transforms quantitative data (returns new variables in new tibble)}
 \usage{
-tq_transform(data, x_fun = OHLCV, transform_fun, ...)
+tq_transform(data, ohlc_fun = OHLCV, transform_fun, x_fun, ...)
 
-tq_transform_(data, x_fun = "OHLCV", transform_fun, ...)
+tq_transform_(data, ohlc_fun = "OHLCV", transform_fun, x_fun, ...)
 
-tq_transform_xy(data, .x, .y = NULL, transform_fun, ...)
+tq_transform_xy(data, x, y = NULL, transform_fun, .x, .y, ...)
 
-tq_transform_xy_(data, .x, .y = NULL, transform_fun, ...)
+tq_transform_xy_(data, x, y = NULL, transform_fun, .x, .y, ...)
 
 tq_transform_fun_options()
 }
 \arguments{
 \item{data}{A \code{tibble} (tidy data frame) of data from \code{\link{tq_get}}.}
 
-\item{x_fun}{The \code{quantmod} function that identifes columns to pass to
+\item{ohlc_fun}{The \code{quantmod} function that identifes columns to pass to
 the transformation function. OHLCV is \code{quantmod} terminology for
 open, high, low, close, and volume. Options include c(Op, Hi, Lo, Cl, Vo, Ad,
 HLC, OHLC, OHLCV).}
@@ -30,10 +30,12 @@ HLC, OHLC, OHLCV).}
 \code{quantmod}, or \code{TTR} package. Execute \code{tq_transform_fun_options()}
 to see the full list of options by package.}
 
+\item{x_fun, .x, .y}{Deprecated. Use \code{ohlc_fun}, \code{x}, and \code{y} instead.}
+
 \item{...}{Additional parameters passed to the appropriate transformation
 function.}
 
-\item{.x, .y}{Column names of variables to be passed to the transformation
+\item{x, y}{Column names of variables to be passed to the transformation
 function (instead of OHLC functions).}
 }
 \value{
@@ -48,7 +50,7 @@ Transforms quantitative data (returns new variables in new tibble)
 results are returned as a \code{tibble} and the
 function can be used with the \code{tidyverse}.
 
-\code{x_fun} is one of the various \code{quantmod} Open, High, Low, Close (OHLC) functions.
+\code{ohlc_fun} is one of the various \code{quantmod} Open, High, Low, Close (OHLC) functions.
 The function returns a column or set of columns from \code{data} that are passed to the
 \code{transform_fun}. In Example 1 below, \code{Cl} returns the "close" price and sends
 this to the transform function, \code{periodReturn}.
@@ -56,7 +58,7 @@ this to the transform function, \code{periodReturn}.
 \code{transform_fun} is the function that performs the work. In Example 1, this
 is \code{periodReturn}, which calculates the period returns. The \code{...}
 functions are additional arguments passed to the \code{transform_fun}. Think of
-the whole operation in Example 1 as the close price, obtained by \code{x_fun = Cl},
+the whole operation in Example 1 as the close price, obtained by \code{ohlc_fun = Cl},
 is being sent to the \code{periodReturn} function along
 with additional arguments defining how to perform the period return, which
 includes \code{period = "daily"} and \code{type = "log"}.
@@ -67,12 +69,12 @@ that is not in OHLC format. Example 2 shows the first benefit in action:
 using the EVWMA function that uses volume to defind the moving average period.
 The two variables do not fall into a single OHLC code (i.e. CV does not exist).
 The xy form gets us out of this problem. Example 3 shows the second benefit
-in action: Some functions are useful to non-OHLC data, and defining .x = price
+in action: Some functions are useful to non-OHLC data, and defining x = price
 allows us to transform WTI crude prices from daily to monthly periodicity.
 
 \code{tq_tranform_} and \code{tq_transform_xy_} are setup for Non-Standard
 Evaluation (NSE). This enables programatically changing column names by modifying
-the text representations. Example 4 shows the difference in implemenation.
+the text representations. Example 4 shows the difference in implementation.
 Note that character strings are being passed to the variables instead of
 unquoted variable names. See \code{vignette("nse")} for more information.
 }
@@ -87,23 +89,23 @@ fb_stock_prices  <- tq_get("FB", get = "stock.prices")
 
 # Example 1: Return logarithmic daily returns using periodReturn()
 fb_stock_prices \%>\%
-    tq_transform(x_fun = Cl, transform_fun = periodReturn,
+    tq_transform(ohlc_fun = Cl, transform_fun = periodReturn,
                  period = "daily", type = "log")
 
 # Example 2: Use tq_transform_xy to use functions with two columns required
 fb_stock_prices \%>\%
-    tq_transform_xy(.x = close, .y = volume, transform_fun = EVWMA)
+    tq_transform_xy(x = close, y = volume, transform_fun = EVWMA)
 
 # Example 3: Using tq_transform_xy to work with non-OHLC data
 tq_get("DCOILWTICO", get = "economic.data") \%>\%
-    tq_transform_xy(.x = price, transform_fun = to.period, period = "months")
+    tq_transform_xy(x = price, transform_fun = to.period, period = "months")
 
 # Example 4: Non-standard evaluation:
 # Programming with tq_tranform_() and tq_transform_xy_()
 col_name <- "adjusted"
 transform <- "periodReturn"
 period <- c("daily", "weekly", "monthly")
-tq_transform_xy_(fb_stock_prices, .x = col_name, transform_fun = transform,
+tq_transform_xy_(fb_stock_prices, x = col_name, transform_fun = transform,
                  period = period[[1]])
 }
 \seealso{

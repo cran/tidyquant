@@ -32,7 +32,8 @@
 #' @import quantmod
 #' @import TTR
 #' @import xts
-#' @importFrom utils "data"
+#' @importFrom utils "data" "download.file" "read.csv"
+#' @import scales
 #' @import tidyverse
 #' @import lubridate
 NULL

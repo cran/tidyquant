@@ -1,9 +1,9 @@
 ---
 title: "Introduction to tidyquant"
 author: "Matt Dancho"
+date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
-    keep_md: true
     toc: true
     toc_depth: 2
 vignette: >
@@ -14,7 +14,8 @@ vignette: >
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(message = FALSE,
-                      warning = FALSE)
+                      warning = FALSE,
+                      fig.width = 6)
 # devtools::load_all() # Travis CI fails on load_all()
 ```
 
@@ -22,11 +23,11 @@ knitr::opts_chunk$set(message = FALSE,
 
 # Overview
 
-`tidyquant` integrates the best quantitative resources for collecting and analyzing quantitative data, `xts`, `quantmod` and `TTR`, with the tidy data infrastructure of the `tidyverse` allowing for seamless interaction between each and working within the `tidyverse`. 
+`tidyquant` integrates the best quantitative resources for collecting and analyzing quantitative data, `xts` and `zoo`, `quantmod` and `TTR`, with the tidy data infrastructure of the `tidyverse` allowing for seamless interaction between each and working within the `tidyverse`. 
 
 The three primary quantitative packages that are the backbone for quantitative financial analysis in _R programming_ are: 
 
-* [xts](https://CRAN.R-project.org/package=xts), or [eXtensible time series](http://joshuaulrich.github.io/xts/index.html): The data structure for handling time-series data.
+* [xts](https://CRAN.R-project.org/package=xts), or [eXtensible time series](http://joshuaulrich.github.io/xts/index.html): The data structure for handling time-series data. The underlying time-series structure is `zoo`, which is also integrated.
 * [quantmod](https://CRAN.R-project.org/package=quantmod), or [Quantitative Financial Modelling & Trading Framework for R](http://www.quantmod.com/): A package designed for retrieving, manipulating, and modeling and  quantitative data.
 * [TTR](https://CRAN.R-project.org/package=TTR), or Technical Trading Rules: A package that includes various functions to compute technical trading equations for quantitative or trading data.
 
@@ -120,14 +121,14 @@ __Financial Statements__:
 For any given stock, a total of six financials statements are retrieved as nested tibbles, one for each combination of statement type (Income Statement, Balance Sheet, and Cash Flow) and period (by annual and quarter). 
 
 ```{r}
-fb_financials <- tq_get("FB", get = "financials")
-fb_financials
+aapl_financials <- tq_get("AAPL", get = "financials")
+aapl_financials
 ```
 
 The statement information can be extracted by selecting (`dplyr::select()`) and filtering (`dplyr::filter()`) to the desired statement and unnesting (`tidyr::unnest()`) the results.
 
 ```{r}
-fb_financials %>%
+aapl_financials %>%
     filter(type == "IS") %>%
     select(annual) %>%
     unnest()
@@ -136,7 +137,7 @@ fb_financials %>%
 A slightly more powerful example is looking at all quarterly statements together. This is easy to do with `unnest` and `spread` from the `tidyr` package.
 
 ```{r}
-fb_financials %>%
+aapl_financials %>%
     unnest(quarter) %>% 
     spread(key = date, value = value)
 ```
@@ -144,6 +145,47 @@ fb_financials %>%
 
 The data source is [google finance](https://www.google.com/finance).
 
+
+__Key Ratios__:
+
+For any given stock, the key ratios are available for 10 years that are classified into the following sections:
+
+* __Financials__: These ratios include gross margin %, operating margin %, EPS, book value per share, and more.
+* __Profitability__: These ratios include margin as a percentage of sales (gross margin, operating margin, EBT margin, etc) and profitability metrics such as tax rate %, asset turnover, ROA, financial leverage, ROE, return on invested capital, and more.
+* __Growth__: These ratios include year over year, 3-year average, 5-year average, and 10-year average growth rates for revenue, operating income, net income, and EPS.
+* __Cash Flow__: These ratios include operating cash flow growth % YOY, free cash flow growth % YOY, capital expenditure as a % of sales, and more.
+* __Financial Health__: These ratios include balance sheet items as a percentage of total assets and liabilities, and liquidty/financial health metrics such as current ratio, quick ratio, debt/equity, and financial leverage.
+* __Efficiency Ratios__: These ratios include days sales outstanding, days inventory, inventory turnover, asset turnover and more. 
+* __Valuation Ratios__: These ratios include price to earnings (P/E), price to sales (P/S), price to book (P/B), and price to operating cash flow. 
+
+To get the key ratios:
+
+```{r}
+aapl_key_ratios <- tq_get("AAPL", get = "key.ratios")
+aapl_key_ratios
+```
+
+The ratios can be filtered and unnested to peel away the hierarchical nesting layers and access the underlying data:
+
+```{r}
+aapl_key_ratios %>%
+    filter(section == "Valuation Ratios") %>%
+    unnest()
+```
+
+Once we have a section, we can quickly visualize the ratios:
+
+```{r}
+aapl_key_ratios %>%
+    filter(section == "Valuation Ratios") %>%
+    unnest() %>%
+    ggplot(aes(x = date, y = value)) + 
+    geom_line(aes(col = forcats::fct_reorder2(category, date, value))) +
+    labs(title = "10-Year Historical Valuation Ratios for AAPL", x = "", 
+         y = "", col = "") 
+```
+
+The data source is [Morningstar](http://www.morningstar.com/).
 
 <a class="anchor" id="economic-data"></a>
 
@@ -196,10 +238,10 @@ Transforms the results of `tq_get()`. The result is typically a different shape 
 ```{r}
 fb_prices <- tq_get("FB") 
 fb_prices %>%
-    tq_transform(x_fun = OHLCV, transform_fun = to.monthly)
+    tq_transform(ohlc_fun = OHLCV, transform_fun = to.monthly)
 ```
 
-Let's go through what happened. `x_fun` is one of the various quantmod Open, High, Low, Close (OHLC) functions (see `?quantmod::OHLC`). The function returns a column or set of columns from data that are passed to the `transform_fun`. In example above, `OHLCV` selects the full list of prices and volumes from `data`, and sends this to the transform function, `to.monthly`, which transforms the periodicity from daily to monthly. Additional arguments can be passed to the `transform_fun` by way of `...`. 
+Let's go through what happened. `ohlc_fun` is one of the various quantmod Open, High, Low, Close (OHLC) functions (see `?quantmod::OHLC`). The function returns a column or set of columns from data that are passed to the `transform_fun`. In example above, `OHLCV` selects the full list of prices and volumes from `data`, and sends this to the transform function, `to.monthly`, which transforms the periodicity from daily to monthly. Additional arguments can be passed to the `transform_fun` by way of `...`. 
 
 
 __Mutate Quantitative Data, `tq_mutate()`__: 
@@ -208,7 +250,7 @@ Adds a column or set of columns to the tibble with the calculated attributes (he
 
 ```{r}
 fb_prices %>%
-    tq_mutate(x_fun = Cl, mutate_fun = MACD)
+    tq_mutate(ohlc_fun = Cl, mutate_fun = MACD)
 ```
 
 Note that a mutation can occur if, and only if, the mutation has the same structure of the original tibble. In other words, the calculation must have the same number of rows and row.names (or date fields), otherwise the mutation cannot be performed.
@@ -222,21 +264,21 @@ Enables working with:
 
 _Transformation with two primary inputs_:
 
-EVWMA (exponential volume-weighted moving average) requires two inputs, price and volume, that are not in OHLC code format. To work with these columns, we can switch to the xy variants, `tq_transform_xy()` and `tq_mutate_xy()`. The only difference is instead of an `x_fun` argument, you use `.x` and `.y` arguments to pass the columns needed based on the `transform_fun` or `mutate_fun` documentation.
+EVWMA (exponential volume-weighted moving average) requires two inputs, price and volume, that are not in OHLC code format. To work with these columns, we can switch to the xy variants, `tq_transform_xy()` and `tq_mutate_xy()`. The only difference is instead of an `ohlc_fun` argument, you use `x` and `y` arguments to pass the columns needed based on the `transform_fun` or `mutate_fun` documentation.
 
 ```{r, message=FALSE, warning=FALSE}
 fb_prices %>%
-    tq_mutate_xy(.x = close, .y = volume, mutate_fun = EVWMA)
+    tq_mutate_xy(x = close, y = volume, mutate_fun = EVWMA)
 ```
 
 _Working with non-OHLC data_:
 
-Returns from FRED, Oanda, and other sources do not have open, high, low, close, and volume (OHLCV) format. The following example shows how to transform WTI Crude daily prices to monthly prices. Since we only have a single column to pass, set the `.x = price` and leave the `.y = NULL`. This sends the price column to the `to.period` transformation fuction. 
+Returns from FRED, Oanda, and other sources do not have open, high, low, close, and volume (OHLCV) format. The following example shows how to transform WTI Crude daily prices to monthly prices. Since we only have a single column to pass, set the `x = price` and leave the `y = NULL`. This sends the price column to the `to.period` transformation fuction. 
 
 ```{r, message=FALSE, warning=FALSE}
 wti_prices <- tq_get("DCOILWTICO", get = "economic.data") 
 wti_prices %>%    
-    tq_transform_xy(.x = price, transform_fun = to.period,
+    tq_transform_xy(x = price, transform_fun = to.period,
                     period = "months")
 ```
 
@@ -290,7 +332,7 @@ time_series_xts
 
 ## Working in the tidyverse
 
-You probably already know and love `tidyverse` packages like `dplyr`, `tidyr`, `purrr`, `readr`, and `tibble` along with `lubridate` for working with date and datetime. `tidyquant` works solely in tibbles, so all of the `tidyverse` functionality is intact. 
+You probably already know and love `tidyverse` packages like `ggplot2`, `dplyr`, `tidyr`, `purrr`, `readr`, and `tibble` along with `lubridate` for working with date and datetime. `tidyquant` works solely in tibbles, so all of the `tidyverse` functionality is intact. 
 
 A simple example inspired by [Kan Nishida's blog](https://blog.exploratory.io/introducing-time-series-analysis-with-dplyr-60683587cf8a#.w6pvyi3d2) shows the `dplyr` and `lubridate` capability: Say we want the growth in the stock over the past year. We can do this with `dplyr` operations. 
 
@@ -311,16 +353,27 @@ aapl_prices %>%
     mutate(baseline = first(adjusted))
 ```
 
-Growth and growth percent versus baseline columns can be added now. We tack on a final select statement to remove unnecessary columns. The final workflow looks like this:
+Growth and growth percent versus baseline columns can be added now. We tack on a final `select` statement to remove unnecessary columns. The final workflow looks like this:
 
 ```{r}
-aapl_prices %>%
+aapl_growth <- aapl_prices %>%
     select(date, adjusted) %>%
     filter(date >= today() - years(1)) %>%
     mutate(baseline = first(adjusted),
            growth = adjusted - baseline,
-           growth_pct = growth / baseline * 100) %>%
+           growth.pct = growth / baseline) %>%
     select(-(baseline:growth))
+aapl_growth
+```
+
+And, we can quickly plot using `ggplot2`.
+
+```{r}
+aapl_growth %>%
+    ggplot(aes(x = date, y = growth.pct)) + 
+    geom_line() +
+    labs(title = "AAPL: Growth Over One Year", x = "", y = "Growth") +
+    scale_y_continuous(labels = scales::percent)
 ```
 
 
@@ -329,11 +382,25 @@ aapl_prices %>%
 
 ## Leverage the Quantitative Power of xts, quantmod and TTR
 
-You may already know and love `xts`, `quantmod` and `TTR`, which is why the core functionality is fully intact. Using `tq_transform()` and `tq_mutate()`, we can apply the `xts`, `quantmod` and `TTR` functions. Entering `tq_transform_fun_options()` returns a list the transform functions by each package. We'll discuss these options by package briefly.
+You may already know and love `xts` / `zoo`, `quantmod` and `TTR`, which is why the core functionality is fully intact. Using `tq_transform()` and `tq_mutate()`, we can apply the `zoo`, `xts`, `quantmod` and `TTR` functions. Entering `tq_transform_fun_options()` returns a list the transform functions by each package. We'll discuss these options by package briefly.
 
 ```{r}
 tq_transform_fun_options() %>% str()
 ```
+
+### zoo Functionality
+
+```{r}
+# Get zoo functions that work with tq_transform and tq_mutate
+tq_transform_fun_options()$zoo
+```
+
+The `zoo` functions that are compatible are listed above. Generally speaking, these are the:
+
+* Roll Apply Functions:
+    * A generic function for applying a function to rolling margins.
+    * Form: `rollapply(data, width, FUN, ..., by = 1, by.column = TRUE, fill = if (na.pad) NA, na.pad = FALSE, partial = FALSE, align = c("center", "left", "right"), coredata = TRUE)`.
+    * Options include `rollmax`, `rollmean`, `rollmedian`, `rollsum`, etc.
 
 
 ### xts Functionality
@@ -441,25 +508,25 @@ AAPL <- tq_get("AAPL")
 ```
 
 
-#### Example 1: Getting the max close price for each quarter.
+#### Example 1: Getting the Max Close Price for Each Quarter.
 
-The `xts::apply.quarterly()` function that is part of the period apply group can be used to apply functions by quarterly time segments. Because we are seeking a return structure that is on a different time scale than the input (quarterly versus daily), we need to use a transform function. We select `tq_transform` and pass the close price using OHLC format via `x_fun = Cl`, and we send this subset of the data to the `apply.quarterly` function via the `transform_fun` argument. Looking at the documentation for `apply.quarterly`, we see that we can pass a function to the argument, `FUN`. We want the maximum values, so we set `FUN = max`. The result is the quarters returned as a date and the maximum closing price during the quarter returned as a double. 
+The `xts::apply.quarterly()` function that is part of the period apply group can be used to apply functions by quarterly time segments. Because we are seeking a return structure that is on a different time scale than the input (quarterly versus daily), we need to use a transform function. We select `tq_transform` and pass the close price using OHLC format via `ohlc_fun = Cl`, and we send this subset of the data to the `apply.quarterly` function via the `transform_fun` argument. Looking at the documentation for `apply.quarterly`, we see that we can pass a function to the argument, `FUN`. We want the maximum values, so we set `FUN = max`. The result is the quarters returned as a date and the maximum closing price during the quarter returned as a double. 
 
 ```{r}
 AAPL %>%
-    tq_transform(x_fun = Cl, transform_fun = apply.quarterly, FUN = max)
+    tq_transform(ohlc_fun = Cl, transform_fun = apply.quarterly, FUN = max)
 ```
 
-Note that as an alternative you could use the xy form, replacing `x_fun = Cl` with `.x = close`.
+Note that as an alternative you could use the xy form, replacing `ohlc_fun = Cl` with `x = close`.
 
-#### Example 2: Getting daily log returns 
+#### Example 2: Getting Daily Log Returns 
 
-The `quantmod::periodReturn()` function generates returns by periodicity. We have a few options here. Normally I go with a transform function, `tq_transform`, because the `periodReturn` function accepts different periodicity options, and anything other than daily will blow up a mutation. But, in our situation the period returns periodicity is the same as the stock prices periodicity (both daily), so we can use either. We want to use the adjusted closing prices column (adjusted for stock splits, which can make it appear that a stock is performing poorly if a split is included), so we set `x_fun = Ad`. We researched the `periodReturn` function, and we found that it accepts `type = "log"` and `period = "daily"`, which returns the daily log returns. 
+The `quantmod::periodReturn()` function generates returns by periodicity. We have a few options here. Normally I go with a transform function, `tq_transform`, because the `periodReturn` function accepts different periodicity options, and anything other than daily will blow up a mutation. But, in our situation the period returns periodicity is the same as the stock prices periodicity (both daily), so we can use either. We want to use the adjusted closing prices column (adjusted for stock splits, which can make it appear that a stock is performing poorly if a split is included), so we set `ohlc_fun = Ad`. We researched the `periodReturn` function, and we found that it accepts `type = "log"` and `period = "daily"`, which returns the daily log returns. 
 
 
 ```{r}
 AAPL %>%
-    tq_transform(x_fun = Ad, transform_fun = periodReturn, 
+    tq_transform(ohlc_fun = Ad, transform_fun = periodReturn, 
                  type = "log", period = "daily")
 ```
 
@@ -473,15 +540,15 @@ AAPL %>%
     tq_mutate(HLC, BBands)
 ```
 
-Note that for the MACD, we could have used `tq_mutate_xy()`, setting `.x = close`. However, for the BBands, we are forced to use `tq_mutate()` because of the HLC input.
+Note that for the MACD, we could have used `tq_mutate_xy()`, setting `x = close`. However, for the BBands, we are forced to use `tq_mutate()` because of the HLC input.
 
 #### Example 4: Getting the Percentage Difference Between Open and Close from Zero to Five Periods 
 
-We can't use the `OpCl` function for this task since it only returns the percentage difference for a period lag of zero. We keep digging and we find the base `Delt` function from quantmod. In researching the function, we see that `Delt` takes one or two inputs, `k` a series of lags, and the type of difference, either arithmetic or log. We will set `.x = open` and `.y = close` and `k = 0:5` to get zero through five periods. The default `type = "arithmetic"` is acceptable, so there is no need to specify. The result is the percentage difference between the open and close prices for periods zero to five.
+We can't use the `OpCl` function for this task since it only returns the percentage difference for a period lag of zero. We keep digging and we find the base `Delt` function from quantmod. In researching the function, we see that `Delt` takes one or two inputs, `k` a series of lags, and the type of difference, either arithmetic or log. We will set `x = open` and `y = close` and `k = 0:5` to get zero through five periods. The default `type = "arithmetic"` is acceptable, so there is no need to specify. The result is the percentage difference between the open and close prices for periods zero to five.
 
 ```{r}
 AAPL %>%
-    tq_mutate_xy(.x = open, .y = close, mutate_fun = Delt, k = 0:5) %>%
+    tq_mutate_xy(x = open, y = close, mutate_fun = Delt, k = 0:5) %>%
     select(-c(high, low, volume, adjusted))
 ```
 
@@ -493,6 +560,21 @@ AAPL %>%
     select(-c(high, low, volume, adjusted))
 ```
 
+#### Example 4: Get the 5, 10, 15-Day Rolling Minimum and Maximum Values of the Adjusted Prices
+
+Rolling functions come from the `zoo` package. In reviewing the available options, we see that `rollmax` is present but no there is no `rollmin`. However, the generic `rollapply` function will work with any function, so let's use that. In reviewing the documentation, the `rollapply()` function takes three primary arguments: `data`, `width` and `FUN`. The `data` is passed using the `ohlc_fun` argument, so we don't need to worry about this. The `width` is the number of periods to apply the function, and for our situation this is 5, 10, and 15. The `FUN` is the function to apply, and for our situation this is `min` and `max`. We want the result to add columns to our data set, so we use the `tq_mutate()` function, which allows us to pipe (`%>%`) each mutation. Putting it all together:
+
+```{r}
+AAPL %>%
+    tq_mutate(Ad, rollapply, width = 5, FUN = min) %>%
+    tq_mutate(Ad, rollapply, width = 10, FUN = min) %>%
+    tq_mutate(Ad, rollapply, width = 15, FUN = min) %>%
+    tq_mutate(Ad, rollapply, width = 5, FUN = max) %>%
+    tq_mutate(Ad, rollapply, width = 10, FUN = max) %>%
+    tq_mutate(Ad, rollapply, width = 15, FUN = max)
+```
+
+Note that the new column names for the rolling minimums and maximums are just the `mutate_fun` name with a sequential suffix added, which is likely not descriptive enough for our applications. These can be renamed using the `rename` function (e.g. `rename(rolling.min.5 = rollapply)` for the five period rolling minimum). 
 
 <a class="anchor" id="built-for-scale"></a>
 
@@ -513,7 +595,7 @@ In our hypothetical situation, we want to compare the mean monthly log returns (
 my_stock_analysis_fun <- function(stock.symbol) {
     period.returns <- stock.symbol %>%
         tq_get(get = "stock.prices") %>%
-        tq_transform(x_fun = Ad, transform_fun = periodReturn, 
+        tq_transform(ohlc_fun = Ad, transform_fun = periodReturn, 
                      type = "log", period = "monthly")
     mean(period.returns$monthly.returns)
 }
@@ -576,7 +658,7 @@ stock_list_with_one_bad_apple <- tibble(
                "AVGO", "SWKS","NVDA", "V", "MA")
 )
 stock_list_with_one_bad_apple <- stock_list_with_one_bad_apple %>%
-    mutate(stock.prices = map(.x = symbol, ~ tq_get(.x, get = "stock.prices")))
+    mutate(stock.prices = map(.x = symbol, ~ tq_get(x = .x, get = "stock.prices")))
 ```
 
 We get warned that there was an issue in the operation. With that said, we still get the full list of stocks.
@@ -592,8 +674,8 @@ Say hypothetically we didn't recognize the error message. An error shows up duri
 tryCatch({
     stock_list_with_one_bad_apple %>%
     mutate(annual.returns = map(.x = stock.prices, 
-                                ~ tq_transform(.x,
-                                               x_fun = Ad, 
+                                ~ tq_transform(x = .x,
+                                               ohlc_fun = Ad, 
                                                transform_fun = periodReturn, 
                                                period = "yearly")
                                 )
@@ -619,15 +701,15 @@ stock_list_with_one_bad_apple <- tibble(
                "AVGO", "SWKS","NVDA", "V", "MA")
     ) %>%
     # Step 1: Get stock prices
-    mutate(stock.prices = map(.x = symbol, ~ tq_get(.x, get = "stock.prices")),
-           class = map_chr(stock.prices, ~ class(.x)[[1]])) %>%
+    mutate(stock.prices = map(.x = symbol, ~ tq_get(x = .x, get = "stock.prices")),
+           class = map_chr(.x = stock.prices, ~ class(.x)[[1]])) %>%
     # Step 2: Filter out errors; errors have a class of "logical"
     filter(class != "logical") %>%
     select(-class) %>%
     # Step 3: Perform period returns
     mutate(annual.returns = map(.x = stock.prices, 
-                                ~ tq_transform(.x,
-                                               x_fun = Ad, 
+                                ~ tq_transform(data = .x,
+                                               ohlc_fun = Ad, 
                                                transform_fun = periodReturn, 
                                                period = "yearly")
                                 )
@@ -647,11 +729,5 @@ tq_get("SP500", get = "stock.index", use_fallback = TRUE)
 
 # Recap
 
-Hopefully now you see how `tidyquant` helps to integrate the best quantitative financial analysis packages with the `tidyverse`. The benefits are:
-
-* A few core functions with a lot of power, that
-* leverage the quantitative analysis power of `xts`, `quantmod` and `TTR`, and are
-* designed to be scaled with the `tidyverse` workflow.
-
-With a few, easy-to-use core functions, you can efficiently leverage the quantitative power of `xts`, `quantmod` and `TTR` with the data management infrastructure and scale-ability of the `tidyverse`. 
+Hopefully now you see how `tidyquant` helps to integrate the best quantitative financial analysis packages with the `tidyverse`. With a few, easy-to-use core functions, you can efficiently leverage the quantitative power of `xts` and `zoo`, `quantmod` and `TTR` with the data management infrastructure and scale-ability of the `tidyverse`. 
 
