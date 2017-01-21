@@ -20,8 +20,22 @@ test1.1 <- AAPL %>%
     tq_mutate(HLC, BBands, n = 50)
 
 test1.1_names <- c("date", "open", "high", "low", "close", "volume", "adjusted",
-                   "rollapply", "sma", "rollapply.1", "sma.1", "dn", "mavg",
-                   "up", "pctb", "dn.1", "mavg.1", "up.1", "pctb.1")
+                   "rollapply", "SMA", "rollapply.1", "SMA.1", "dn", "mavg",
+                   "up", "pctB", "dn.1", "mavg.1", "up.1", "pctB.1")
+
+# Test 1.2: Grouped_df test
+grouped_df <- tibble(symbol = c("FB", "AMZN")) %>%
+    dplyr::mutate(stock.prices = purrr::map(.x = symbol,
+                                            .f = ~ tq_get(.x,
+                                                          get  = "stock.prices",
+                                                          from = "2015-01-01",
+                                                          to   = "2016-01-01"))) %>%
+    tidyr::unnest() %>%
+    dplyr::group_by(symbol)
+
+test1.2a  <- mutate(grouped_df, V1 = runSD(adjusted))
+
+test1.2b <- tq_mutate(grouped_df, Ad, runSD)
 
 # Test 2: tq_mutate_xy piping test
 test2 <- AAPL %>%
@@ -61,6 +75,10 @@ test_that("Test 1 returns tibble with correct rows and columns.", {
 test_that("Test 1.1 returns correct column names", {
     # Column names
     expect_equal(colnames(test1.1), test1.1_names)
+})
+
+test_that("Test 1.2 grouped data frames are same with mutate and tq_mutate", {
+    expect_identical(test1.2a, test1.2b)
 })
 
 test_that("Test 2 returns tibble with correct rows and columns.", {

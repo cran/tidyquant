@@ -1,34 +1,24 @@
 library(tidyquant)
 
 #### Setup
-get <- "stock.prices"
+get <- "key.stats"
 context(paste0("Testing tq_get(get = '", get, "')"))
 
 test1 <- tq_get("AAPL", get = get,
                 from = "2016-01-01", to = "2016-06-01")
 
-test2 <- c("AAPL", "FB") %>%
-    tq_get(get = get, from = "2016-01-01", to = "2016-06-01")
 
 #### Tests
 
-test_that("Test 1 returns tibble with correct rows and columns.", {
+test_that("Test returns tibble with correct rows and columns.", {
     # Tibble
     expect_is(test1, "tbl")
     # Rows
-    expect_equal(nrow(test1), 104)
+    expect_equal(nrow(test1), 1)
     # Columns
-    expect_equal(ncol(test1), 7)
+    expect_equal(ncol(test1), 55)
 })
 
-test_that("Test 2 returns tibble with correct rows and columns.", {
-    # Tibble
-    expect_is(test2, "tbl")
-    # Rows
-    expect_equal(nrow(test2), 208)
-    # Columns
-    expect_equal(ncol(test2), 8)
-})
 
 test_that("Test prints warning message on invalid x input.", {
     expect_warning(tq_get("XYZ", get = get))

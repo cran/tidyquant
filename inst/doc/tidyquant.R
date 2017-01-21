@@ -63,6 +63,28 @@ aapl_key_ratios %>%
          y = "", col = "") 
 
 ## ------------------------------------------------------------------------
+aapl_key_stats <- tq_get("AAPL", get = "key.stats")
+aapl_key_stats
+
+## ------------------------------------------------------------------------
+c("AAPL", "FB", "GOOG") %>%
+    tq_get(get = "key.stats") %>%
+    select(symbol.x, Ask, Ask.Size, Bid, Bid.Size, Days.High, Days.Low)
+
+## ---- eval = FALSE-------------------------------------------------------
+#  collect_real_time_data <- function(x, interval_sec, n) {
+#      data <- tibble()
+#      while (n > 0) {
+#          data <- bind_rows(data, tq_get(x, get = "key.stats"))
+#          Sys.sleep(interval_sec)
+#          n <- n - 1
+#      }
+#      return(data)
+#  }
+#  collect_real_time_data("AAPL", interval_sec = 3, n = 5) %>%
+#      select(Ask, Ask.Size, Bid, Bid.Size, Open, Change)
+
+## ------------------------------------------------------------------------
 wti_price_usd <- tq_get("DCOILWTICO", get = "economic.data")
 wti_price_usd 
 
@@ -82,17 +104,17 @@ fb_prices %>%
 
 ## ------------------------------------------------------------------------
 fb_prices %>%
-    tq_mutate(ohlc_fun = Cl, mutate_fun = MACD)
+    tq_mutate(ohlc_fun = Cl, mutate_fun = MACD, col_rename = c("MACD", "Signal"))
 
 ## ---- message=FALSE, warning=FALSE---------------------------------------
 fb_prices %>%
-    tq_mutate_xy(x = close, y = volume, mutate_fun = EVWMA)
+    tq_mutate_xy(x = close, y = volume, mutate_fun = EVWMA, col_rename = "EVWMA")
 
 ## ---- message=FALSE, warning=FALSE---------------------------------------
 wti_prices <- tq_get("DCOILWTICO", get = "economic.data") 
 wti_prices %>%    
     tq_transform_xy(x = price, transform_fun = to.period,
-                    period = "months")
+                    period = "months", col_rename = "WTI Price")
 
 ## ------------------------------------------------------------------------
 # Create xts object from a matrix
@@ -192,12 +214,39 @@ AAPL %>%
 
 ## ------------------------------------------------------------------------
 AAPL %>%
-    tq_mutate(Ad, rollapply, width = 5, FUN = min) %>%
-    tq_mutate(Ad, rollapply, width = 10, FUN = min) %>%
-    tq_mutate(Ad, rollapply, width = 15, FUN = min) %>%
-    tq_mutate(Ad, rollapply, width = 5, FUN = max) %>%
-    tq_mutate(Ad, rollapply, width = 10, FUN = max) %>%
-    tq_mutate(Ad, rollapply, width = 15, FUN = max)
+    tq_mutate(Ad, rollapply, width = 5, FUN = min, col_rename = "roll.min.5") %>%
+    tq_mutate(Ad, rollapply, width = 10, FUN = min, col_rename = "roll.min.10") %>%
+    tq_mutate(Ad, rollapply, width = 15, FUN = min, col_rename = "roll.min.15") %>%
+    tq_mutate(Ad, rollapply, width = 5, FUN = max, col_rename = "roll.max.5") %>%
+    tq_mutate(Ad, rollapply, width = 10, FUN = max, col_rename = "roll.max.10") %>%
+    tq_mutate(Ad, rollapply, width = 15, FUN = max, col_rename = "roll.max.15")
+
+## ------------------------------------------------------------------------
+c("AAPL", "GOOG", "FB") %>%
+    tq_get(get = "stock.prices", from = "2016-01-01", to = "2017-01-01")
+
+## ------------------------------------------------------------------------
+stock_list <- tibble(symbols = c("AAPL", "JPM", "CVX"),
+                     industry = c("Technology", "Financial", "Energy"))
+stock_list
+
+## ------------------------------------------------------------------------
+stock_list %>%
+    tq_get(get = "stock.prices", from = "2016-01-01", to = "2017-01-01")
+
+## ------------------------------------------------------------------------
+tibble(symbol = c("AAPL", "GOOG", "AMZN", "FB", "AVGO", "SWKS","NVDA")) %>%
+    mutate(stock.prices = map(.x = symbol, ~ tq_get(.x, get = "stock.prices")))
+
+## ---- eval = F-----------------------------------------------------------
+#  tq_get("SP500", get = "stock.index") %>%
+#      tq_get(get = "stock.prices")
+
+## ------------------------------------------------------------------------
+c("AAPL", "GOOG", "FB") %>%
+    tq_get(get = "stock.prices") %>%
+    group_by(symbol.x) %>%
+    tq_transform(Ad, transform_fun = periodReturn, period = "yearly")
 
 ## ------------------------------------------------------------------------
 my_stock_analysis_fun <- function(stock.symbol) {
@@ -270,7 +319,4 @@ stock_list_with_one_bad_apple <- tibble(
                                 )
            )
 stock_list_with_one_bad_apple
-
-## ---- warning = TRUE, message = TRUE-------------------------------------
-tq_get("SP500", get = "stock.index", use_fallback = TRUE)
 

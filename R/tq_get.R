@@ -1,24 +1,29 @@
 #' Get quantitative data in \code{tibble} format
 #'
-#' @param x A character string representing a single stock index,
+#' @param x A single character string, a character vector or tibble representing a single or multiple stock index,
 #' stock symbol, metal symbol, currency combination, FRED code, etc.
 #' @param get A character string representing the type of data to get
 #' for \code{x}. Options include:
 #' \itemize{
-#'   \item \code{"stock.index"}: Get all stocks in an index or exchange
+#'   \item \code{"stock.index"}: Get all stock symbols in any of \strong{18 stock indexes}
 #'   from \href{http://www.marketvolume.com/indexes_exchanges/}{marketvolume.com}.
-#'   \item \code{"stock.prices"}: Get the stock prices for a stock symbol from
+#'   \item \code{"stock.prices"}: Get the open, high, low, close, volumen and adjusted
+#'   stock prices for a stock symbol from
+#'   \href{https://finance.yahoo.com/}{Yahoo Finance}.
+#'   \item \code{"financials"}: Get the income, balance sheet, and cash flow
+#'   financial statements for a stock symbol from
+#'   \href{https://www.google.com/finance}{Google Finance}.
+#'   \item \code{"key.ratios"}: These are key historical ratios. Get \strong{89 historical growth, profitablity, financial health,
+#'   efficiency, and valuation ratios that span 10-years} from
+#'   \href{https://www.morningstar.com}{morningstar.com}.
+#'   \item \code{"key.stats"}: These are key current statistics. Get \strong{55 current key statistics} such as
+#'   Ask, Bid, Day's High, Day's Low, Last Trade Price, current P/E Ratio, EPS,
+#'   Market Cap, EPS Projected Current Year, EPS Projected Next Year and many more from
 #'   \href{https://finance.yahoo.com/}{Yahoo Finance}.
 #'   \item \code{"dividends"}: Get the dividends for a stock symbol
 #'   from \href{https://finance.yahoo.com/}{Yahoo Finance}.
 #'   \item \code{"splits"}: Get the splits for a stock symbol
 #'   from \href{https://finance.yahoo.com/}{Yahoo Finance}.
-#'   \item \code{"financials"}: Get the income, balance sheet, and cash flow
-#'   financial statements for a stock symbol from
-#'   \href{https://www.google.com/finance}{Google Finance}.
-#'   \item \code{"key.ratios"}: Get historical growth, profitablity, financial health,
-#'   efficiency, and valuation ratios over 10-years for a stock symbol from
-#'   \href{https://www.morningstar.com}{morningstar.com}.
 #'   \item \code{"economic.data"}: Get economic data from
 #'   \href{https://fred.stlouisfed.org/}{FRED}.
 #'   \item \code{"metal.prices"}: Get the metal prices from
@@ -66,7 +71,6 @@
 #'
 #' @examples
 #' # Load libraries
-#' library(tidyverse)
 #' library(tidyquant)
 #'
 #' ##### Basic Functionality
@@ -75,49 +79,88 @@
 #' tq_get_options()
 #'
 #' # Get all stocks in a stock index from www.marketvolume.com
+#' tq_get_stock_index_options() # Get stock index options
 #' tq_get("SP500", get = "stock.index")
-#'
-#' # Get the list of stock index options that can be used with tq_get(get = "stock.index")
-#' tq_get_stock_index_options()
 #'
 #' # Get stock prices for a stock from Yahoo
 #' aapl_stock_prices <- tq_get("AAPL")
-#' cvx_stock_prices  <- tq_get("CVX", get = "stock.prices",
-#'                             from = "2014-01-01", to = "2015-01-01")
 #'
-#' # Get dividends and splits for a stock from Yahoo
-#' tq_get("AAPL", get = "dividends", from = "1990-01-01")
-#' tq_get("AAPL", get = "splits", from = "1990-01-01")
-#'
-#' # Get financial statement data for a stock from Google
-#' appl_financials <- tq_get("AAPL", get = "financials")
-#'
-#' # Get key ratios for a stock from Morningstar
-#' appl_key_ratios <- tq_get("AAPL", get = "key.ratios")
-#'
-#' # Get FRED economic data for a commodity code
-#' tq_get("DCOILWTICO", get = "economic.data") # WTI crude oil spot prices
-#'
-#' # Get exchange rate data from Oanda
-#' eur_usd <- tq_get("EUR/USD", get = "exchange.rates")
-#'
-#' # Get metal prices from Oanda
-#' plat_price_usd <- tq_get("plat", get = "metal.prices")
-#' gold_price_eur <- tq_get("gold", get = "metal.prices",
-#'                                  base.currency = "EUR")
-#'
-#' ##### Tidyverse functionality
-#'
-#' # Get a historical stock prices from multiple stocks
-#' FANG <- tibble(symbol = c("FB", "AMZN", "NFLX", "GOOGL")) %>%
-#'     mutate(stock.prices = map(.x = symbol,
-#'                               ~ tq_get(.x, get = "stock.prices"))) %>%
-#'     unnest()
-#'
+#' # Get stock prices for multiple stocks
+#' mult_stocks <- tq_get(c("FB", "AMZN"),
+#'                       get  = "stock.prices",
+#'                       from = "2016-01-01",
+#'                       to   = "2017-01-01")
+
+
+
 
 # PRIMARY FUNCTIONS ----
 
 tq_get <- function(x, get = "stock.prices", ...) {
+
+    # Handle x
+    if (inherits(x, "data.frame")) {
+
+        if (inherits(x, "grouped_df")) {
+            warning("Ungrouping grouped data.frame")
+            x <- dplyr::ungroup(x)
+        }
+
+        col_name <- colnames(x)[[1]]
+
+        names(x)[[1]] <- "symbol.."
+
+        x <- x %>%
+            tibble::as_tibble()
+
+        ret <- tq_get_multiple(x = x, get = get, ...)
+
+        names(ret)[[1]] <- col_name
+
+    } else if (is.character(x) && length(x) > 1) {
+
+        col_name <- names(x)
+
+        if (is.null(col_name)) col_name <- "symbol.x"
+
+        x <- tibble::tibble(symbol.. = x)
+
+        ret <- tq_get_multiple(x = x, get = get, ...)
+
+        names(ret)[[1]] <- col_name
+
+    } else if (is.character(x) && length(x) == 1) {
+
+        ret <- tq_get_base(x = x, get = get, ...)
+
+    } else {
+
+        stop("x must be a single character, list of characters, or data frame of characters with the first column being the object to pass to tq_get.")
+
+    }
+
+    ret
+
+}
+
+tq_get_multiple <- function(x, get, ...) {
+
+    # Map tq_get_base
+    ret <- x %>%
+        dplyr::mutate(data.. = purrr::map(.x = symbol..,
+                                         ~ tq_get_base(x = .x,
+                                                       get = get,
+                                                       ...)),
+                      class.. = purrr::map_chr(.x = data.., ~ class(.x)[[1]])) %>%
+        dplyr::filter(class.. != "logical") %>%
+        dplyr::select(-class..) %>%
+        tidyr::unnest()
+
+    ret
+
+}
+
+tq_get_base <- function(x, get, ...) {
 
     # Check get
     get <- stringr::str_to_lower(get) %>%
@@ -144,6 +187,7 @@ tq_get <- function(x, get = "stock.prices", ...) {
                   dividend     = tq_get_util_2(x, get, ...),
                   split        = tq_get_util_2(x, get, ...),
                   financial    = tq_get_util_2(x, get, ...),
+                  keystat      = tq_get_util_4(x, get, ...),
                   keyratio     = tq_get_util_1(x, get, ...),
                   metalprice   = tq_get_util_2(x, get, ...),
                   exchangerate = tq_get_util_2(x, get, ...),
@@ -160,10 +204,11 @@ tq_get <- function(x, get = "stock.prices", ...) {
 tq_get_options <- function() {
     c("stock.prices",
       "stock.index",
+      "financials",
+      "key.stats",
+      "key.ratios",
       "dividends",
       "splits",
-      "financials",
-      "key.ratios",
       "economic.data",
       "exchange.rates",
       "metal.prices"
@@ -216,11 +261,18 @@ tq_get_util_1 <- function(x, get, ...) {
 
         # Download file
         tmp <- tempfile()
-        url_base_1 <- 'http://financials.morningstar.com/finan/ajax/exportKR2CSV.html?&callback=?&t=XNAS:'
+        stock_exchange <- c("XNAS", "XNYS") # mornginstar gets from various exchanges
+        url_base_1 <- 'http://financials.morningstar.com/finan/ajax/exportKR2CSV.html?&callback=?&t='
         url_base_2 <- '&region=usa&culture=en-US&cur=&order=asc'
-        url <- paste0(url_base_1, x, url_base_2)
+        # Two URLs to try
+        url <- paste0(url_base_1, stock_exchange, ":", x, url_base_2)
 
-        download.file(url, destfile = tmp, quiet = TRUE)
+        # Try various stock exchanges
+        download.file(url[1], destfile = tmp, quiet = TRUE)
+        if (length(readLines(tmp)) == 0) {
+            download.file(url[2], destfile = tmp, quiet = TRUE)
+        }
+
 
         # Setup Tibble Part 1
         key_ratios_1 <- tibble::tibble(
@@ -660,3 +712,115 @@ tq_get_util_3 <-
 
 }
 
+# Util 1: Used for tq_get() `get` options:
+#     key.statistics -> From Yahoo Finance
+tq_get_util_4 <- function(x, get, ...) {
+
+    # Convert x to uppercase
+    x <- stringr::str_to_upper(x) %>%
+        stringr::str_trim(side = "both") %>%
+        stringr::str_replace_all("[[:punct:]]", "")
+
+    # Check x
+    if (!is.character(x)) {
+        err <- "Error: x must be a character string in the form of a valid stock symbol."
+        stop(err)
+    }
+
+    tryCatch({
+
+        # Download file
+        tmp <- tempfile()
+        url_base_1 <- 'http://download.finance.yahoo.com/d/quotes.csv?s='
+        url_base_2 <- '&f='
+        url_base_3 <- '&e=.csv'
+        yahoo_tag_list <- stringr::str_c(yahoo_tags$yahoo.tag, collapse = "")
+        url <- paste0(url_base_1, x, url_base_2, yahoo_tag_list, url_base_3)
+
+        # Try various stock exchanges
+        download.file(url, destfile = tmp, quiet = TRUE)
+
+        # Read data
+        key_stats_raw <- suppressMessages(
+            suppressWarnings(
+                readr::read_csv(tmp, col_names = FALSE, na = c("", "NA", "N/A", "<NA>"))
+            )
+        )
+
+        # Unlink tmp
+        unlink(tmp)
+
+        # Format tidy data frame ----
+
+        # Names
+        key_stat_names <- yahoo_tags$yahoo.tag.desc %>%
+            make.names()
+        names(key_stats_raw) <- key_stat_names
+
+        # Formatting Functions
+        convert_to_numeric <- function(x) {
+            # x = character such as "23.4B"
+            units <- stringr::str_sub(x, -1, -1)
+
+            if (units %in% c("T", "B", "M")) {
+                value <- stringr::str_sub(x, 1, -2) %>%
+                    as.numeric()
+
+                if (units == "T") {
+                    value <- value * 1e12
+                } else if (units == "B") {
+                    value <- value * 1e9
+                } else if (units == "M") {
+                    value <- value * 1e6
+                }
+            } else (
+                value <- as.numeric(value)
+            )
+
+            value
+        }
+
+        convert_to_percent <- function(x) {
+            # x = character such as "-0.6104%"
+            units <- stringr::str_sub(x, -1, -1)
+
+            if (units %in% c("%")) {
+                value <- stringr::str_sub(x, 1, -2) %>%
+                    as.numeric()
+
+                value <- value * 1 / 100
+            }
+
+            value
+        }
+
+        # Main formatting script
+        suppressWarnings(
+            key_stats <- key_stats_raw %>%
+                dplyr::mutate(Last.Trade.Date = lubridate::mdy(Last.Trade.Date),
+                              Market.Capitalization = convert_to_numeric(Market.Capitalization),
+                              EBITDA = convert_to_numeric(EBITDA),
+                              Percent.Change.From.52.week.Low = convert_to_percent(Percent.Change.From.52.week.Low),
+                              Percent.Change.From.50.day.Moving.Average = convert_to_percent(Percent.Change.From.50.day.Moving.Average),
+                              Percent.Change.From.200.day.Moving.Average = convert_to_percent(Percent.Change.From.200.day.Moving.Average),
+                              Change.in.Percent = convert_to_percent(Change.in.Percent),
+                              Ex.Dividend.Date = lubridate::mdy(Ex.Dividend.Date),
+                              Dividend.Pay.Date = lubridate::mdy(Dividend.Pay.Date),
+                              Revenue = convert_to_numeric(Revenue)
+                )
+        )
+
+        # Sort by column name
+        key_stats_sorted <- key_stats[, order(names(key_stats))]
+
+        return(key_stats_sorted)
+
+    }, error = function(e) {
+
+        warn <- paste0("Error at ", x, " during call to get = key.stats")
+        warning(warn)
+        return(NA) # Return NA on error
+
+    })
+
+}

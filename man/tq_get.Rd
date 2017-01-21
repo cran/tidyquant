@@ -13,26 +13,31 @@ tq_get_options()
 tq_get_stock_index_options()
 }
 \arguments{
-\item{x}{A character string representing a single stock index,
+\item{x}{A single character string, a character vector or tibble representing a single or multiple stock index,
 stock symbol, metal symbol, currency combination, FRED code, etc.}
 
 \item{get}{A character string representing the type of data to get
 for \code{x}. Options include:
 \itemize{
-  \item \code{"stock.index"}: Get all stocks in an index or exchange
+  \item \code{"stock.index"}: Get all stock symbols in any of \strong{18 stock indexes}
   from \href{http://www.marketvolume.com/indexes_exchanges/}{marketvolume.com}.
-  \item \code{"stock.prices"}: Get the stock prices for a stock symbol from
+  \item \code{"stock.prices"}: Get the open, high, low, close, volumen and adjusted
+  stock prices for a stock symbol from
+  \href{https://finance.yahoo.com/}{Yahoo Finance}.
+  \item \code{"financials"}: Get the income, balance sheet, and cash flow
+  financial statements for a stock symbol from
+  \href{https://www.google.com/finance}{Google Finance}.
+  \item \code{"key.ratios"}: These are key historical ratios. Get \strong{89 historical growth, profitablity, financial health,
+  efficiency, and valuation ratios that span 10-years} from
+  \href{https://www.morningstar.com}{morningstar.com}.
+  \item \code{"key.stats"}: These are key current statistics. Get \strong{55 current key statistics} such as
+  Ask, Bid, Day's High, Day's Low, Last Trade Price, current P/E Ratio, EPS,
+  Market Cap, EPS Projected Current Year, EPS Projected Next Year and many more from
   \href{https://finance.yahoo.com/}{Yahoo Finance}.
   \item \code{"dividends"}: Get the dividends for a stock symbol
   from \href{https://finance.yahoo.com/}{Yahoo Finance}.
   \item \code{"splits"}: Get the splits for a stock symbol
   from \href{https://finance.yahoo.com/}{Yahoo Finance}.
-  \item \code{"financials"}: Get the income, balance sheet, and cash flow
-  financial statements for a stock symbol from
-  \href{https://www.google.com/finance}{Google Finance}.
-  \item \code{"key.ratios"}: Get historical growth, profitablity, financial health,
-  efficiency, and valuation ratios over 10-years for a stock symbol from
-  \href{https://www.morningstar.com}{morningstar.com}.
   \item \code{"economic.data"}: Get economic data from
   \href{https://fred.stlouisfed.org/}{FRED}.
   \item \code{"metal.prices"}: Get the metal prices from
@@ -80,7 +85,6 @@ can be used.
 }
 \examples{
 # Load libraries
-library(tidyverse)
 library(tidyquant)
 
 ##### Basic Functionality
@@ -89,44 +93,16 @@ library(tidyquant)
 tq_get_options()
 
 # Get all stocks in a stock index from www.marketvolume.com
+tq_get_stock_index_options() # Get stock index options
 tq_get("SP500", get = "stock.index")
-
-# Get the list of stock index options that can be used with tq_get(get = "stock.index")
-tq_get_stock_index_options()
 
 # Get stock prices for a stock from Yahoo
 aapl_stock_prices <- tq_get("AAPL")
-cvx_stock_prices  <- tq_get("CVX", get = "stock.prices",
-                            from = "2014-01-01", to = "2015-01-01")
 
-# Get dividends and splits for a stock from Yahoo
-tq_get("AAPL", get = "dividends", from = "1990-01-01")
-tq_get("AAPL", get = "splits", from = "1990-01-01")
-
-# Get financial statement data for a stock from Google
-appl_financials <- tq_get("AAPL", get = "financials")
-
-# Get key ratios for a stock from Morningstar
-appl_key_ratios <- tq_get("AAPL", get = "key.ratios")
-
-# Get FRED economic data for a commodity code
-tq_get("DCOILWTICO", get = "economic.data") # WTI crude oil spot prices
-
-# Get exchange rate data from Oanda
-eur_usd <- tq_get("EUR/USD", get = "exchange.rates")
-
-# Get metal prices from Oanda
-plat_price_usd <- tq_get("plat", get = "metal.prices")
-gold_price_eur <- tq_get("gold", get = "metal.prices",
-                                 base.currency = "EUR")
-
-##### Tidyverse functionality
-
-# Get a historical stock prices from multiple stocks
-FANG <- tibble(symbol = c("FB", "AMZN", "NFLX", "GOOGL")) \%>\%
-    mutate(stock.prices = map(.x = symbol,
-                              ~ tq_get(.x, get = "stock.prices"))) \%>\%
-    unnest()
-
+# Get stock prices for multiple stocks
+mult_stocks <- tq_get(c("FB", "AMZN"),
+                      get  = "stock.prices",
+                      from = "2016-01-01",
+                      to   = "2017-01-01")
 }
 

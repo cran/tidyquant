@@ -1,6 +1,6 @@
 #' Mutates quantitative data (adds new variables to existing tibble)
 #'
-#' @param data A \code{tibble} (tidy data frame) of data from \code{\link{tq_get}}.
+#' @inheritParams tq_transform
 #' @param ohlc_fun The \code{quantmod} function that identifes columns to pass to
 #' the mutatation function. OHLCV is \code{quantmod} terminology for
 #' open, high, low, close, and volume. Options include c(Op, Hi, Lo, Cl, Vo, Ad,
@@ -12,7 +12,6 @@
 #' to see the full list of options by package.
 #' @param ... Additional parameters passed to the appropriate mutatation
 #' function.
-#' @param x_fun,.x,.y Deprecated. Use \code{ohlc_fun}, \code{x}, and \code{y} instead.
 #'
 #' @return Returns data in the form of a \code{tibble} object.
 #'
@@ -49,7 +48,7 @@
 #' Note that character strings are being passed to the variables instead of
 #' unquoted variable names. See \code{vignette("nse")} for more information.
 #'
-#' @seealso \code{\link{tq_transform}}
+#' @seealso \code{\link{tq_transform}}, \code{\link{tq_get}}
 #'
 #' @name tq_mutate
 #'
@@ -57,7 +56,6 @@
 #'
 #' @examples
 #' # Load libraries
-#' library(tidyverse)
 #' library(tidyquant)
 #'
 #' ##### Basic Functionality
@@ -67,11 +65,12 @@
 #' # Example 1: Return logarithmic daily returns using periodReturn()
 #' fb_stock_prices %>%
 #'     tq_mutate(ohlc_fun = Cl, mutate_fun = periodReturn,
-#'                  period = "daily", type = "log")
+#'               period = "daily", type = "log")
 #'
 #' # Example 2: Use tq_mutate_xy to use functions with two columns required
 #' fb_stock_prices %>%
-#'     tq_mutate_xy(x = close, y = volume, mutate_fun = EVWMA)
+#'     tq_mutate_xy(x = close, y = volume, mutate_fun = EVWMA,
+#'                  col_rename = "EVWMA")
 #'
 #' # Example 3: Using tq_mutate_xy to work with non-OHLC data
 #' tq_get("DCOILWTICO", get = "economic.data") %>%
@@ -85,37 +84,24 @@
 
 # PRIMARY FUNCTIONS ----
 
-tq_mutate <- function(data, ohlc_fun = OHLCV, mutate_fun, x_fun, ...) {
-
-    # Deprecation
-    if (!missing(x_fun)) {
-        warning("argument x_fun is deprecated; please use ohlc_fun instead.",
-                call. = FALSE)
-        ohlc_fun <- deparse(substitute(x_fun))
-    } else {
-        ohlc_fun <- deparse(substitute(ohlc_fun))
-    }
+tq_mutate <- function(data, ohlc_fun = OHLCV, mutate_fun, col_rename = NULL, ...) {
 
     # Convert to NSE
+    ohlc_fun <- deparse(substitute(ohlc_fun))
     mutate_fun <- deparse(substitute(mutate_fun))
 
-    tq_mutate_(data = data, ohlc_fun = ohlc_fun, mutate_fun = mutate_fun, ...)
+    tq_mutate_(data = data, ohlc_fun = ohlc_fun,
+               mutate_fun = mutate_fun, col_rename = col_rename, ...)
 
 }
 
 #' @rdname tq_mutate
 #' @export
-tq_mutate_ <- function(data, ohlc_fun = "OHLCV", mutate_fun, x_fun, ...) {
-
-    # Deprecation
-    if (!missing(x_fun)) {
-        warning("argument x_fun is deprecated; please use ohlc_fun instead.",
-                call. = FALSE)
-        ohlc_fun <- x_fun
-    }
+tq_mutate_ <- function(data, ohlc_fun = "OHLCV", mutate_fun, col_rename = NULL, ...) {
 
     # Get transformation
-    ret <- tq_transform_(data = data, ohlc_fun = ohlc_fun, transform_fun = mutate_fun, ...)
+    ret <- tq_transform_(data = data, ohlc_fun = ohlc_fun,
+                         transform_fun = mutate_fun, col_rename = col_rename, ...)
 
     ret <- merge_two_tibbles(tib1 = data, tib2 = ret, mutate_fun)
 
@@ -125,51 +111,25 @@ tq_mutate_ <- function(data, ohlc_fun = "OHLCV", mutate_fun, x_fun, ...) {
 
 #' @rdname tq_mutate
 #' @export
-tq_mutate_xy <- function(data, x, y = NULL, mutate_fun, .x, .y, ...) {
-
-    # Deprecation
-    if (!missing(.x)) {
-        warning("argument .x is deprecated; please use x instead.",
-                call. = FALSE)
-        x <- deparse(substitute(.x))
-    } else {
-        x <- deparse(substitute(x))
-    }
-
-    if (!missing(.y)) {
-        warning("argument .y is deprecated; please use y instead.",
-                call. = FALSE)
-        y <- deparse(substitute(.y))
-    } else {
-        y <- deparse(substitute(y))
-    }
+tq_mutate_xy <- function(data, x, y = NULL, mutate_fun, col_rename = NULL, ...) {
 
     # Convert to NSE
+    x <- deparse(substitute(x))
+    y <- deparse(substitute(y))
     mutate_fun <- deparse(substitute(mutate_fun))
 
-    tq_mutate_xy_(data = data, x = x, y = y, mutate_fun = mutate_fun, ...)
+    tq_mutate_xy_(data = data, x = x, y = y,
+                  mutate_fun = mutate_fun, col_rename = col_rename, ...)
 
 }
 
 #' @rdname tq_mutate
 #' @export
-tq_mutate_xy_ <- function(data, x, y = NULL, mutate_fun, .x, .y, ...) {
-
-    # Deprecation
-    if (!missing(.x)) {
-        warning("argument .x is deprecated; please use x instead.",
-                call. = FALSE)
-        x <- .x
-    }
-
-    if (!missing(.y)) {
-        warning("argument .y is deprecated; please use y instead.",
-                call. = FALSE)
-        y <- .y
-    }
+tq_mutate_xy_ <- function(data, x, y = NULL, mutate_fun, col_rename = NULL, ...) {
 
     # Get transformation
-    ret <- tq_transform_xy_(data = data, x = x, y = y, transform_fun = mutate_fun, ...)
+    ret <- tq_transform_xy_(data = data, x = x, y = y,
+                            transform_fun = mutate_fun, col_rename = col_rename, ...)
 
     ret <- merge_two_tibbles(tib1 = data, tib2 = ret, mutate_fun)
 
@@ -189,11 +149,16 @@ merge_two_tibbles <- function(tib1, tib2, mutate_fun) {
     # Merge results
     if (identical(nrow(tib1), nrow(tib2))) {
 
-        tib2 <- tib2[,-1] # Drop date column
+        # Arrange dates - Possibility of issue if dates not decending in tib1
+        tib1 <- arrange_by_date(tib1)
+
+        # Drop date column and groups
+        tib2 <- drop_date_and_group_cols(tib2)
 
         # Replace bad names
         tib2 <- replace_bad_names(tib2, mutate_fun)
 
+        # Replace duplicate names
         tib2 <- replace_duplicate_colnames(tib1, tib2)
 
         ret <- dplyr::bind_cols(tib1, tib2)
@@ -264,13 +229,14 @@ replace_bad_names <- function(tib, fun_name) {
 
     bad_names_regex <- "open|high|low|close|volume|adjusted|price"
 
-    name_list_tib <- stringr::str_to_lower(colnames(tib))
+    name_list_tib <- colnames(tib)
+    name_list_tib_lower <- stringr::str_to_lower(name_list_tib)
 
-    detect_bad_names <- stringr::str_detect(name_list_tib, bad_names_regex)
+    detect_bad_names <- stringr::str_detect(name_list_tib_lower, bad_names_regex)
 
     if (any(detect_bad_names)) {
 
-        len <- length(name_list_tib[detect_bad_names])
+        len <- length(name_list_tib_lower[detect_bad_names])
         name_list_tib[detect_bad_names] <- rep(fun_name, length.out = len)
 
     }
@@ -278,5 +244,54 @@ replace_bad_names <- function(tib, fun_name) {
     colnames(tib) <- name_list_tib
 
     tib
+
+}
+
+arrange_by_date <- function(tib) {
+
+    if (dplyr::is.grouped_df(tib)) {
+
+        group_names <- dplyr::groups(tib)
+
+        arrange_date <- function(tib) {
+            date_col <- get_col_name_date_or_date_time(tib)
+            tib %>%
+                dplyr::arrange_(date_col)
+        }
+
+        tib %>%
+            tidyr::nest() %>%
+            dplyr::mutate(nested.col =
+                              purrr::map(data, arrange_date)
+            ) %>%
+            dplyr::select(-data) %>%
+            tidyr::unnest() %>%
+            dplyr::group_by_(.dots = group_names)
+
+
+    } else {
+
+        tib <- tib %>%
+            dplyr::arrange_(get_col_name_date_or_date_time(tib))
+
+    }
+
+    tib
+
+}
+
+drop_date_and_group_cols <- function(tib) {
+
+    date_col <- get_col_name_date_or_date_time(tib)
+    group_cols <- dplyr::groups(tib) %>%
+        as.character()
+    cols_to_remove <- c(date_col, group_cols)
+    tib_names <- colnames(tib)
+    cols_to_remove_logical <- tib_names %in% cols_to_remove
+    tib_names_without_date_or_group <- tib_names[!cols_to_remove_logical]
+
+    tib <- tib %>%
+        dplyr::ungroup() %>%
+        dplyr::select_(.dots = as.list(tib_names_without_date_or_group))
 
 }
