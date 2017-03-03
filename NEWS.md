@@ -1,3 +1,32 @@
+
+# tidyquant 0.4.0
+
+* New Features:
+    * `tq_transmute()` replaces `tq_transform()` for consistency with `dplyr`.
+    * `tq_performance()` which integrates the performance analysis functions of `PerformanceAnalytics`.
+    * `tq_portfolio()` which enables aggregating portfolios from individual stock returns.
+    * `tq_tranform()`: Added the NA-handling functions from `zoo` to the list of compatible, which provide a number of useful methods for handling `NA` values in data sets. Added `Return.calculate` and `Return.excess` for calculating returns and returns in excess of the risk-free rate, respectively.
+* Documentation:
+    * `tq_mutate()` and `tq_transmute()` help pages have been combined.
+    * Split introduction into four separate vignettes, which improves flow and enables readers to more easily get to needed documentation. Now five docs total covering the primary needs of `tidyquant` users!
+* New data:
+    * `tq_exchange()` gets the stock list for NASDAQ, NYSE, and AMEX exchanges. Use `tq_exchange_options()` to exchange options.
+    * `FANG` data set that can be loaded with `data(FANG)`.
+* New visualizations that integrate with `ggplot2`:
+    * `palette_()` functions used to create scales are exported.
+    * `theme_tq()` creates light, dark, and green themes for tidyquant visualizations.
+    * `scale_color_tq()` and `scale_fill_tq()` add color/fill scales for the data used in tidyquant visualizations.
+* Improvements and Fixes:
+    * The `transform_fun` argument of `tq_transmute()` has been replaced with `mutate_fun` for consistency with `tq_mutate()`.
+    * Core functions are now generics to allow for extendability.
+    * Issue #11: Part 2. Fix multiple stocks that only return 110 lines. Handle stocks that return csv with "We're sorry" message.
+    * Issue #11: Part 1. Fix instability with `get = key.ratios` failing with HTTP 500 error on download. Use httr RETRY in case of failure.
+    * Fixed issue with `get = "key.ratios"` where stocks listed on AMEX exchange were not able to return key ratios.
+    * Issue #9: Fix problem with `get = "key.stats"` where NA's in multiple `x` (e.g. `c("AAPL", "GOOG")`) cause call to fail during coercion. 
+    * Issue #8, Part 2: Enable compound gets (e.g. `tq_get("AAPL", get = c("stock.prices", "financials"))`).
+    * Issue #8, Part 1: Create `tq_index()` function to return a stock index. `tq_get(get = "stock.index")` is deprecated and will be removed during the next version after 0.4.0. Use `tq_index_options()` for index options. 
+    * Issue #7: Fixed issue with date column inadvertently being coerced to `dttm`. 
+
 # tidyquant 0.3.0
 
 * New data:

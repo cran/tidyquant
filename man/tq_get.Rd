@@ -6,60 +6,59 @@
 \alias{tq_get_stock_index_options}
 \title{Get quantitative data in \code{tibble} format}
 \usage{
-tq_get(x, get = "stock.prices", ...)
+tq_get(x, get = "stock.prices", complete_cases = TRUE, ...)
 
 tq_get_options()
 
 tq_get_stock_index_options()
 }
 \arguments{
-\item{x}{A single character string, a character vector or tibble representing a single or multiple stock index,
+\item{x}{A single character string, a character vector or tibble representing a single (or multiple)
 stock symbol, metal symbol, currency combination, FRED code, etc.}
 
 \item{get}{A character string representing the type of data to get
 for \code{x}. Options include:
 \itemize{
-  \item \code{"stock.index"}: Get all stock symbols in any of \strong{18 stock indexes}
-  from \href{http://www.marketvolume.com/indexes_exchanges/}{marketvolume.com}.
-  \item \code{"stock.prices"}: Get the open, high, low, close, volumen and adjusted
-  stock prices for a stock symbol from
-  \href{https://finance.yahoo.com/}{Yahoo Finance}.
-  \item \code{"financials"}: Get the income, balance sheet, and cash flow
-  financial statements for a stock symbol from
-  \href{https://www.google.com/finance}{Google Finance}.
-  \item \code{"key.ratios"}: These are key historical ratios. Get \strong{89 historical growth, profitablity, financial health,
-  efficiency, and valuation ratios that span 10-years} from
-  \href{https://www.morningstar.com}{morningstar.com}.
-  \item \code{"key.stats"}: These are key current statistics. Get \strong{55 current key statistics} such as
-  Ask, Bid, Day's High, Day's Low, Last Trade Price, current P/E Ratio, EPS,
-  Market Cap, EPS Projected Current Year, EPS Projected Next Year and many more from
-  \href{https://finance.yahoo.com/}{Yahoo Finance}.
-  \item \code{"dividends"}: Get the dividends for a stock symbol
-  from \href{https://finance.yahoo.com/}{Yahoo Finance}.
-  \item \code{"splits"}: Get the splits for a stock symbol
-  from \href{https://finance.yahoo.com/}{Yahoo Finance}.
-  \item \code{"economic.data"}: Get economic data from
-  \href{https://fred.stlouisfed.org/}{FRED}.
-  \item \code{"metal.prices"}: Get the metal prices from
-  \href{https://www.oanda.com/}{Oanda}.
-  \item \code{"exchange.rates"}: Get exchange rates from
-  \href{https://www.oanda.com/currency/converter/}{Oanda}.
+\item \code{"stock.prices"}: Get the open, high, low, close, volume and adjusted
+stock prices for a stock symbol from
+\href{https://finance.yahoo.com/}{Yahoo Finance}.
+\item \code{"financials"}: Get the income, balance sheet, and cash flow
+financial statements for a stock symbol from
+\href{https://www.google.com/finance}{Google Finance}.
+\item \code{"key.ratios"}: These are key historical ratios. Get \strong{89 historical growth, profitablity, financial health,
+efficiency, and valuation ratios that span 10-years} from
+\href{https://www.morningstar.com}{Morningstar}.
+\item \code{"key.stats"}: These are key current statistics. Get \strong{55 current key statistics} such as
+Ask, Bid, Day's High, Day's Low, Last Trade Price, current P/E Ratio, EPS,
+Market Cap, EPS Projected Current Year, EPS Projected Next Year and many more from
+\href{https://finance.yahoo.com/}{Yahoo Finance}.
+\item \code{"dividends"}: Get the dividends for a stock symbol
+from \href{https://finance.yahoo.com/}{Yahoo Finance}.
+\item \code{"splits"}: Get the splits for a stock symbol
+from \href{https://finance.yahoo.com/}{Yahoo Finance}.
+\item \code{"economic.data"}: Get economic data from
+\href{https://fred.stlouisfed.org/}{FRED}.
+\item \code{"metal.prices"}: Get the metal prices from
+\href{https://www.oanda.com/}{Oanda}.
+\item \code{"exchange.rates"}: Get exchange rates from
+\href{https://www.oanda.com/currency/converter/}{Oanda}.
 }}
+
+\item{complete_cases}{Removes symbols that return an NA value due to an error with the get
+call such as sending an incorrect symbol "XYZ" to get = "stock.prices". This is useful in
+scaling so user does not need to
+add an extra step to remove these rows. \code{TRUE} by default, and a warning
+message is generated for any rows removed.}
 
 \item{...}{Additional parameters passed to the appropriate \code{quantmod}
 function. Common optional parameters include:
 \itemize{
-  \item \code{from}: Optional. A character string representing a start date in
-  YYYY-MM-DD format. No effect on \code{get = "stock.index"},
-  \code{"financials"}, or \code{"key.ratios"}.
-  \item \code{to}: A character string representing a end date in
-  YYYY-MM-DD format. No effect on \code{get = "stock.index"},
-  \code{get = "financials"}, or \code{"key.ratios"}.
-  \item \code{use_fallback}: Used with \code{get = "stock.index"} only.
-  Set to \code{FALSE} by default. A boolean
-  representing whether to use the fall back data set for a stock index. Useful
-  if the data cannot be fetched from the website. The fallback data returned is
-  accurate as of the date the package was last updated.
+\item \code{from}: Optional. A character string representing a start date in
+YYYY-MM-DD format. No effect on
+\code{"financials"}, \code{"key.ratios"}, or \code{"key.stats"}.
+\item \code{to}: A character string representing a end date in
+YYYY-MM-DD format. No effect on
+\code{get = "financials"},  \code{"key.ratios"}, or \code{"key.stats"}.
 }}
 }
 \value{
@@ -76,25 +75,18 @@ are (1) only one function is needed for all data sources and (2) the function
 can be seemlessly used with the tidyverse: \code{purrr}, \code{tidyr}, and
 \code{dplyr} verbs.
 
-\code{tq_get_options()} returns a list of valid `get` options you can
+\code{tq_get_options()} returns a list of valid \code{get} options you can
 choose from.
 
-\code{tq_get_stock_index_options()} returns a list of stock indexes you can
-choose from. Alternatively \code{tq_get("options", get = "stock.index")}
-can be used.
+\code{tq_get_stock_index_options()} Is deprecated and will be removed in the
+next version. Please use \code{tq_index_options()} instead.
 }
 \examples{
 # Load libraries
 library(tidyquant)
 
-##### Basic Functionality
-
 # Get the list of `get` options
 tq_get_options()
-
-# Get all stocks in a stock index from www.marketvolume.com
-tq_get_stock_index_options() # Get stock index options
-tq_get("SP500", get = "stock.index")
 
 # Get stock prices for a stock from Yahoo
 aapl_stock_prices <- tq_get("AAPL")
@@ -104,5 +96,13 @@ mult_stocks <- tq_get(c("FB", "AMZN"),
                       get  = "stock.prices",
                       from = "2016-01-01",
                       to   = "2017-01-01")
-}
 
+# Multiple gets
+mult_gets <- tq_get("AAPL",
+                    get = c("stock.prices", "financials"),
+                    from = "2016-01-01",
+                    to   = "2017-01-01")
+}
+\seealso{
+\code{\link[=tq_index]{tq_index()}} to get a ful list of stocks in an index.
+}

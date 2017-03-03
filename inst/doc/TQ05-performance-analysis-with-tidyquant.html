@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Matt Dancho" />
+
+<meta name="date" content="2017-03-02" />
+
+<title>Performance Analysis with tidyquant</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Performance Analysis with tidyquant</h1>
+<h4 class="author"><em>Matt Dancho</em></h4>
+<h4 class="date"><em>2017-03-02</em></h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#key-concepts">Key Concepts</a></li>
+<li><a href="#quick-example">Quick Example</a></li>
+<li><a href="#workflow">Workflow</a><ul>
+<li><a href="#individual-assets">Individual Assets</a></li>
+<li><a href="#portfolios-asset-groups">Portfolios (Asset Groups)</a></li>
+</ul></li>
+<li><a href="#available-functions">Available Functions</a><ul>
+<li><a href="#table.stats">table.Stats</a></li>
+<li><a href="#table.capm">table.CAPM</a></li>
+<li><a href="#table.annualizedreturns">table.AnnualizedReturns</a></li>
+<li><a href="#table.correlation">table.Correlation</a></li>
+<li><a href="#table.downsiderisk">table.DownsideRisk</a></li>
+<li><a href="#table.downsideriskratio">table.DownsideRiskRatio</a></li>
+<li><a href="#table.highermoments">table.HigherMoments</a></li>
+<li><a href="#table.informationratio">table.InformationRatio</a></li>
+<li><a href="#table.variability">table.Variability</a></li>
+<li><a href="#var">VaR</a></li>
+<li><a href="#sharperatio">SharpeRatio</a></li>
+</ul></li>
+<li><a href="#customizing-using-the">Customizing using the …</a><ul>
+<li><a href="#customizing-tq_portfolio">Customizing tq_portfolio</a></li>
+<li><a href="#customizing-tq_performance">Customizing tq_performance</a></li>
+</ul></li>
+</ul>
+</div>
+
+<blockquote>
+<p>Tidy analysis of stock and portfolio return performance with <code>PerformanceAnalytics</code></p>
+</blockquote>
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>Financial asset (individual stocks, securities, etc) and portfolio (groups of stocks, securities, etc) performance analysis is a deep field with a wide range of theories and methods for analyzing risk versus reward. The <code>PerformanceAnalytics</code> package consolidates functions to compute many of the most widely used performance metrics. <code>tidquant</code> integrates this functionality so it can be used at scale using the split, apply, combine framework within the <code>tidyverse</code>. Two primary functions integrate the performance analysis functionality:</p>
+<ul>
+<li><code>tq_performance</code> implements the performance analysis functions in a tidy way, enabling scaling analysis using the split, apply, combine framework.</li>
+<li><code>tq_portfolio</code> provides a useful tool set for aggregating a group of individual asset returns into one or many portfolios.</li>
+</ul>
+<p>This vignette aims to cover three aspects of performance analysis:</p>
+<ol style="list-style-type: decimal">
+<li><p>The general workflow to go from start to finish on both an asset and a portfolio level</p></li>
+<li><p>Some of the available techniques to implement once the workflow is implemented</p></li>
+<li><p>How to customize <code>tq_portfolio</code> and <code>tq_performance</code> using the <code>...</code> parameter</p></li>
+</ol>
+</div>
+<div id="key-concepts" class="section level1">
+<h1>Key Concepts</h1>
+<p>An important concept is that performance analysis is based on the statistical properties of <strong>returns</strong> (not prices). As a result, this package uses inputs of <strong>time-based returns as opposed to stock prices</strong>. The arguments change to <code>Ra</code> for the asset returns and <code>Rb</code> for the baseline returns. We’ll go over how to get returns in the <a href="#workflow">Workflow</a> section.</p>
+<p>Another important concept is the <strong>baseline</strong>. The baseline is what you are measuring performance against. A baseline can be anything, but in many cases it’s a representative average of how an investment might perform with little or no effort. Often indexes such as the S&amp;P500 are used for general market performance. Other times more specific Exchange Traded Funds (ETFs) are used such as the <a href="http://www.sectorspdr.com/sectorspdr/sector/xlk/holdings">SPDR Technology ETF (XLK)</a>. The important concept here is that you measure the asset performance (<code>Ra</code>) against the baseline (<code>Rb</code>).</p>
+<p>Now for a quick tutorial to show off the <code>PerformanceAnalytics</code> package integration.</p>
+</div>
+<div id="quick-example" class="section level1">
+<h1>Quick Example</h1>
+<p>One of the most widely used risk to return metrics is the <a href="http://www.investopedia.com/terms/c/capm.asp">Capital Asset Pricing Model (CAPM)</a>. According to Investopedia:</p>
+<blockquote>
+<p>The capital asset pricing model (CAPM) is a model that describes the relationship between systematic risk and expected return for assets, particularly stocks. CAPM is widely used throughout finance for the pricing of risky securities, generating expected returns for assets given the risk of those assets and calculating costs of capital.</p>
+</blockquote>
+<p>We’ll use the <code>PerformanceAnalytics</code> function, <code>table.CAPM</code>, to evaluate the returns of several technology stocks against the SPDR Technology ETF (XLK).</p>
+<p>First, load the <code>tidyquant</code> package.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyquant)</code></pre></div>
+<p>Second, get the stock returns for the stocks we wish to evaluate. We use <code>tq_get</code> to get stock prices from Yahoo Finance, <code>group_by</code> to group the stock prices related to each symbol, and <code>tq_transmute</code> to retrieve period returns in a monthly periodicity using the “adjusted” stock prices (adjusted for stock splits, which can throw off returns, affecting the performance analysis). Review the output and see that there are three groups of symbols indicating the data has been grouped appropriately.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Ra &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="st">&quot;GOOG&quot;</span>, <span class="st">&quot;NFLX&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get  =</span> <span class="st">&quot;stock.prices&quot;</span>,
+           <span class="dt">from =</span> <span class="st">&quot;2010-01-01&quot;</span>,
+           <span class="dt">to   =</span> <span class="st">&quot;2015-12-31&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">group_by</span>(symbol) %&gt;%
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun   =</span> Ad, 
+                 <span class="dt">mutate_fun =</span> periodReturn, 
+                 <span class="dt">period     =</span> <span class="st">&quot;monthly&quot;</span>, 
+                 <span class="dt">col_rename =</span> <span class="st">&quot;Ra&quot;</span>)
+Ra</code></pre></div>
+<pre><code>## Source: local data frame [216 x 3]
+## Groups: symbol [3]
+## 
+##    symbol       date          Ra
+##     &lt;chr&gt;     &lt;date&gt;       &lt;dbl&gt;
+## 1    AAPL 2010-01-29 -0.10256526
+## 2    AAPL 2010-02-26  0.06539619
+## 3    AAPL 2010-03-31  0.14847041
+## 4    AAPL 2010-04-30  0.11102125
+## 5    AAPL 2010-05-28 -0.01612472
+## 6    AAPL 2010-06-30 -0.02082686
+## 7    AAPL 2010-07-30  0.02274081
+## 8    AAPL 2010-08-31 -0.05500481
+## 9    AAPL 2010-09-30  0.16721508
+## 10   AAPL 2010-10-29  0.06072249
+## # ... with 206 more rows</code></pre>
+<p>Next, we get the baseline prices. We’ll use the XLK. Note that there is no need to group because we are just getting one data set.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Rb &lt;-<span class="st"> &quot;XLK&quot;</span> %&gt;%
+<span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get  =</span> <span class="st">&quot;stock.prices&quot;</span>,
+           <span class="dt">from =</span> <span class="st">&quot;2010-01-01&quot;</span>,
+           <span class="dt">to   =</span> <span class="st">&quot;2015-12-31&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun   =</span> Ad, 
+                 <span class="dt">mutate_fun =</span> periodReturn, 
+                 <span class="dt">period     =</span> <span class="st">&quot;monthly&quot;</span>, 
+                 <span class="dt">col_rename =</span> <span class="st">&quot;Rb&quot;</span>)
+Rb</code></pre></div>
+<pre><code>## # A tibble: 72 × 2
+##          date          Rb
+##        &lt;date&gt;       &lt;dbl&gt;
+## 1  2010-01-29 -0.09926949
+## 2  2010-02-26  0.03482834
+## 3  2010-03-31  0.06839788
+## 4  2010-04-30  0.01255406
+## 5  2010-05-28 -0.07481830
+## 6  2010-06-30 -0.05396629
+## 7  2010-07-30  0.07450984
+## 8  2010-08-31 -0.05611310
+## 9  2010-09-30  0.11663639
+## 10 2010-10-29  0.05777586
+## # ... with 62 more rows</code></pre>
+<p>Now, we combine the two data sets using the “date” field using <code>left_join</code> from the <code>dplyr</code> package. Review the results and see that we still have three groups of returns, and columns “Ra” and “Rb” are side-by-side.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb &lt;-<span class="st"> </span><span class="kw">left_join</span>(Ra, Rb, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;date&quot;</span> =<span class="st"> &quot;date&quot;</span>))
+RaRb</code></pre></div>
+<pre><code>## Source: local data frame [216 x 4]
+## Groups: symbol [?]
+## 
+##    symbol       date          Ra          Rb
+##     &lt;chr&gt;     &lt;date&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+## 1    AAPL 2010-01-29 -0.10256526 -0.09926949
+## 2    AAPL 2010-02-26  0.06539619  0.03482834
+## 3    AAPL 2010-03-31  0.14847041  0.06839788
+## 4    AAPL 2010-04-30  0.11102125  0.01255406
+## 5    AAPL 2010-05-28 -0.01612472 -0.07481830
+## 6    AAPL 2010-06-30 -0.02082686 -0.05396629
+## 7    AAPL 2010-07-30  0.02274081  0.07450984
+## 8    AAPL 2010-08-31 -0.05500481 -0.05611310
+## 9    AAPL 2010-09-30  0.16721508  0.11663639
+## 10   AAPL 2010-10-29  0.06072249  0.05777586
+## # ... with 206 more rows</code></pre>
+<p>Finally, we can retrieve the performance metrics using <code>tq_performance()</code>. You can use <code>tq_performance_fun_options()</code> to see the full list of compatible performance functions.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_capm &lt;-<span class="st"> </span>RaRb %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, <span class="dt">Rb =</span> Rb, <span class="dt">performance_fun =</span> table.CAPM)
+RaRb_capm</code></pre></div>
+<pre><code>## Source: local data frame [3 x 13]
+## Groups: symbol [3]
+## 
+##   symbol ActivePremium  Alpha AnnualizedAlpha   Beta `Beta-` `Beta+`
+##    &lt;chr&gt;         &lt;dbl&gt;  &lt;dbl&gt;           &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1   AAPL        0.1176 0.0087          0.1099 1.1229  0.6366  1.0427
+## 2   GOOG        0.0331 0.0028          0.0341 1.1376  1.3598  1.1651
+## 3   NFLX        0.4440 0.0527          0.8514 0.3983 -1.5180  0.0048
+## # ... with 6 more variables: Correlation &lt;dbl&gt;,
+## #   `Correlationp-value` &lt;dbl&gt;, InformationRatio &lt;dbl&gt;, `R-squared` &lt;dbl&gt;,
+## #   TrackingError &lt;dbl&gt;, TreynorRatio &lt;dbl&gt;</code></pre>
+<p>We can quickly isolate attributes, such as alpha, the measure of growth, and beta, the measure of risk.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_capm %&gt;%
+<span class="st">    </span><span class="kw">select</span>(symbol, Alpha, Beta)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 3]
+## Groups: symbol [3]
+## 
+##   symbol  Alpha   Beta
+##    &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1   AAPL 0.0087 1.1229
+## 2   GOOG 0.0028 1.1376
+## 3   NFLX 0.0527 0.3983</code></pre>
+<p>With <code>tidyquant</code> it’s efficient and easy to get the CAPM information! And, that’s just one of 128 available functions to analyze stock and portfolio return performance. Just use <code>tq_performance_fun_options()</code> to see the full list.</p>
+<p><a class="anchor" id="workflow"></a></p>
+</div>
+<div id="workflow" class="section level1">
+<h1>Workflow</h1>
+<p>The general workflow is shown in the diagram below. We’ll step through the workflow first with a group of individual assets (stocks) and then with portfolios of stocks.</p>
+<div class="figure">
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAArYAAAJxCAIAAAA4jGa3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAITJSURBVHhe7b37911VdfffP6hjfJ8xvuP72PFcfBQJFxFyv2GAJJALhBIuoRFbTBFqRZBahdCntomXKiiooUERKiA2aEmpEbk0CiIqiNjW3p7n53xf5G0ns2vvz/mcc/bnc/beZ78zXmMz91xzzbX2PGuuNc/+fBJ+48s/+Nlnn/2xMcYYY0zwjVd+8Rv850+++5IxxhhjTPDFF37qEsEYY4wxJS4RjDHGGFODSwRjjDHG1OASwRhjjDE1uEQwxhhjTA0uEYwxxhhTw6gS4eYHvgkf/vp3qkqoKj/xnReycnzoSPdioIIbv/jwZbf+b43ScLglZNGZdGeqDeHT0bMEoz+vhuSPu2iqovmEpW6jdWrkZ8kfk3ku7QznYHUZY7rJqBLhrEuu+c23r+Iammv+9Ito4H+svSyUH/3md7lFSWsoJ4LDoBgoE/4Fe6Ju6VVYzgCOrg2/86G4XXQmLU51UojzBXtuLJSBFkMBT3fR73+ssJyUYtzqxx1NC5GDjP34HUdQu9SXBK32JXGbH9wYY5acUSVCdS/jdNS+CVEQaDPFjM09LCdCAy1UIlzx8c/IPwNp329rZ9Tj53lytnHLDENT0JdNnEdgqlDoA5UIGCAIPVrDp6uOW/24F0Uz0TT40q/pNfz2jwc9HcRSXxK02vMjT82iy88YY5qwyA8atEXy1Vka7cW6xpdpHZzVLY/uo7d4WlVVaNNks8utQXVL1QSqJ9OiIzZEx8ZC8wz0Tl7yQlMdAX2bHG8afXQcqgaLnlvVZ//Ed17Q01UDsugEmKSesTruiJno0aqV6JhBXnRWAQseh5oG1xEvV0CzKpRCIxati4a6yjifaSBLhdcYY5qwyK8raovUy2Q2HW1t3OY9TjZRMei9sZRhryZgf0TDoaIjBxm32jTjpEFAr6bClTZrafKRwBCFmQ4SPHALca7oNjZ9viBKk1trDxu6yL+GkE1hz3B6LtnErDCIgfIJJ03ERzbqjp9ibgpFzBzUGqPn7oAcnjkzZJxtEFT84SEr8xCBnis+o6ykS2gW+iAg5hDvoqrj6hmzRn31siH0jBtlK6hJcYhRENQ6ekHWgj2W+gjUKw8HGoJWRUBu44OAHAe1YqwmzKRB1scBC62K/HmpV568LGPcEYMaY8wULFIixF6JrK0Nme1MOxEnYsixh2rTRMmGxWGg1tjr5UQGWEofnnN3bfHhQQYqRKSJnTGOHITYJbnq17h0q70Sn7JEqb56QLkN4/CciZlwZSZ6u1vYx+TR5P1aBoWxvqqi1PGw/zMPyJgpYcNV9lxlL+dcdQvZYXwQzBNNxERhzA/OxDCQsbzlAxhNRCNTHT1Or/hwY1CE6gcRcwD8QHVcqM4EM2kUGfS6jSWnLopDjKIHB9ljU7sgq0QktWYkayaBlFzRx5S41UdJR25BoY5W9UWTb+VKk4e8KmIm+OFxuKpJa6/oq0HVihMmpluSVMbGGDMpi5QI2p3ZaJC102k/0t5Ea2xMso/tLzZobXmgDVcGEPt7KPEfm2l0j9YYAjS6ZhL+Y9+MF+Da1rWx6kiITZarhpAck0EJC/2KuKbHNTR5JnEwhLfQyCBGV6s28Tirqs5pyvajR2fOzFxBrrbShAxhgJ7bcF7cVtHoshFxq0No0Q8i5qApieq4VU12IhSZCIUM5DZGQeA2vOkWYp45VpniY4pbHf+imFIxKAFBoOZTa4xYTEmtI1ZFuKWLgqyiXJagaejBwy3PJRsNZ4wxU7NIicCWpE2K/U77kbYq7Wvs0SHIXgdJ3IrajSwbSBkU3atdFnWYjxA9ggw0Pe3CdNQRXvQdQfXpFp1JNogvhaohslxYisLh6NEFT8Qngo2aojUOmzg2dG6F82KsKhpdNgINkdR6gFoP+YOozgGqvQpNba9cuQICt7VPqmlrAkG2r6JWZo4HiJVPYAub7EGamCSfNZMkPgytpmgtHnD0qtD8BU3MKlc2MtY0wo8sgdHDjzHGTMEiJQJo39FWhSxlHDDSx+6pW666FfKgjUz7Y2EgpfTZOLfG0FB1mFtBRUCMollhiRmoaECpAyxv/aORn3ALi84kG4BGZHrV6qSwhMLh6NHjhOCKf5S5lcMJGeIMkyacF2NVqY5eUOshfxDFiKLaq9BUZw5F9BC4rX3S2mln+wJ5riVPsupBGg0aVQXjsrr0RNFaPCCMWBVAqYEfORSxYqWMabAGaEKZjeNlhjHGTMriJYL2L8EuFvq8DcX2rSOBpnhXT5Ms9e1H+2OxZedNM74gst9VW4UcameMPT1/YZJBzFY+dVpIKQNd43vworD/yk9oqjNBEzNnd0YTBlCUVqEHaYh2aBR5jLPBQqNzzcZFK58CMsQnJU3Yx8R0W6U6esGiH0QxoqiOWzxIlD45VrHMdJsNiidddEEW6DExQMjIZ3TJI2aNBpV9LL9iSsUDwkKrovjhEXKxJPI0WMYYREGAT7XiUxpjjJmUxUuE2Poh76pROuTNLjZ0NiaMOZuLfUr7Y7FtFUoEbuOwrG6p8hk7qexRMhyDxm2c/TEr0AGmk0NmshHcQnguiJkgyI/chr1umQDTAN1mg7ABhCgmAHvpmRt7fXWGcdphGacFyHnMjUMCt9FdrdjrFkHepAnnYUAZRBilzCiqXAt9ZvQHUYwoquPGg4SNKjPZ8HTxaAwhA4y5rX3SRRdkRkc1hOdAzxK98ohZo0HDmAcH3UZr9QFB3aWPVZFLTPqCXEVq5GkoSmi0POibW40xZgoWLxFik+Wa9exEKCH2TcE+G3uiiB0NtD8WXQolu6pG1E6t1jx6sfcxwzgvBa60HQeaUjiJw4CNNWyg8FwQW3bYFPYMKo3gMNO42SGyWnNYRBx+gJ+oCdQaYRF0z87jYwIEmtSKE1qZmJoiLNKE89ydjlJm5K22KRj9QRQjiuq4ik9hxscUZmrNp7iaFIfqk45ekBlNvhhaUFuob21pGBoNGsezwK1uF1rPoZRxoc+ugGdRyQVqimnwWRfGCz2pMcaMw+IlArDxQWxMhZ5dvtADenYuNtail96dLqpEDo1aIVp1G6+OBcYMx6DZMmCS6PMQchK3WVl4zuCBIdjrZVNrTys2GotrYRDViQ6bgvCPjIBZcZaMdq5WeUZPqyxBU5VcqyFEBLD6kQmNVdtUgM1CH0QxoijG1bRrzfLTZWQfcajtjoa+Cz2dUMeFDNSqUbKcW+NWD1X7SdU+4OhVgVKTL3rJT55GRInriCc1xphxGKtEMEuCNnR9o9U35tGw0VdLBDNnTLoqjDFmZrhEmB35JfD+MX7P3CXCEJh0VRhjzMxwiTA79OYZal8mV9HrZSj0Zp6YdFUYY8zMcIlgjDHGmBpcIhhjjDGmBpcIxhhjjKnBJYIxxhhjanCJYIwxxpgaXCIYY4wxpgaXCMYMlD898aPPP/+TMTn0zMtFd2PM3OMSwQyFTz/74+LYy3zlB68uCV976edf+9HS8/UfvT6XPPRy+aRLwpEflp/LdNzzQrlOgs8++0qxwIyZP1wimBYY/f31/pM/K3bqzIgzmPOmOIGMaYWHKoszUyzpzP0nXy3SIeN3OWbGuEQwb/IXz75SbEZBsYVljr74arH3Zb7+crlvGmOWiYdf/kWRgJkHXxpVl3zx739aZL343HN+UzJ0XCL0ns9WTvci/4/+sDzIv/7yL4r9xRhjFuWhH71ebCZ8Tyg2nGrBUWxZpke4RGgTivScSPe8UDndX3ytSEhStEhaY4zpEy9X64zyJccXKr8FUmyeZja4RJiSYvnWne7ld3ef7qZTPPzyL775k1+OySM/9psn0yGqP1ip/jCF463YqP/0xI+KndyMZrglQl43Xzn5nxYWJW2x+Pxj9Tng0VfeKI69zHde+8cl4cQv/nk5+Pt//Ne55HtvlE+6JPzNq+XnMh1P/LRcJ8FjP3mjWGCmhyxeZ+STYoAVxpyUCJ965q2/z8Yjxaf7l/nH8C/51927wujvr8d+9g/FTp357i9+VZwHwTNvzO1RavrF90eWPsWSzjz56j8U6ZDxu5zukP++bv6FjPtP/iwOo0/3/2ztaIkQIYYj/xF6yH/hrfjATBP4SlRsRkGxhWWO//yfir0v8/w//EuxbxpjlokX/uFfigTMPP36PxXJm1noZcnjr/hNydKRfwPjP7+ryOdd115UzKJEOPTMy/H8X0g/sz+SvuL75/RTUz3di/x/qvL2+7lf+vA2xkzMc5VChO8JxYZTFByuM6amCy8qpikR8u/hf/k/Jg0Ppq/4PvLHgeTJuURqFclW/Zru090Y02uqdUb1Jce3flr+wKXYPE0NC7yoONLgRcWbJcLnnv11z4W+4kM5lcFTLN+xTne/eDfGmKXg+anqjIf9T8KUvHXKH33xtSgA4kXFl/7+Z79x7ws/qXSbf/K6KRYWS61YfP6xujHGzBnVX+B4uvJzk3xSDLDCoG6YhxLhGz9+6zfk/zr9Pnz+Mfz3/OvuxhhjloJn0l9ayb+Qcexnb726eLT/v4fR0RIhQgwRevi79P3e7+2NMcb0gvyTke/+4lf5XMvnXddeVMyiRPir9BX/Wz996yv+37zqr/jGGGNMDflFxVOppPjr9KLiG8v8T2VMUyLk38P/dvpXzJ5Ov6DnX7w3xhhjZkb+qyJ/959/eTOObCgO9NG8WSJ88YWfqOdCX/GhmIrpLE/87Xe/dOQr991///++++C1l23fseaCfnHDb1/J5OGvjn37xI9fLZ7OmLnk+6+9QeZq5f/u1VcVSdF92Gr+6CMf0fx5EB6neEDTTfK/gF77ouJrL732G18++bOim+kdD3/zCVJ014Y1W9auO+/dq889Z+U5561bsW7bik27+8XZF2xm8rB59bpL162mYvjK0QddK5i5hKP0wa8//JFbbr5szWoyVyv/nPM3nrVxV5EXXWfdNqat+fMgPA4PxaO5Vug73/jxL1wi9BuKA0r4DavW9XJnWYyz11y88j1rdm7a+Oef/KS3GzM3PP+Lf7r/gSNXbLlw9flrKYuLZT8H8FA8Gg/IY/KwxeObvuASocc8dfJFvmRTHPTxbcFEUPqcd/6G09vNXxZBMKZ3PHzs21dtvXjNynUrNu4olvq8sXEHj8nDPvG33y2CYHqBS4S+wi6z66ItfMkuc3KO2bhjw7qNn/jjj/tLiekv997/5YvXbzxr3aXl8p5feNgta9e5vu8jLhF6iXaZ+f8KUsfKNRfeuO86/9DB9A5K29v/8A/Xrd5YLOmBoPq+iInpOC4R+sdXH31085oNRfoNirNXbaFK8LsE0y84IClwi8U8KFau2vCnf/InRVhMl3GJ0DOOfe/ZrRs3z9+vJU4KW62/kZgece/9Xx7s+4MMX2/4klMEx3QWlwh94sSPX7165465/+XEMWHDZdstQmRMB3nib7/ryl4QBELBV50iRKabuEToE3/+yU+ed/6gf8SQYa/ZuWmj/8kE031u+O0rh/WbxSMhFASkCJHpJqdLhB/87OQ//ZvpOH/z/MlL1q0vkm3gUDD9+Z99sgiUMZ3ia48+NvBfHqqyefW6bzz5nSJQpoO4ROgNt/3BzXP5T6w04ayNu3Zt2njildeKWBnTEV5441d7t14yqL/iOBbrtl2z41KCU4TLdA2XCP2AU/DSdWvKNGuVbdccuOKGDxXK2bPy/HVf/NKXinAZ0xEe+5vj712zrli0BrasXffE0yeKcJmu4RKhH3ztG4+tW7m2yLHxOXb8xKuvvxE8e/LFD9x2sLBZlA/feYiyQDIeTp3+gzIMCg7de4SxVEYgMIfculSctfqiG/ddW4TLmI7wp3ff/eb/LaWybsckcjYYkXGTQm7ikDxFztk6G85+95pPHTpUhMt0DZcI/eBjH7ntnPOn/xtTnOjaC+Chx45xtHO7cff+wmwEdKRX7CB0x+foDSV3Qf7EoXty6xJy6bo1/lmD6SZXbb2oyU8ZSLTIXNDtRJk7AnKTDMUt8r4P3oFwwda92WB5Wbft2h3bi3CZruESoR803GhUIsStqoQ44Ple8sWjj0D+gsJ+waH+gdsOYrztmgPHjp+gCzbaSmLnkrGUWOY6AM1CJQIyxijpGMqp2bBq3SNPfKuImDGtc/wHL21b1+inDGQZyRu3JGCRueRRkXdKRhKWay4m0CvN4w3iQiUC3oCsl31OUo2IZbxQbIKL++7jEqEf7FhzQZFdE1GUCNzGRkPCI+vIR+BWNtIILNXKld1Bsm6xZNeQLLexo2HJrUZRq/RhJj+5LpmOle9Zc+TBrxYRM6Z1nnj6xJa1S1AikETAsZ3zSPnFrRJKP8jjOA8lxqAqoUhS+qLEZ8g5W6OvjMOJ9opozaXDdFyybv3fPH+yCJrpFC4ResDTL72yfd30v4gASnWuSm/J6PkqgBxlgV4V6PuBzGIXyDuIWuVBMuj7h8z0nSZ3CXuawoAu6ovcBP9Q03SThr9CBGQH+ZL/8LVeTeSm8giU1wiRgBzqJHJO2Eg00lzy6BJBMsNJj0OU2iuUuSpKmuC/+th9XCL0gCefee7iZq8ryXnynKuIXUb7QnyP11cNbRlsAdpHRN5B1IofBO0yUWRoH1FT7hJKrsj6UgL6XhJup+Ps92y46+MfK4JmTOt8+YEj5717dbFcJ0KJQ4II5YsyFCgFlFAouaJRAuoWwlK3GIe9HIa3nK2yUcfQyzg7CZupoX6iiiqCZjqFS4Qe0PwfTco5n8nf6YvbYgvIO4ha8Ymg9xDxfSLf5i5hn19UVG+nwyWC6SZHHvzqyvc0+rvKkThC57Q0SmqylfSRLBu+4lPrk1loMM7pTEoGmMkbMgZckZWt2VvoZYxbdReymRqXCN3HJUIPaP6PIuScz8SXfgSQmb7iI+Qu2ik+cNtB/UBBvdSkXvqRhL7l6LWEumjTCXu9qNBbB7pkP1Nz7jkr7//S/UXQjGmdR5741oZVS/a7COSL8ktvASN3lMWATNIhKBnJVox1kCtJcUL+cswDSp36MsjZKmOEQo+SJtUWCMriJvifRug+LhH6wa4Na5r8P2ByzhdwZtMU6HQH3YYZmw47BZpiewL2C27VyjU2jurmIr22uegigyasPn/tgw8/XETMmNZp/iNCpUn+E3mkN3AYBCij0A9U8StJA6U5SjyMXyIUe0XzzN22bt3xH7xUBM10CpcI/eD63TvPWru1SLDx2TbyX0JkEyH5QbuJwL7oQpWgt5pqLX46kFuFvm1ILuyRMdZ3nea8d826x/7meBExY1qn+fs/pWFQm3Skbc41QOZor+ZX2IcGS70XzB4YJeTCc+wVoZma0/96+oZnf/7LImimU7hE6AefOnTo7Hd36x9g7ghsNLs3rPM/9m66yY37rj1r9UXFojVw9qotN93wviJcpmu4ROgHzf+C9bxyzvkbP/aR24pwGdMRvvilL60835lbg/85k17gEqEf8C15z5bNKzbuKNLM+J9WNF2m+T+wOK/4FxF6gUuE3vCZz352zZpNRZoNHf8vZU3n8f/GvQoBISxFoEwHcYnQG/w/nq/if53NdJ/m/67JnHHWxl2Xbt7sf3q5F7hE6BNfeuCBNSv90vLXnL3m4huuurIIkTEdxC8SMuedv+HP/+yTRYhMN3GJ0DNu/eBN563xL0jvXrFxx66LtvhnmaYXPPvzX16zY8eKddvKZTw83qzs9/62fzjYF1wi9AxSiwQjzYrEGxrvXbvh60/8dREcYzoL5SxF7dB/43jjjt1btjz90itFcExncYnQP0iwK7dtbfIvKfWdDWvW/8U99xRhMabjUNResn7jcKuEjTu2btjof3G5X7hE6CVUCfv2XP7utcN7l7Bxx5a16770wNEiIMb0Ag7IXRdtGWB9f/aai3dv2fLkM88VATEdxyVCX3n257+85cbfe/O3FwfzpeSc8zdeseW9/hZies3xH7xEfX/e+Rua/F9XegSPycO+7+q9/vlCH3GJ0G++9MADe7a8d+XK9fO93Zx9weZL1q3/2EduO/HKa0UEjOkd1Pd//mef3LVp49nv2VAs9TmDB+QxeVj/vxh6ikuE3kPufe7zn9+1Yc3m1evOOW/dPP3DCVQGq89fe+m6Nbf9wc3+W9RmzqDevevjH7ts7eoNq9adc/7GuanyeRAeh4fi0XhAl/W9xiXC/PCNJ7/zp3fffdXWi3asuWDbunVb1q7bvm4tcr9gzsxcMpXBgw8/7C3GzDGU+I888a2PfeQ2qnzW/MXrepy2l6xbj8yD8Dg8lN8czAEuEeaT4z946YmnT/Txh39M279tYAbLk888x/rv3T8bwFbDtP2qb/5wiWCMMcaYGlwiGGOMMaYGlwjGGGOMqcElgjHGGGNqcIlgjDHGmBpcIhhjjDGmBpcIxhhjjKnBJYIxxhhjanCJYIwxxpgaXCIYY4wxpgaXCMYYY4ypwSWCMcYYY2pwiWCMMcaYGlwiGGOMMaYGlwjGGGOMqcElgjHGGGNqcIlgjDHGmBpcIhhjjDGmBpcIxhhjjKnBJYIxxhhjanCJYIwxxpgaXCIYY4wxpoZ+lwhXHrh95barjRkOrPkiC3qH09YMjf6mbb9LBEK/YtNuY4YDa77Igt7htDVDo79p6xLBmD7hEsGY3uESoR2815ih4RLBmN7hEqEdvNeYoeESwZje4RKhHbzXmKHhEsGY3uESoR2815ih4RLBmN7hEqEdvNeYoeESwZje4RKhHbzXmKHhEsGY3uESoR26v9fs++Adh+49AtuuOVA0NQSHuK0qr7jhQ4VyBM2np2kAroqmSWHmI6ZBa6ZoFRds3btQ09zgEmEJ2bh7/ycO3cPq/fCdh4qm5uA5kkKJGYyZbg2TS+mQKQymAz+af8N0i1mJojWgiYEKZe9widAOHS8Rjh0/cerUqVdffwMQvnj0EemV9mE2Hc+efBG3hbIYaAQkOR7y9B567Fhhk6mdM5rsAYfSf+C2gzx7mI0JTsJDFQ0RY3Flfy9sNJ8R280c4BJhqeDc1XIqVpRSI1tOATUHPiNlcq5puNHpBsXuMXpKtRmX03McJ2OCK/lpmG6aUsyNazWjcU5ThLG/uERohy6XCGw0LG6d1lTBJBU5oCaEJouerS12nKzXroSy0Nei+ejLE9PTfjTiu1TtnFHGpsOWhwd93UEZ+vHJ3qpEq775MVZ1k6VpvusDcImwVLDmWVQ6lrSilK2sc/RhNgX4wRt/ImVYuuGTEVm6MXQt8hC1vm5HVBW1Gcfo9IqM0DM2f1+SM7FJumU/C2U0MMSIQPUFlwjt0P0SgRzQqckq19u5+HKgql/7kbJF+YYeWfsXVFOaVnKJK61Zry7aF6IXPlEWmZzLlyBs+EaioUF+ijkHYaMclgdNQPbcMlY8S+4eSh5EmpD1aApXkC2paeIWQRsuKJiaBlf5kYE6VqPN5KWB4um6iUuEpYKPm1XKktBKi2XDStDqRaYpVpHyRQbIUlbXTBjIuZRyEjZasZLxUHVCq5Z3oOmJWPDqWGRcIH101DGs7SgSASI78BZKNgEpi7EAWXOTE/zrkcOSVm0I1Z0kI0vJC2W0PCuMyBhIH3OOB6FJT5o/MoSOlBcuEdqhyyUCsI5PZ+6vD1clpxY9OwhLGQ2tpK5WP2DAFSUGkRLFKtetmrJSbpE1nPRKGG2CQfF9goGEfuZHd2bOrRIVz8hyXvjR+aoHZBQ51CsToBe3miebhYw1MW1GKLWJKOHlREGr3VCAHQEwU9ykl0wXmpA1rrwh04RMa220adLoGDArRaDLuERYKljMWjz8QdA5BKxzbrWKtFC1ijBjkSAjsHhYTlJq/RTILHxqxeIqoK+a6F54YGLZLa6Esg+fdM+5U2RcoHSIEcOn7JGx50oTOa40QUMrT62ZV8dCiUD38K+5IWgCiom6q0seBWWABrAE+tJLMUEpOaId3mII5IUymskj8BQokbXrto5LhHboeIkAZLUSQPmgJEHQoueKzJaEoM0IAxmru3KgdpVnM8AJlkoqNRUJmVEaKyGxxxiUitwikNLI4RMzDDTnAm0umnwYMwFAkLfoGDsFVxlk5IE/eCuaQK1cBXMLfbhiIGwYtBg3WtURIUcbS67MrSO7yWhcIiwtrFgtS5YBAhqtE7VqdaGREoNiadEayy9TNaO7/IBui4I7UIkQWYAlaJVym12pSUq1ZjCglxY84JBbZSiw2uUBJbOlCEDgFj/aGaB2LNkgoFTf/LAhSyBiyHknCfCDUm6hNqMLbxoi4FYdESKjNRYymmLEFnGJ0A5dLhHIQNZo7AIsVhauco/lq7WuJc41UIGPUr2UGLULPZsBMpb5T6RcFe1B2hBFbWILHZwx54CpYha7iQ5+7WvMTUleJLayl9GxjF0g0CNoI6ue1rVdIOsZiL4MWowbrRhzDXgE9MwKDxq9O3vKQrhEWCr43HMKsAAAQesklCzIWDCs9mJpaeVIzow2q12fGYwLt9xqncuV5iOkVGuGJkZhrNBUnRCBsKFK4GHRoynMguyEW/XNjxOyhOpOEoSfgqwvvCGEGXBbTE8ZzcekmWsCuUtbuERoh46XCFqgnJ3cKhXjuNX5zVJGSWYio2GJI7C4UeqsUq/abxvKAckaCw8kkqBJreRMZE5GJzFNTA//GohbVQ+aHhNDUN+YcwYl09D09CyyQQnZBicgWQbIDC2lCotoDU0mWguynvkzBx5fejkhOMg0VaPN6Dw4AhqVOJK7jEuEpUKLUOtBi0QLiTWAHMteSpYHSwUznVUoMVCiVdcqyCyWk8ZCKZRuLEiauErI0BEDzEguhtatZsJwMT0MtFHQpNaMemGgQbX+6Y4sPTYkAjIabmkKtwyBUDsWGo0l/3KOoIcNeaGdJAg/BVmfPaNXqEdkNAJXpooAtWFpBZcI7dDlEgFYqaxgVjMgxMLVrZY7K5hbrmiUTpKrvQrUUbIyma0kWpX52h0QuEZTQC8NxJU/3Oqw17RjYjKWmeYc4F96XcM4PIdNoJlwrSoR5IEudNd+FERrQdazO9BR3vK4YYCgW8wU7fywoAh0GZcIS4UWoRaqrlo5Onh0W6xeUgylWoPaNSMzHVqgJZf/5DUZcob1iXMsdcVGZyHDxdAgZc64QOmQ/2BAd1XDoKHRM9twK422ndqxZBP+6ZsfNsu1O0lQq4Ssz97GzOgwU1OxjbSFS4R26HiJAOSYviUghJIUzRrSIN9qZVNxs7hpkrIK9tGKULVEo7J9tBNGoSrP05OeKeWOxZyzHg/kcDGK3EqWTdwGaIBW3eIh/Gd5IY3Iep43T0PjZg1wWzwIMprq9LqJS4Slhc+d1Vt8+tyyciQXq5f1o0OLZYM+Vm8VLON7M8bcBsXyy7cZnGsmdCmapM+j50kKpUMmmnJqcI154qGa5sVY2Msgp1t2kmUsi50kCD8FhT57y9MOuC3mLLM859ZxidAO3S8RpkAlQqE0RrhEaBcOpPhea8yYuERoh7ksER567FjxPt+YwCVCu/BtlSKer62F3pgRuERoh7ksEYwZgUsEY3qHS4R28F5jhoZLBGN6h0uEdvBeY4aGSwRjeodLhHbwXmOGhksEY3qHS4R28F5jhoZLBGN6h0uEdvBeY4aGSwRjeodLhHbwXmOGhksEY3pHv0uEr/zgZz/41b/1Ee81Zmiw5oss6B1OWzM0+pu2LhGM6RMuEYzpHS4R2sF7jRkaLhGM6R0uEdrBe40ZGi4RjOkdLhHawXuNGRouEYzpHS4R2sF7jRkaLhGM6R0uEdrBe40ZGi4RjOkdLhHawXuNGRouEYzpHS4R2sF7jRkaLhGM6R0uEdrBe40ZGi4RjOkdLhHawXvNkrBx9/5Cs7Qst/9B4RLBBM7cvuASoR281zTnA7cdfPX1NwrlErLc/oeGSwQjljuzvnj0kWdPvlgozXS4RGgH7zXNYSNgo7nihg/plu8NyNuuOXDB1r2hrGUhS2SI7x+Ff9MQlwhGTJ252ChDESD0KKMjTqgPYLQrMyYuEdrBe01DyH92mVOnTmmv0a1gd+Ba2Af6BlO1PHb8ROg/fOehwn90N1PjEsHA1JlLYaFeYYySckG9BHXDoXuPYCbL3N1Mh0uEdvBe0xz2gtgFtE2w3eg7xIjdQa2YZUtqAvYUqgfkhx47JmX2b5rjEsGI6TKXJup4BFUVGCMrW5XOYUCTWk1zXCK0g/ea5uSNJraMQl+l1hKBEkE7CxpkfR0Z4cdMiksEI6bIXMoCshID3SpVJciDBHWPVtMclwjt4L2mOQttNPpJp+Qq2bJ4YbDvg3ewE4lQytI0xyWCEVNkblEiRC+uEGmrzJVSlqYhLhHawXtNc7TR5J8OIMevGmTLDJbaa9RdlvpBwycO3YN87PgJva7M/k1zXCIYMV3mcurTSqoqhVUEqDvFvX4pgSIjLFUumIa4RGgH7zXNiT2FvUAbBBsHt9o1CuOMfjORa/7WIlmwDaHJ/mVjmuASwYjpMhdjnf2kKgJIr3QGNPprDpHLMjBNcInQDt5rlgq2mELWd5RQFnzi0D0YXLB1L3J1S8p/k0pk/6YJLhFMZtLMpVXv+QCzKBFEkadO26XCJUI7eK9ZPmKj4euFvm0E1AR8w9BbSkDgNvc1y4dLBDMaZS5leiRsQHHANWfuB/wTwJngEqEdvNcsH/s+eAd7DQLXAn0LkQHoBwpmNrhEMKNRYl6wda/SM0MTBiRsvjUzwCVCO3ivMUPDJYIxvcMlQjt4rzFDwyWCMb3DJUI7zM1eU/39vmVCv2CYhblnzv4mhUuETjGz1TWchA1mtivOAJcI7TAfe82+D94x4jeQF+ITh+6ZNIUYKP6tAshNGcwm/fUCNkoeYYTPRWnuQejvbiFw1cM+e/LF5m67g0uE7sC6YnUVykWZ4nd7GUi9WNIjfoFgij0Bz2RKk0KnuQehhM37AMLc/LaES4R2mI+9hsR46LFjhXI0JNKpU6cmTUsG0tk/OqUjRcdH85m0V0a/XdV8R9DvbCOwpapE4JF5ojDoOy4RugPratJiWgdqoVwUJaz+ksJCrxOm2xOYzxS9MuQsTpq/5CBh2QbxQ9rqF6K5VQrPAS4R2mEO9pqNu/eT/3E0kmzsAsDWw1XfCWiVMioJZBKbq3JJ6HTM5FZAo+2JKzIC/klCGTM0GobAMwYai+khyCD//aiYp77c5BIBh5C3DG1tPJHGkhngGfCAUjYx4cI/VIMAMbdQMopkrrF98ziTbuWdxSVCR2BFKZuEliIrnKXLVcpi0bLI6aLMVWoL9c3kVlDC5iwjGcNYiYmQ9wSGVrpxrR1LGYE3euFZCah5BriiO5bqEjtAPCZo24khCv8gA9DMAWM6Fko6qgtK/XsMPAIPPh//NoNLhHaYg72G/Ik0IENIV1KFtNFWQuqqhgglqYUlByetXMmi7EpZF6CJVhkoIbmqCRscMgr+NQ3NR5mPATJgj4YRtUfE6BJojc0LP2EWqBU/2MtA02B05JhD6Kv+a4OgORMBzVmDRkByZKLLHOASoSOwolhXkrWqtWJRSl9dtPqKjIwm19DYKGGDokTAnkVOFwQWtjwzFlkje2yULFwxAGT02HPFmC7YSEapCWOGLCGbBWoNP7JEjyXwLHo69MwEfdW/9jRFBoEmmdGXLpjFoPIM8ex6TG1EfcclQjvMwV5DzpAGkvOmo9Qii2TA+RcZRStypGXADoImk7ehWvAGZC/DhTEaZTLJyShx3qMnt7MAjEJKc8USfewCGbUyim6juzYUjSsb9a36rw0C4aILt8yz2NoK8BYO+45LhI6QF1VesbE+axetlLIMlEGZwqAAe1Y+I+It0pNeKNVXO4kyS8ZkXwhhjwEeUGIM1XHVqsNbBzYaZIR4XtnQt9Y/ZvIMyOql4Yptp5YYse+4RGiHOSsRlE6SySglnjJQ2SW0oahVxkKW+c+i2aW8ZVCMucZXBHWUwxhFljJAllJoPnJSNEVrTCb8hFDYVJ1oJigDgoBeW6HGDf9V1KVQ9hSXCB0hL6q8YlmHWtW1izZaMzRhmf9E0i0Ehyt+AGO6o1EGqSOaPAoymiINhSYpP3G6F60xGczIOAkaNNvU+tdMuAp1x1J6DR3vD6rQWjjsKS4R2mHOSgR91VBCIivxlIE6EfWNBEHZKDmgHkeTGV2hAxuN8hPPkY0h6E2GXvThCn1sEIAAaJgqY2GprwUIXNUFPYJaMZOSvmwQyNomEMImJlD4rw0CM9fcuA2ftdA0orVfuEToCHlRIbACWdsgGWXtokUZazvAhtZMYVDAKHpzBhpFvSRgkHcShkYve5RKQ2TmiVLdsVEX9LRqPghqVZaRbshokLGMZ48J1PqPaADbgqJRu+3UMrq1R7hEaIc52Gt0pipzlGOC1MqJxy0HMEKU4bRyq+ydGiUwnklsHJKxKNGAUl3TkBlEhmt0tXKr+SiZmSFNCLF3xGzlB1kD6RYBsoeq/9ogINPKPCVwlasqdBnR2i9cInQEnamSdQxzq1Uqfe2iVVKgVCpNR3jGm4ZDk/cEGchGV3VUmksJzCGSVLW7JikDBLXKg7rgGb008hkekKv+FRncqgljzGRAWKTUblCF7rSOeMfQI1witMN87DVkC6egZCVtHLpKPNISJWmWCwJkNM3zR35I13BFxuaxZMAEtDsIjOkCSm/2FwzkQY/AlVsEmvQsGOOKTSF2BG4xkJw9QOEfaoNAoHAIEcAq2i7Dc99xidARWFGsq0gKrXZd0UtZu2hZ1axYFnxopiA8c405KFW11GuHBqUMTWQot5qwJkOuSY7E5KojXMmoLtKH2+wBCv8y0CPnJNVU0Wu2tWAfkew7LhHaYT72GpKHbEEgr0gJ0oYzFWXegHqNSgSertDPBjaj+MYzB7hE6A6sK52U5C/ZypHGUkc5N+uNnI0vKrOHqLINFsqe4hKhHeZjr6EOiGpAe43IRXevYYvhcdoqEdiv5yaS4BKhO7CuVA2oMlDaIrR1pi45+tLSyuPkXXEOcInQDnOz1xgzJi4RjOkdLhHawXuNGRouEYzpHS4R2sF7jRkaLhGM6R0uEdrBe40ZGi4RjOkdvS8Rfvirf+sj3mvM0GDNF1nQO5y2Zmj0N21dIhjTJ1wiGNM7XCK0g/caMzRcIhjTO1witIP3mlY4c+Pud23YWSjNbHCJYKbmzI27oFCaGeASoR227fsgoTcz5n+uvOS/nrP5/Ev2FnozA1jzRRb0DqdtW7zt3AuhUJoZ0N+07XeJYFph9/tv3XTFDU+97GVjTJ8gbaFQGjMClwhmYlwiGNNHXCKYSXGJYCbGJYIxfcQlgpkUlwhmYlwiGNNHXCKYSXGJYCbGJYIxfcQlgpkUlwhmYlwiGNNHXCKYSXGJYCbGJYIxfcQlgpkUlwhmYlwiGNNHXCKYSXGJYCbGJYIxfcQlgpkUlwhmYlwiGNNHXCKYSXGJYCbGJYIxfcQlgpkUlwhmYlwiGNNHXCKYSXGJYCbGJYIxfcQlgpkUlwhmcV5441eX7b9F+wv89/Mvftu5F67deX1oHjj2dNHFGNM6Tzz/YiQp6P/0GLdbrvq97/7k9aKLMRmXCGYsPvXgN2JnefuqbWw063f+jm6v/uDHCmNjTEe46c7Dkbn/7T0XQdx+/C++XBgbU+ASwYxFfpFAcbD60utio/ErBGM6S36RsHbn9fHyz68QzDi4RDDjkl8kBH6FYEzHyS8SAr9CMOPgEsGMS/EbCcKvEIzpOMVvJIBfIZgxcYlgJqB4keBXCMb0guJFgl8hmDFxiWAmoHiR4FcIxvSC/CLBrxDM+LhEMJMRLxL8CsGYHhEvEvwKwYyPSwQzGfEiwa8QjOkRepHgVwhmIlwimIn51IPf8CsEY3rHTXce9isEMxH9LhF++/dvX7ntajNjLti695z3XlEozWxgzRdZ0Ductm3x7i173nPxVYXSzID+pm2/SwRCv2LTbmOGA2u+yILe4bQ1Q6O/aesSwZg+4RLBmN7hEqEdvNeYoeESwZje4RKhHbzXmKHhEsGY3uESoR2815ih4RLBmN7hEqEdvNeYoeESwZje4RKhHbzXmKHhEsGY3uESoR2815ih4RLBmN7hEqEd2tprtl1z4NC9R2DfB+8ompqwcff+K274EBT6C7buRUlroS+QWUFhsyR84tA9PHuhnCXEfwaP2U1cIjSBhFXmsoSKpiZUMzdWZqGvpbqeobBpDpPkwUneQj9Limdc2k+hy7hEaIdW9hrS7NSpU6++/gYgPHvyRek/cNvBY8dPhNmkfPjOQ/IpckGA2zzQQjAx9cWYP5LJw8KsITGZJfesvbtQ1sLo8YB63tHBeeixY0s+27ZwiTA1WrqxZr549BHpx194tVQzl8VWrE+uI45DJpYtRWHTHLlddBuZgvHziwnkj4A/8SnUMjeZ2/cS4dUXf/XvfYS4n7Vp94xRmklmBbPK+WqCjDL0U6C0Wbl1L97wefjeI9Jv2r0/Mmr7NQfCfgR5hkvO8jnHczz1aJgAxpKJT/4Uquw5vV9zLfQ9hTVfZEHvaCVtyR2WwX1HH0Emy/ISGn/h1UJ3yJmrJRc+D9x2EANWaXSppei1tMi5Hn9pmSi/iEPsHnwiCl20FkzkueP0N21dIkyMlvWtdx7icOJWK5jEZjXzRytem0JYygyZFJWS7w0oMxioAlBNEDuFPOOEa95l8FB1IuieT3HMuNWeyBA41BxADjU3ZCmx1KPFbEGbC65OP+Vbjym3YQDI4ap4avTRpLAE8oxeD1XrOVBT3EaIkKuRR5BnzPTs8ZGFjBATkz7mHEEOjVqlnD0uEaZDJQIrR6UkK1zpViw8ffqAZV4n8elXP3rMisxFg0+EMJBet1nOFL2AKTENrXaGiCUKWtsYI1fXKoI0QEagQah9TJArTVKusJFBjHjnoXs0DdDDBmjkWTOves6gxE/cyqd2m+iIksnIODyrVfqQa+c8TjRmj0uEdmhlr2Hds9S0dlnNSgN9L8mLm+xCVo6RA8h0wYAdinxDpil8ZqKLbjUKAldkKQGzhTxEF4Gs4RhX80SunRuC5kayaUvlFg9kncbCQM4RtCFKxl69sEGpjkQme8YDsoYuZhieGYhxF/Ic0CS3IntDLp6OaWDMlWeXN1qxzDKWyJqz9OFENrXRaAWXCFOjT5M/fNwcG6oV+HC51cLTawA+ZZRaWhhoPWAf60EpX4VWLTksNUoQ6xNwpYVUoF55qdMLDW6xZ27cam7yiUHtWsWGVgQWPGPJobJAjyk598I5MgIdaeU2e0aJjFvV3ziJGYZnrgxX6zkb0x0U23g69LWRz541H1rRhwwItXPW6Ai10Zg9LhHaoa29hl2AlceCY/GxEFmgKGNla+GyRlmOpJMMpIwFGsYFWtlyCMqcvOijaQRKwrhFRhO3oHTS5PGc5xayzmm54im4Vd9wjo26hx6yAWTP2b46JUBTtZS+MKY7BnKCQGSk13C1kZe37DnL+Ik519osFI3Z4xKhCRyQfKZaOaDPEQElAldkPl8EZTcGsQbkQQaSMzk9MUbWgQRqilW6EOqFfWg0z7hlMvhndJTS57mFzEGOgAHd2abUNzvPbrWwmVsxevac7eVWslDHqmV41q1AIw9c6RXTYzg0ReSz5zyfkGXAbTip2tRGY/a4RGiH2e81lKIs+lhqSgPWNDJLUMmjhYsZy1RwJBerOedSgB9schEgTf6jIUajfIjbYizdMhNmiEMmlueWZfZTbDAWPCxKBDnHRt2RIUYJA8jesn0xJYGmaglV46xBxljvDzVcbeTlLXvOcp7zQja10Zg9LhGmg5VANvEh6pYs45NVIvNp8kEjcJUcFN9fZcwykBwUmYsxt3QMg9oFXzC6F/NHZiAMQp/nlmXSAUts0GhhZ+fFZOS2GD17y/YIchioY9US5DlupYn5IIPyiOGQuQZEPntGU5VlwC3KhWyQq9GYPS4R2qGVvUarXHsNWwzLTt8qUGr90RRKVidCLHcMJOOkSB7M1ItWwAylzKQBZGxi6IWKYs0wbpHRSMYJHrSXaUR5RlCmhcwoDMfGhFL7KU3I4ZwmlNouaUIvOY+ePeekzVMK0ChoC3kOcnfmiQxEbETkVUPo85KMz5gP3WPOeZ4hLxSN2eMSYTpiUelM0qevD5RPX2smLw80ed1qBcqgyDssUXJlSUAsudDgUEtU9jjUuAXqpUFFXufokTX50GtudMwy65O1qg2EacsyO5elNgE9EXIxevacp4EQmSLUUUGr9RyWkLvLgKmGXEQ+e84Gkbkj5hxybTRmj0uEdmhlr2HNsc5Yf7rGimchSomsRazUkoFWM7eBTvoADQbxhyVezbF8duI2hi7AVW7SNCSzxWh0dcdbkWlZVse4ykOW9ZjhsGqQvUXSIsunbAI0GGjLqPUcFN3lWWGpRl51A7eYxeOrFb3mE8bhTfrqnLPnVnCJMDV5USFowYButfDi80XDWYVGayB6VT966eMP9lr2+Q82kcjI2ET3QL1ykyYjmdNRfiD0eX2GHEWznkKPWThXEzYLGWTPeRpyK1nk/OK26jlTdNeeqchoFHVX5BfN3BFzDrk2GrPHJUI7tLXXsF5Z1qxCLccAZXw/YGlyxodBrGb0mOnbQAaDjL4TI1TN0CNwlVAlbEThR5OXhqvq6xCqcvGYyIXz/JhQGHArb1zDrJiSYGK4ir5Vz0G1O7fZedFRGk0jjxI2CNJAnmeWAbn6oc8YlwhN0EqIBSCKhcfnm2/jsCG1F/r2n9EyK5SFvWyqFE3MIffllszlGssyr88sA1MtHrNwzu0Ig+wtTwMhdxFocBV9q56DavesqXbMnhfK3No5Zxmq0ZgxLhHaocW9ZlJYryoRCr0xE+ESYcZEiVDojRkflwjt0KO9hgL22VZ/pdbMBy4RZgw5S+a2+AXUzAEuEdqhX3uNMc1xiWBM73CJ0A7ea8zQcIlgTO9widAO3mvM0HCJYEzvcInQDt5rzNBwiWBM73CJ0A7ea8zQcIlgTO9widAO3mvM0HCJYEzvcInQDt5rzNBwiWBM73CJ0A7ea8zQcIlgTO9widAO3mvM0HCJYEzvcInQDt5rzNBwiWBM73CJ0A7ea8zQcIlgTO9widAO3mvM0HCJYEzvcInQDt5rzNBwiWBM73CJ0A7ea8zQcIlgTO9widAO3mvM0HCJYEzvcInQDt5rzNBwiWBM73CJ0A7ea8zQcIlgTO9widAO3muCTbv3F5pxmK7X8rFy695CYwpcIswZ85G5ZjQuEdrBe404cNvBV19/o1AuynS9lo9jx08cvvdIoTQFLhHmiTnIXIqVZ0++uOeGDxV6k3GJ0A7ea8R9Rx9hy4gsJWmRt19zgC/lI1I398IY1FGtCEK30uAQM4T8JabWkqssQxNy1ofMlckwJTRqUhd/WypwiTBPNM9crpGVakUQug1XWSmkiYyrWsZ8ZFAr33rnoVOnTnGlezSpuwlcIrSD9xogG9kvyFLtGroVVPdcC3tR9JKlYF/gC72auNIke8lhtu+Dd6CXhiut9CosJYTM1hZdELIcI8oJV2TB7iNjAy4R5oYiB3Urco4UFL3CWPYhR7odvvcIsvTqhZIclxl6lHp7x1UaWUYOIh+47SAGakXIsgy40h236i6injAuEdrBe41QbktWirJ3UNRLDrOCohd5zmFMVtORJh3M7DLoUeJQuwZK9gtkbKREkFJdpHzosWPR/c5D9yDHZPKssowgV/ihl3Yl/ISBAZcI80SRg8iTZi6CepGkQMYhow8PGEeSKh8xkAdV+aSnBFnmbNVkEJTOCOgRsoyNfCIrW+miXtou5okVG3a+Y82l71p/2QUXXSnO27Ln7Su3nrH+ssKywCVCO3ivEcWWEWmc9VVya2woQnuNlMp/bQR0oTXL2CBr0FwiqJWrustSQ+SxsoyQe9GkVmTmIxvjEmGeYKnn9c+Cr+qrLNQLKKw5p9EoK9Eom5SDIZNQtMqGgzyXCEW2QgwRQpaV77kXVwkg4zmAIuA9W/ZcvOeGj9796a987dEnj58Qjx176t6vfO2a37t19da9K9bvPGtj2VG4RGgH7zVioS2DY35EluZeSmnJegnJxkHax9cObQR0wSDLfF2gMtC3B5RsPbmVq7ojxxB5rCwjRC9kti2Nq+5GuESYJ7TUJSNMkbm5l16/0ZeUiczKOZhl0vzOQ/fETxOK1iIxNUQIWcY+9wLkQMa9ZsWmXedt2UMR8MR3nv7Zz3+xECdfevnTX3hg/WXXnblhZ+EBXCK0g/caoS0jv5lHBgTIlpnci8QOSxKbnNf7Rrwp/6WkSxggc4rTS5Zcq5ZcpUSOITRD+qp7jItAE0WGdjq5ZQsDGRhwiTBP5BycLnMRdFSHnnSLXzWQMnIwZFnq5YGqhMIybwgIGgIBVFtgKSX2yla+LURq65cSKFbkob+csX7H5t3XP3bsqaIgWAgKhVvu+N/nXnh54cclQjt4rxGxp2h3IDlJWm6VsYVxkHvFNiG0QYC+zZDz2CCwidCaZRkI7Qi5VTsRGuQYIl5yMkqeoaatgiC71c8vjHCJME80z1yuUUMrs0R4yDlYzUehFKvNVkDQEJjJnlumKqXKEaatlA+3GDAfeegp71x32ZXv+4PnTr5U1AGLcu+Rh86/6LezK5cI7eC9JkOuFrJyPpS15F6ZhfS1aFuZiNrto1D2fYtZDlwizB8tZu4UKVbrv/Az0Ry6yZkbdm7fe+PJl14ujv8x+cwXH3j3hXvCm0uEdvBeM5rYaFT1Z/iSkS1NX3CJMASUuZy7RdqCfgBnlpeNu9dtv/bp779QHPwTceAjd63Y+OvfS3CJ0A7ea0az74N36O0f1wJvND3FJcIQUOauPP3Xjwv0CwRmWXnXusvu/vQXiiN/Uk6+9PL6y67T33Hof4nwz//eR97cazbvNmY4vLnXVBKhXzhtTafZtJujfeofMWSoM961/jJ89jdtXSIY0ydcIhizrLxjzaUfvfvT+aR//NjxszfsFBt37IP7jj6M/raDh9Fky4LnTr60euubq90lQjt0Ya/Z8/4PFZouwKw2Xb6/UJqp2X7tgULTFi4RlorufKYBOdvN/aS/TBHP87bsKf6WIyXCb7591c7rbqImAEoEKoNnnv/BoiUCXHnDLWds2OESoR1a32sO33vk2ZMvFsqJePMvClaUwb6b77j1rkOFcjTsMq/+x19MKpraRX8bqlAuBJbEFiH+DlUwOmJ3Hr5nObZ+Bu1IPF0iLAl8mqMX0mjIsiXP3AO3//qvMmrldwemNObi5zzGWKeyniUzOiBNPo4RsD9PGs/VW6965aev5WNeJQIFgW4RuEWpEuHAbQcpGiggwj7zqS888L9Wb3WJ0A6t7zWLrvvRsHbxUCgztE66vrE/deoU283KbXuLpnbh8B7/WeLByXBkNh0g1NzydAsVAdjQqh1qaVHhxb5f6GePS4Tm8DnyaTZ5zcY6HP3dYIrM1VInbbuWuTwIyVsoa8kJyLPwRMhAd24hG2cYYkRrE9g0JvK8YuPOi/fcUBzzxVsE/bgBvWqF6w7c9ukvPICytko4+sg3V2zY6RKhHdrda/Lie+jxY8BCJyuouNl9uCKrNOZIQ1aahYxAdzKKW+ToEr1wSCs2CNyyr6lVt7VknwyBZZT/IaOnVcctVDeymIYID4LuaKI7tYj01enJMobLk8FYo3BlzlLiSh7owlNoYtxGkAElT4cBcnVE5Hh2jSvnIQOCJk8v6auh0OcIeXrcxkAt4hKhOXyOfJqS+Yj5uKUh7zjP9NGzKmjVgtF6CxlYk6D1HOsweuFt0syVT61eBsJzGIfMFVmLFiL1hKaXKYbjFrS28RMLOxzG+pcl0UBZTCaSJTQQ+YIrHiGXCGGDTJMGLUZEmZ8dz4yoXiHTJZ6dOUgffiIU6KXJ08O5PpdxOGPDjitvuKU45lUiqDJQTSC9ygXJB247GHLmsWNPnbdlj0uEdmh3r2GNsvgksyhZ4qxL8goBPQK3ShhAUD6EzHcFeShk9WJbIQHQKBP0LZYmDKTUuAXyQ3dG18aEsZpCxgMG3CJo2rFZCDygD4qxqt0ZqHZ6spSeITDWBLDPHlDSXR6yWwSMZYAskLN9MaKCr2dHj6zdKmQFXx2JqvR5UObJboIBV/YdBLzhAejCreQWcYnQHC2AkPUpo9Ha0GLQZ12buawu9ZIeIZaQek2RudknWYyANzWFzJUJhCuQgVCKZeIZBRq6MIHcnXWOTx5fuUOTLJG5arZYIiPQqglgHEp5iFkhK+k0BEqo2ucRi50QM2QsIWSaMEZmID1pHlQ23CIQScU/6gbkhcJe5Yz1l11z463FMZ9/0EB9gPzVb3wLOZcIWc488Z2n33ORS4SWaHevYZlq0UvWMgUE6WNPqd1okLW+1QvYTWjNuUprtmTRY6BMiF4FWNIdM+Q8q5BlQCIVxgG3Bbk1d9f2hwaq05NlJGpMQNsBewEy2Y4Nj0xWh1sp6a5eyNgDAn1pRV87IjI2mrBGL2QZMBzK0Beh0EwYCI26h7FGaReXCM3hc+TTDLnIVuRYDFmZZbqol1DmsmbUC00MwRV5nMyNBIGYVZazQZYDhsgoU4LcRec0NlLKHhnCUhkKyNKHAJGwSuesxJWMkXXlTySdnBcjKkrZoJAxwEl1M8my4k+QmQafiFplAHE7mjM37tx+9QeKYz6XCD98+Sd6nYCMBv3Bw19AiUbKgocePXa2/l2ESiL0ApcI05NXXixTQJCeHGDJsrhDyErknBiS6aiFLgM0YYlSI4oi/wNZMgoyZuE/5GyQ5QAzlPEnPIiiC606TVHG3IDpFZYxgRAEMpqqWzQIYUwTAkSJUB0Rm3CSHYYsA3leyAaZ7YyBuOUPTxfGmkm7uERoDp9jrAFkFg9CXhuxGLIyy1pyCKCDXxr1QhlDyJVaxUKZS1MssJhVlrNBloWml/+EB5G7yJijVEquQqs9W4IMsgARjWwsZURAxipHoqPsuQqNiJ9wIoNCVhjleSEbwBsyllwVfxmA5MXZtHvdpdcUxzwlAmWBSgS47+jD3B647aDeHOy87iaugFl0Ce4/+vA71l7qEqEd+lgiUAiHzDX3Yq/JvaQMS5TaXPSNBKEWWcogzyrkbJDlgNuC3KoubC7IfIdARiNlMb3CeUxAW6r0igbetI9wDSXdc6/QK7a1I3JFWR1dL2aQZSDPhU3I+JQBgnacMA65RVwiNIfPMdYAslZUXhuxGLKyWJa5l9Zt9EKOIaQcJ3PzUo9Z5R86ZIMsB5pwoEEDdUGPHFPNfngKdSmcI6Mp9Mop7JXO+tYeiZZ7hZ4rcu2IzCeU2SDkHNuFbNiOtC9hhgZ9GIQ8DisvvuqpE98vTvqp+b0Pf/yd6y5zidAO7e41yg3JecnG6mSlsqy1U6AEdQml1j3G5IkMyCJuq730Sp8mDBDiq22VnEskDDLGOuqgMMjymKiLJiOfzK12eoVz2SPIWPa6ZgNd6Uj33EsQCjXVjqiAc8uDE1JkDCLmtMpAniHPMGSdBDhEoyFkjCbkFnGJ0JxYMJL1sea1kRcGBlBkLl20SGKZReYWvcbPXGwwkIwZruguJdfCIMtjQhd8ypvmjDJWe2SWLLPzmICMwwNdUMbepV7oIwLqJdSFU7x2RAUcG7wtumvJm/RZJsLY4FYCVxnQGvI4nLH20s/d/2Bx0k/HKz997c1/g9k/aGiLdvcaljuLjy0AmWWttQ4IKmb5BoCMGTJLX2sX+1ACGvRYYoAMpAEGJBKtXMkTeVPHuF0IPGMWP0fEmC5U69IXBoXxOGBP+jExzZZpS1+dXnUm3EqufRaUOQJ0R5l7CW6lqXWCjEZ9I3pMEktmAghqhTzDQmYahedJN5plwiVCc/gc44DhQ9ennNdGXgy1mRtKZJYZMk1aZsqIKTKXVsziFue4ZTj06pgNCuNx0FGKQ8029Gg0lt6FQOEcWROAqrGUOQKKW+4FaiIssq86kUZ96Ui4Ftq1ZCB9IdMFJ9kzwddT63YcztywY+e++n/kYFIeeeLb5154OT5dIrRD63sNWZfTYMZwlBZECi0fZGMu5wcCG1yUg+3iEqE5OjZ0ls8ekjTnrChsloP8zXs4sD/z4IVyUc7ZvPvIQ48W5/2kvPLT17ZffeOZG3fi0CVCO7S+11CrTrH+lgS2FRK+IKrp5YMhGGg2m1p30FeTQtkKLhGWhBY/UGVQwQwSiu/lDFQo5x725/yuYkxO/wNK7y/+jcVJue/oI2dt2iWHLhHaoQt7jTGzxCWCMTNgxaadB267qzj1x+epE99fu/30//T8tDeXCO3gvcYMDZcIxsyGd793z92f+mJx9o/DM8+fjB8xCJcI7eC9xgwNlwjGzIxzNu8+cNtdE/3E4ZEnvr151/W5PgCXCO3gvcYMDZcIxsySFZve/L2E+44+UpQCVZ55/uRNH737got/e8XmX/8KQuASoR2815ih4RLBmBmzYuPOszbt2n71B/70s/c9efxEURmcfOnlo498k+Jg1da971x3adFXuERoB+81Zmi4RDCmFc7cuPN/rdl2wUVXrt66F6658daL99wgecWGnQsVB8IlQjt4rzFDwyWCMV3gjPWXvfl2oaKvxSVCO3ivaYUVm3a9a8OOQmlmg0sEMzVnbtwFhdLMAJcI7bB93wcJvZkx/3PlJf/1nM3nX7K30JsZwJovsqB3OG3b4m3nXgiF0syA/qZtv0sE0wqXv//WTVfccPzHXjbG9AnSFgqlMSNwiWAmxiWCMX3EJYKZFJcIZmJcIhjTR1wimElxiWAmxiWCMX3EJYKZFJcIZmJcIhjTR1wimElxiWAmxiWCMX3EJYKZFJcIZmJcIhjTR1wimElxiWAmxiWCMX3EJYKZFJcIZmJcIhjTR1wimElxiWAmxiWCMX3EJYKZFJcIZmJcIhjTR1wimElxiWAmxiWCMX3EJYKZFJcIZmJcIhjTR1wimElxiWAW5+9/+c+X7b9F+wv89/Mvftu5F67beX1oHnjy74ouxpjWOfHTX2zZe2Pkqf5Pj3FLEwZFF2MyLhHMWHz6wUdjZ3nn2st+693v3bB7v26vufljhbExpiN8/HNficz9b++5COKWpsLYmAKXCGYs8osEioO1O/bFRuNXCMZ0lvwiYf2u3wHJfoVgxuHNEuHID1596Z//3ZjRfCa9SAiuufljhZkxplN8Ir1ICFAWZsZUcYlgxuXkL/95R/qNBPGXT/5dYWaM6RTFbySAXiEUZsZUcYlgJqB4keBXCMb0guJFgl8hmDFxiWAmoHiR4FcIxvSC/CLBrxDM+LhEMJMRLxL8CsGYHhEvEvwKwYyPSwQzGfEiwa8QjOkRepHgVwhmIlwimIn5zIOP+hWCMb3jE5/7il8hmInod4lw1e/fvmrb1WbGrNy699z3XlEozWxgzRdZ0Ductm1x/sVXQaE0M6C/advvEoHQn7V5tzHDgTVfZEHvcNqaodHftHWJYEyfcIlgTO9widAO3mvM0HCJYEzvcInQDt5rzNBwiWBM73CJ0A7ea8zQcIlgTO9widAO3mvM0HCJYEzvcInQDt5rzNBwiWBM73CJ0A7ea8zQcIlgTO9widAO3mvM0HCJYEzvcInQDt5rzNBwiWBM73CJ0A7ea8zQcIlgTO9widAO3mvM0HCJYEzvcInQDt5rzNBwiWBM73CJ0A7ea8zQcIlgTO9widAO3mvM0HCJYEzvcInQDhPtNXve/yEolKZ3bLp8/5A/R5cIbaGFt/3aA4XemEVxidAOY+41h+898urrb5w6/Qfh1rsOSb/v5jtCngL64k3gKjc9e/JFlHcevicrRzCp/bJy39FHCs1CjG8ZgRLHjp8oDEbA1hwDHbj9oDzwmYZBBs+0IuhDH6eYkGVm9PTyfGaPS4RWeOjxYywM7SFkaxQK5GyTooGFpCWHT9YVmupqHL3Ywj62Mm0mEDZLjvwHjDhOomFTdFwoi0W7iba0uERoh3H2GtYZa5FNnwUaB4yaFl2jowm32SdQLsRWEsoRTGq/rGjHKZS1jG8JWGofYSNjt+Vhx488HSMyCLhauW0vhEFGBghElSEWMstgxnyYGNOjl6Y3olzL85k9LhFmD2uDJcFxxQphYSCriOQWmWs2Hh9qC7nVviSftasRIXfMyJ4/WHKr7Y5bZcEygXNSgBkqILotbKooXBFGnpfbziba0uISoR3G2Wu0LpU/QDZqUSr3WNxqIgm1IsNSi5hclZ6O0gd41glEa05IPMgt/iO32Q4wq/3CUWsvPV2YA7uAtg9gGpqPpqdnCRuZVZ8Far3RXZbA4zA9ZsI0uNVUyWe1Fo9ftYxA5UEDjGmqvWU+6oggDR5AQzNDjIE5S86DVvsiY4OgR5NZrWWABp88vm61YCJERQTyfLjlGs8bcp4/E5Bet8iakvTyXJ3SCFwizB6tED563SKw2hH47LQa1aQllz9QrQRuUcZHH7B7xKqLFVWsRlYdtxqO7vgpnMievlr2WCJgpluozgpjZK4asXZLodRARsm1GBE0RNyqOwIPK5+gXShvaMqsmAbgJ+YZiSYPTEOtuh09n+7jEqEdxtxrWFgsTS3rWKBagiw4BJXeSuZYlMj0Uhd5yMs9oIkuyishV+FTStKD28j8TK09AiOSNoAeUMomT0mPIwOmnf3kZ6n1pimFJQ7Zs7BHRoNMk2R1z49fWHLFADP5x1VYCikZEWIy6HEiOSv1aFxpZVD6aqAsawK1fTFA0JQU8FrLQJYoEUDGKgiw13DqyATyHDBAiIcNOc9fevkHBCnVqmhgwKcmJ4viEmH2KKf47PQR68AGfaBcWRUo86es5YExXfiguUUAdcxw4KlJJx+WdKejUHdZKmG1pAPZyz/zZDlFR1prZ0WT3GK80JYiJ1LKVUYeZCODKKDxoAfRwo4uwMzDvwjnKBFinlyLRNNAC82n+7hEaIfx9xrWrtYW6y9WWKw/LVBWeWzZUmLMSkVWIsk4o9ORJpxLoyRRwoyzmheyzz5jSjKuTikb1z5LNsipy/zxE9mIRt3ViqBjDJDJW+lFYRn+8yQDDFDGHxmzlSCHW8aSQ1oRmJv03IZzNSGM7ovA9DBg5gtZBrJECRL0cQByNQJ5PiirsuYQ86+1QQAcsomH5Ti4RGgF0oQPS58si4RVgZJVoTWGrCYtFWR9ylLKg05rGWdYn3jGjMTkVqtRHtRdbnOXjOyVwkrJmCetEopZoZEAtVsKxiglaNrVdJYTgYEmrybJIQThNjT0xUwyoxMKhpNntUpYdD7dxyVCO4yz17D/kgaxC5M/rDDWGTJrUeuVK0qtSMFilZJFqY4Ya1+ownoNn/RFxhgQ+MPo2bhgIXtuaZINM+FWAgZ5Spp/YYwNtwHPUuuNnESpJq5SRitIKSdQJHxhiYHk6kYAMqAJmI+UhSWCng7L8AwaPWQ1Ldo3NAtZ6jZrWCR0R9ZHCbjSzIUiIDkMqjJXzaHQZzmmynBcx9/yXCLMHu0Gcasqk/TR0tJa0qfJVWivkFK9ZLzQbqAqAZ/F+mRNym1YFoS9xkJmLcW4ErgKzSo7LIajCY2mGr2gmHb2ANpU5UTBocjWTMIG5DZHEicYI2CJAOou5xoaYdH5dB+XCO0wzl6jqjPWpVKitkTQ0aXv36HUWlQREE5A565aNQQ2KBFY5ViKWO4gt5kR9lyR2SB0biGj1EAalGtMKY+CBn3xLLXeNBy7UhiEEgEQtKcAQ9NXssiW0R20X2gCAa0xw4Ch0UflEU6yN91G32hatK/iwOMvZBmEJbKMQWFBqEYADyAlBpJpCrkYIvRZxps2UD4jlMxBBoviEmH2sHhYIXHg6RhjhbBmYuXkD50PV+tfShnkZRZm0coQ6l6YIaCP9ZO7i7BX3slJTKZ2VtkhSnoVWwreQkmXePAgewDFR3PTVpnHDeQ2lrrKCCVmtg/nXCUsOp/u4xKhHcbca1hnrDCtPC1f6dEAa1QHA3rV8joVlHvSy1LHRhDeZINGqZJPR2lY01rlyqKitdZe+aNxNYQMYlAplW8xAah9llpv2hEYEdSEUk+NDbPSpkMrThCKzMyW4Z9bdcmWoKZCCRqCJnVkw0KJrMkINelBctPovpqeAl5rGWRLUFg0XG0E5EQG0mOgcbnKIM8/9FmWDf7piwcCKINFcYkwe1jhfFj67LjqE0evpEbDmlEKsB70gSoxsZeBBH30gVI1WlkMKLUapRfcannU7iGxelmcCBqCKx0RamdFU56JRueqXjFzZKbEVa4yaOiiJsnZoTR6nEyEK/dS2a08ogsCTfLGFSUayegXmk/3cYnQDuPvNeQwSw1UigryJzSkK7mRDZR72LAuIR/kAcbkXu6iBAvohYbsJRMQql/EF7JH5iqZa2QFHhgO9LVV3bnGHKD6LFDrDQPNX3pNj4dFKZnTFBkNBuqSyZYY6LY4gEUxw0x1CCyxDwNiIoNq04i++YlqLYPCEuRkoQjk+QACt7TSC9AUk0SWvpAR+IxqpzQClwitoJzioOKzzitcH6I+Qa5aDGGggw09yrwkArnNXTBGk4mdhwXJbV6oIHspEVRM5BVYnRVNsQiBvtwCQmwpoEfjlkmGsUCZyQEBxmLnjGkHmv9CvdDQkfnH5ItEGzGf7uMSoR2Wda9hLbLQi5p9ZpAMpCtZxATYaAAlMkqaEEgYplek2ULUejN9xCVCj1CJUCg7xdRbSi0UAZzxOPQOU+ASoR2Wu0RgrZM5hX426CxnAsq3mAY1tZQQ9fWiLOTN9A6XCD1CpXmh7BrTbSm1aM/0DlPFJUI7DGevMUa4RDCmd7hEaAfvNWZouEQwpne4RGgH7zVmaLhEMKZ3uERoB+81Zmj0Yq/58hNP/e2PF9xVnLZmaPS+RPjRP/97H/FeY4YGa77Igg5y25/du+mKG7g+/eOavcVpa4ZGL9K2FpcIxvSJHpUIolooOG3N0HCJ0A7ea8zQ6F2JUC0UnLZmaLhEaAfvNWZQnLlx17vWX/bJ+7/WcXbf8Ifnbblyw+79tYWC09YMDZcI7eC9xgyK33r3e/+/szYV524HOXPDrrede+GKDbsKvThj7aXFcxkz37hEaAeXCGZQvHPdpe9a24+3COdsvmLNZdcVxcGO/bd85sFHV2512pph4RKhHVwimKHRi72m+rsIKg5+8Mt/ptVpa4aGS4R28F5jhkbvSoRcHAinrRkaLhHawXuNGRo9KhGqxYFw2pqh4RKhHbzXmKHRi73m7nuP1hYHwmlrhoZLhHbwXmP6yIqNO9+x5tLztuy54KIrg3MvvPwday9dsXlXYVzQ370mcNqaoeESoR2815h+ccaGHVQGF++54aN3f/qxY089efxE8MgT3/7DP/7k5l3Xn71p95kbdxYdA5cIxvQOlwjt4L3G9IZNu8/ZvPvKG26hMvjZz38xgocePbb96hspFEoPp3GJYEzvcInQDt5rOsK+m+84fO+RA7cfLPTBnvd/aOW2vRK2X3sgN1XBDw5vvevQopZ94cyNO9ddeu2Rhx4tqoGFeOWnr33u/qMXXHRl9ecOLhEGBSlAyhTKzKKpF0QO1kLT6IGAyZCVWN55+J6iyYzGJUI7eK8J2COOHT9RKJcPNotnT74omU3q1KlTr77+xkITYOvBgI0MGbPoWMumy/djg3+2odGWfYH64OIr3//0918o6oBFefL4iU079xVVgkuEQUEKkA6FMsipl1OySs7BWmjCYHSVgH8VB4xIrZCbzGhcIrSD95qA7J3lgcqGEjuXNhd2q2gtyNsT8uht6KHHj8WDzMFOxAG/edf1zzx/sjj+x4QqYc32q89KP3RwiTAoyIURJUJOvZyStZB31N+FMqBpdGKSieH/vqOPzHK3mQNcIrSD9xqhnYI/ymFSHQFUN4x4u4CNjmQZxx6BMjxIKZ9sDVxxyFXDSS9ZRUBtXwzUij7mU7WUgSwB/YjJ94L3bNnztUf/ujj4J+Jz9x/Nv5fgEmFQkAJkhOTIFyVFkXohRyplZByZVU09eUCWZTZQYcGgyOqODWNtn5efA84Alwjt4L1GrNy2l+yNbFduH7j94J2H7yGTI7GryJLvBxhrO0DJ7kAv+vLtBA16lNoUZIxetYKGQ6YJPdMY0TdKhEVH0bci0CiS+8g71132ex/+eHHkT8orP33tyvf9wRkbdsinS4RBEamhI5w8VaqSPihz6uWUrJJzsDb1aEKJmSzRI2gDicxlCHnTrfRmHFwitIP3moCUBoS8F2R9LeR5tMZ5nJXsPnjjWrhFkLFkmjBAXrRvGIywlCvIo/SRVVuvmuJXEKo8duyp87bs+bVPlwhDghxRCkggI5QUUubUG50stTkIkXrhKlsWvSSI4taMxiVCO3ivCch5pX3O6qyvJW8WdOFWvy0YSr5n4I0vE4VbGYdMEwbIi/YNgxGWcgV5lN5xxvrLrrnx1uKw33ndTWdv2Ck27th33YHbCoOFuHjPDStO/2MJLhEGBTmiFJBARgQouUa+II9IltochEi9cJUti14SRHFrRuMSoR281wTkfKQ92Zt/Whn6KrQCZvpRBTJK+kqJ/NDpH0nqV5liswAE9PSSrM1lnL5oNJ8RllKCRpHcO85Ye+nn7n+wOOkpCygObjt4GA7cdvA3375qzCrho3d/+h1rLsWtS4RBUWSlMo584Xs/Qk69nJJVcg7Wpl64ypZZxkyCKG7NaFwitIP3moC0J5nJW2RlO7JYtEQQdNG+s/3aA1kvZd4sQD+kpBW9hkMYpy9KzafWUgYxCpYjJt9xan/KoBIhbvUuAeG+ow8jwM7rbvqbv3smDIL4WYNLhEERJUKRLwdO/0MIOfVySqpvJudgbeqFq2yZ5ZyM0nPVrVkUlwjt4L0mQ6rv+49f9GMX4JYvB6NPWTYIWjHDmC65CVfyEBp2hPwdRQYIKIvNYkRfhDxQ1ZJaByQzPTa+aOoXq7fuPfnSy8VJn98iXHfgtt98+6pPf+GBH778E5TcUihIKHrBUye+v/Liq3DrEmFQkCw5uYp8KVIvUrIKZnHYixGuECLTQyYTyUcps2zGwSVCO3ivWRSVCGwH7A4FZL5KhKJLuzBV7T4h9BRKhOKYB0oEygIVCkBNID1Vwle/8S3qBpS0hn3w3MmXVm99c7W7RDCjqSb7Q48de+0Xv6REWKiAGBPyEecIbBq4zU1mNC4R2sF7zaI89PgxoOpXrZDhCwrf12kturQOUzpw+8H7jj7S421o0+51l15THPOg4gDh8WPHEXZedxPyM8//QPLBw1/AwCWCaUI12akPqEGbZzr5SFZuunx/vOczY+ISoR2815jOsnrb3pde+Wlx0keJALcdPPybb19FWUC5gHDf0Yf1E4faEuHp77+waqt/0GBML3GJ0A7ea0xnWbV1b/XfXdZfeoxbVQzPPP8DCVwxqC0RnvjO0++5yL+uaEwvcYnQDt5rTGdZsWHn0Ue+WZz0U/Pnn//KGev8lx6N6SUuEdrBe43pLEvyry8HO/fddObpf4PZJYIxvcMlQjt4rzHdZdPu9ZddV/17j1MQv4gALhGM6R0uEdrBe43pMu9af9ndn/5Ccd5PwU0fvfudp3/KAC4RjOkdLhHawXuN6TjN/09O+f/h9KZDlwjG9A2XCO3gvcZ0nDM37Ni176bq334ck+dOvhT/AyfhEsGY3uESoR2815jus2LTrv033zFFlXDypZevvOEPzjj9W4qBSwRjeodLhHbwXmN6wYpNO3ftu6n6zySM4KkT37/4yvcX9QG4RDCmd7hEaAfvNaYvnLlhx6qte+/+9BcW/TsOz5186Q//+JMrL74q/3whcIlgTO9widAO3mtMv3jX+svWX3YdFcBDjx4rfvRA6XD0kW/e9NG7V2+9+h1rf/33F6q4RDCmd7hEaAfvNaZ/bNpNBXD2pjf/Jw6rt/4nVmzYGX+5cSFcIhjTO1witIP3GjM0XCIY0zt6XiL88NWX/+X/9JFV264pPglj5hvWfJEFvcNp2xbv2rgTCqWZAf1N236XCNv3fZDQGzMcWPNFFvQOp21b/Na5F0KhNDOgv2nb7xLBGGPMmGy+4gYolMaMwCWCMcYMApcIZlJcIhhjzCBwiWAmxSWCMcYMApcIZlJcIhhjzCBwiWAmxSWCMcYMApcIZlJcIhhjzCBwiWAmxSWCMcYMApcIZlJcIhhjzCBwiWAmxSWCMcYMApcIZlJcIhhj3uLvfvzaJ7/0NTOXuEQwk+ISwRjzFjv236KDxMwlF+29sfjEjRmBSwRjBs0Lv/inb5x4Pli1/Rr40J98NvjE575SfBk1/eXBb3+3WADGjMAlgjGD5of/8C/5zcHbzr0Q4pYvnc/87I2iizFmILhEMGbofParj0VN8PaVW//bey6K2zs/d6QwNsYMB5cIxgyd/CJh4+7963f9jmS/QjBm4LhEMMb8pxcJgV8hGDNwXCIYY8rfSAC/QjDGuEQwxrxJ8SLBrxCMMS4RjDFvkl8k+BWCMQZcIhhjfk28SPArBGMMuEQwxvwavUjwKwRjjHCJYIx5i89+9TG/QjDGCJcIpqPs/f3bV227xsyYlVuvPv/ivYXSzAAWfJECxrSOSwTTUdg0z9q825iBwIIvUsCY1nGJYDqKSwQzKFwimA7iEsF0FJcIZlC4RDAdxCWC6SguEcygcIlgOohLBNNRXCKYQeESwXQQlwimo7hEMIPCJYLpIC4RTEdxiWAGhUsE00FcIpiO4hLBDAqXCKaDuEQwHaUjJcKtdx06fO+ROw/fs+ny/UVTc3C77+Y7CmWVldv27nn/h6abgPoWyqmRt2D7tQcKg9EomJP2GgguEUwHcYlgOkoXSoRnT7546tSpV19/Qxy4/aD0Dz1+rPm5S32Ac47MQl/l2PETWDKZQj8O+Kdv89kKeVM0EPhz39FHCpuFUF+eYpxHHiAuEUwHcYlgOkrrJYKOcL74InPEcijqkEZG3/DQ3XT5fp2yi56XspTxFN+/l6NEkDeuBISJjfl6Q8aF0gQuEUwHcYlgOkpHSoR4YcDxrLNQpzVXne4YIAPf9dURgeOQq/QqMgpolUGUCFnO6FTGiSYTSuz5Bq8hYuiYDGhcdecR1EVFhsoOusckhZ60+kRBeNMtHuJ2oTioMlBH/iBjf+D2g9JDvIfI9tioSTY4D/96Lh4hPICeS48TluE5/IBmi311Au3iEsF0EJcIpqO0XiIAp0gcbBw8KhF0WnNduW2vzl0OPJBN9OLg4TTSOVR8z6b4QMkpxRUPUnK8oQ+bABucIMiVlDpxGY4huCIj7Lv5DmxwovNVxnGoR1mAUtUPE0DAQE8B2EguniiQN5wgcEXGRvpqL8UBmVGIleYfM+EWWQ65FvY0IctGD8gVWR01IkLtiEUE9LBSYqDuKibQqFVlR7u4RDAdxCWC6ShdKBGAc5ezUGePThfOFWSuyGg4aTiudEbqTJIyumOcfydRlQEnE7L6RlMVddfpqJOyeDdQyJy+GDDhmExu1bmIwAz1LEITHvFEgbxJDxiP6CVl9I1bOVFHqLWnFRsskbN9tlGJo7CgL1pDzsoADfqYsCqMdnGJYDqISwTTUVovETh+OFPjVkcRx5JOr+rRKEKpXjLOX1KxQYMBSMijFNCETf6Dc/RyojmETD0hb2hiDtmSaSBzpUk1CmApZdzSSq9AepG9ZWp7xRyyDULhJPTZnlZs5CfbF074UBDQoM+tWc7KAI0CJSIaLeISwXQQlwimo7ReIuhFug4Pvp3HSaPT68Dpv93AMYNy5ba9yBxXOmixxEByFBbIgoM8TiYdVBqC2/yyQciAEQWyvGGMoFMzZDlkqihjttlSDoXMND2eVP55kNonCgpvwUJxQBk2cRuvRpBxhVJytkePDcMh50HDBgEQGBSN5OwhZH2O+fNCiC7EgdGrkZ89LhFMB3GJYDpK6yUCcIpwunCcCJ18nNBScnQhRyvoHMq9EHT+1YKBTsFCFpQOdM+HdByu+dQMmdERNG4ckNkS6MstJ6VuseE2/mBc+0RB4S1YKA7IYZNvNQ0Zo68aMITmg5wHDRsd/NxKIyfZQyFrOK6KJ1duAxVM7eISwXQQlwimo3ShRABOJo4oTpR8inAicn7rSzNwcmcDHU60oqyephlaw0mWBaNUu6NBj2U0ZZkmBs0GuRVojWMSaMrEBIonCgpvBUWvYv7VW2I4wgBZ88mDZhsEDRfK3Fr1hjHK0NARTRfeHwiXCKaDuEQwHaUjJcIU5O+v3YGDllpHX5qLJtMFXCKYDuISwXSU/pYIDz1+LN7kdwe+QFO7MLH8Tdp0B5cIpoO4RDAdpb8lgjFT4BLBdBCXCKajuEQwg8IlgukgLhFMR3GJYAaFSwTTQVwimI7iEsEMCpcIpoO4RDAdxSWCGRQuEUwHcYlgOopLBDMoXCKYDuISwXQUlwhmULhEMB3EJYLpKC4RzKBwiWA6iEsE01FcIphB4RLBdBCXCKajuEQwg8IlgukgLhFMR3GJYAaFSwTTQVwimI7iEsEMCpcIpoO4RDAdxSWCGRQuEUwHcYlgOopLBDMoXCKYDuISwXQUlwhmULhEMB3EJYLpKC4RzKBwiWA6iEsE01FcIphB4RLBdBCXCKajDLNE2HT5/kKzfBy4/eCzJ188dvxEoTet4BLBdBCXCKajDLBEuO/oI5zZhXKZoBZ59fU3GI5BiybTCi4RTAdxiWA6ytBKhJXb9nJgw573f0ia7dceQOYsR4CwLMCGvpjJOPTShDeQpdzeetehU6dOUR+EZ+nzQOorJR3jVoL8Z3t5gJgGcoyY56amQlnVDAqXCKaDuEQwHWVoJcLhe49wZvOHL/fc6ghHFiPeLtB67PiJsKQjygO3HwxN9JUcevnXDxq46pbrQ48fQ8NpjSx7NEwPQbfoY0RkxsJe85cSVECEB7Hv5jvkOTSgIqP6CEPDJYLpIC4RTEcZWokAnKYgmZMSWd/dJYdZgY5VjmSMdR6jDFfqfufhe8ISjb7Wc35zrqPX6a6DGUvJMsCJPMtGfjQKBugRVFJgIG9UDLKUB5UgUspA3ekLtN539BHVQyo18EYrwtBwiWA6iEsE01GGXCLk8zvra+FAjVa6cMuhzlV6iHM6W+YhUNIkPSBjX8wBgVuUyNk+fKqMUJM6Zg9Zji6BnKOM7vnnFwPBJYLpIC4RTEcZconAARkHatbXkk9cvpFzKyVfxzmYhU7cbJnPbJTqBSov1DfPQac4ysI+fEq57+Y74oVB9pDl6AJMDNCrL2ZCrYPCJYLpIC4RTEcZZonASakDEhmQ9eY/ztQqdMEAM87mOH3livNeSr3Dj1bAc5zZes+vsoArsk7rMAAEbmNuuJI+fCLoXYUmjH32kGXMMGZQzY1bTUA/xeBWfoaGSwTTQVwimI4ywBJB7wAAmUNaMgewyJaZMOOURdApzhWNmuLEzTIG3EYFoKHlgQO7aoDArZzjBFl6BPnU7xCABBxmD4U3eYB4rnh20ASGhksE00FcIpiOMsASAfjeX71dtERQa9G3VjOa1n8DoPUJtIhLBNNBXCKYjjLMEqEWlQh3Hr5HQoYzNX8XN/3FJYLpIC4RTEdxiRBQHMC+m+84fPovFmb09wj0U3zTa1wimA7iEsF0FJcIZlC4RDAdxCWC6SguEcygcIlgOohLBNNR5qlEuPPwPSu37S2UE3HrXYcO33ukd7/Nx4Mz7UK5JBDPOfvxiksE00HeLBEe+OGrP/7X/2NMp1i1fU5KBE73V//jrwhOB6fsqdP/NMIyHbfLxLHT/98Hpq2/KrnkzNlfj2TBFylgTOu4RDAdZW5KBM7I+5r9D5fx0LDIaIXl/qsWRHVZ/c8Ylwimg7hEMB1lPkqE7af/KWV9jT58+l8fin8jKOoG6XWgZkv9G0R6hcAfZFpxGP/ukP7NosL+zsP3SFZhwVUaKWUvS6Ev4sXcwrNegYj4yh7dw6yKXiHEtLkyBPosIzA9zRP0T0AGmlJGvQJc4X9u/ikFlwimg7hEMB1lPkoEnXMhc6RxdnK2ccoic+juu/kOBE5xlDovwxIZg5X/8f9vxIAmyZymOrx1SBf26GWDW+k1IkqMGRGNRpRleMAm5oag+iaUWG66fL+eCOf655PR072KnGtowA8dpQ8Zg+wK4+gO1b/kiSYbAL3QF8qe4hLBdBCXCKajzGuJwBmpW/R8a5eBBM57ZB3D2ZKzU07y+Qr52C4867jN9tmGLhQT8c6gaA25cCs0GZogutdCU3UaWQ6DQhYuEYxpHZcIpqMMoUTgjJcB10D/GlK21KmMkM9X4Iznlu/6hT3G1bM5bDhoMaAcQROes4eQszJQF5qC3JqpnUaWw6CQBTYoM9WxapU9xSWC6SAuEUxHmdcSQW/m9SMArhIOnP4xvN4lhGWczXGQAwK3lBH6gYKO1cI+9Pk8DhsEDPS/bwjP2UPIFBMIzEpKLFHqVQejo+RZbl347xTENPQDC/nR8+ItGxTy+NBLruYAlwimg7hEMB1lPkoEnbL56OVUA4Q4EXVOc41zNA7pbCBZv4IQFIe6bNDLORr0OkTDhnIEQd3Dc/aQZYoAGXNVccN5r75CxU0ttGoaoKfjqhE1pWyQ5THR02mec4BLBNNBXCKYjjIfJQJw+PHVGSGOXuqG4sfqKLGJX87nO3o++dDnW/0mQfZQ2COHK2R94882tOKBayhza+FNxlkDjI5SryIWgi4xDYg5o9eUskFhPA5EjNgWyv7iEsF0EJcIpqPMTYlAZaDvx/nb+TzBUc2jFRQ2ywFRnc1As8ElgukgLhFMR5mbEgGOHT/BF26OUk61Sb8rd5+HTv8bDBn9VcxlhXjOYJRZ4hLBdBCXCKajzFOJYMyiuEQwHcQlgukoLhHMoHCJYDqISwTTUVwimEHhEsF0EJcIpqO4RDCDwiWC6SAuEUxHcYlgBoVLBNNBXCKYjuISwQwKlwimg7hEMB3FJYIZFC4RTAdxiWA6ikuEVviv5276f8/eUCjNDHCJYDqISwTTUS69/oNsmmbG/ObbV0GhNDOABV+kgDGt4xLBGPMWKhEKpTFmmLhEMMa8hUsEY0zgEsEY8xYuEYwxgUsEY8xbuEQwxgQuEYwxb+ESwRgTuEQwxryFSwRjTOASwRjzFi4RjDGBSwRjzFu4RDDGBC4RjDFv4RLBGBO4RDDGvIVLBGNM4BLBGPMWLhGMMcFQSoTjL73yZ1/6mmnC7YfuufbmPzJN2Ln/lk2X7+8yKhEKZdfYfu1NRWDNpNxy8FNFgptJefR7zxcHzfwxlBLhwB//2eYrbjBN+F+rtr3t3AtNE/7LGev+n3es7TIqEQpl53jn2iKwZlJ+693vLRLcTMpVv//R4qCZP4ZSIvzuR/+ET/T2Q/cWZaAZn7WX7Ttn8xVXfeD24uuIGZ8z1+98+8qt63deX3wt7g5nX7j7zPU7CmWnePsFl0ARWDMR52y+HIoEN+Nz5+ePcKBc8bu3FgfN/DGsEmEI74WWD/KBGH73ldcKvRkfx7A5BBAKpZkIx7AhpDABdIkwP7hEaI6Pt+Y4hs0hgFAozUQ4hg1xiTBvuERojo+35jiGzSGAUCjNRDiGDXGJMG+4RGiOj7fmOIbNIYBQKM1EOIYNcYkwb7hEaI6Pt+Y4hs0hgFAozUQ4hg0ZXInwyr/+n/lGJcJj33u+0Jvx0fF24pXXCr0ZH8ewOQQQCqWZCMewIaQwASSdC/384RLBjIuPt+Y4hs0hgFAozUQ4hg1xiTBvuERojo+35jiGzSGAUCjNRDiGDXGJMG+4RGiOj7fmOIbNIYBQKM1EOIYNcYkwb7hEaI6Pt+Y4hs0hgFAozUQ4hg1xiTBvuERojo+35jiGzSGAUCjNRDiGDXGJMA9QEARXfuAjq7Zf85mvfiM03qYX5aV//JcIF1x89QeI4ZFvPRUax3BRFo3hs6++UXQxBX//xj9FuIAAQtY4houyaAwxKLqYApZZhIsUJoCkc2hgLmM4zyXCLXd9SsUyvGP19rede+Hq7deE5tsnf1TYmyrX3fLHEbH/cf7FxHD9zutD4xiOw4gYXrT3Rh9vi0KZtXP/LRFD/Y8K49YxHIfRMaQJg6KLKWCZsdgUMVKYAJLOcx/DeS4ROMDi8zv3vXv4ODfs+h3dUj0UxqaWr377uxHDczZf8T8vuGTT5e9zDCcix3DFhl1vX7k1YnjX548UxqaWv/jaYxHDMzfspOKPW8dwTHIM37nmUohbmgpjUwuLLYLGImQpxu28xnDOfxchv0jI+Ovv+OQvwRnHcHxqY+ivv+NTfAkOHMPxWSiGfoUwPvlFQmaOYzjnJUJ+kRD46+9E5C/BgWM4EbUx9NffichfggPHcCJqY+hXCBORXyQEcxzDOS8RoPoiwV9/J6X6JdgxnJQihv76OynVL8GO4aRUY+hXCJNSfZEw3zGc/xKheJHgr79TUHwJdgynoIihv/5OQfEl2DGcgiKGfoUwBcWLhPmO4fyXCJBfJPjr73TkL8GO4XREDP31dzryl2DHcDpyDP0KYTryi4S5j+EgSoR4keCvv1MTX4Idw6mJGPrr79TEl2DHcGoihn6FMDXxImHuYziIEgH0IsFff5ugL8GOYROIob/+NkFfgh3DJiiGfoXQBL1IGEIMh1IicLD5629D+BLsGDaEGPrrb0P43uYYNoQY+hVCQ1iEQ4jhLEqEq2+6Xf/eZ7tcsPXqQtMKRKOIzzh0JIbnX7K30LRCr2PY33XYkQCu3HZ1F2LY60VIDKFQzp5ex5BF2N8Yjs8sSgQe46zNu40gGkV8xsExzDiGzZkihg5gxouwOY5hc6aL4fi4RJg1zormOIbNmSKGDmDGi7A5jmFzpovh+LhEmDXOiuY4hs2ZIoYOYMaLsDmOYXOmi+H4uESYNc6K5jiGzZkihg5gxouwOY5hc6aL4fi4RJg1zormOIbNmSKGDmDGi7A5jmFzpovh+LhEmDXOiuY4hs2ZIoYOYMaLsDmOYXOmi+H4uESYNc6K5jiGzZkihg5gxouwOY5hc6aL4fi4RJg1zormOIbNmSKGDmDGi7A5jmFzpovh+LhEmDXOiuY4hs2ZIoYOYMaLsDmOYXOmi+H4uESYNc6K5jiGzZkihg5gxouwOY5hc6aL4fi4RJg1zormOIbNmSKGDmDGi7A5jmFzpovh+LhEmDXOiuY4hs2ZIoYOYMaLsDmOYXOmi+H4uESYNc6K5jiGzZkihg5gxouwOY5hc6aL4fi4RJg1zormOIbNmSKGDmDGi7A5jmFzpovh+LhEmDXOiuY4hs2ZIoYOYMaLsDmOYXOmi+H4uESYNc6K5jiGzZkihg5gxouwOY5hc6aL4fi4RJg1zormOIbNmSKGDmDGi7A5jmFzpovh+HSuRLjv6CPPnnwR7jx8jzTHjp8IeQl56PFjGgj/h+89cutdhwqDzPZrD3ClC2T9FMw4K/a8/0OFRvBEPLueKxjzAfk4FDo+rFAuNJAoBmrIDGK46fL9WiEsjwO3H8xNaHKUIhqsIth38x0oFV6IB6cXt6NXMq2YFcqApiVMhCliOPUiJCZ6fOJWrIRxgillRAalbLKr0aHLLNVSnMEibEIRWNZwETGBRsEE0pmYs/ILm+Wj4zHsBdPFcHy6VSKwTF99/Q1WKuv71KlTrFeUaCQsLYzFEJEeMVwBCRMTIOVy1k3HLLOCSDL5Qik40Xnk4lxXKLKmCj7pqFAgaF8eMVAO4FKx3DFk32TOwHNpbUSVQCnJLX9it+XRuFXo6ILMGabw8keHOhrdjo4DrQuFEZY2jFPEcLpFqIgRHC0SiENozGBKyR+ZaQXyJ6/e0aETS7sUl3sRNoT0zKEmT2vjo4VKU8S81myZ6HgMe8F0MRyfbpUIrE7yX3KcxyjJarZarvpWAWwu3IZG+wj7ONeV2/ZyZelz1Qadu3DVrfIhWpHRIMhVWCKQQiQYeryFwzCLJByTmWUFceChFD1umacmrEfQ1qCIyQC0TUguwhVkGwyITDHQiAAWc5ia5Y6h9lOeK25jWSLz+LRqcYIeUMdVHEIKL5bYo1epESEKFGQgONwiYIOgGOoaH4G6E7qwh8LD+EwRwykWITBtBQGID3GIemvMYAICaNkoqmEWHTFQxPLqyuFCiKXI7dShE8u9CBvCQ/GwEQqCozWsEIHWlRYqtzJDKAK7rHQ8hr1guhiOT7dKBGU+WwCrOfJWuwObiHYTNFrHse2GBhkPWvTqwhUbDDBGjisa9cUYSCS64ER96QgIzEECltjQRd7ILpS6pSm+A43DzLJCX4WZJzHhFpnZ8uxouNZGSU+EUA1XEKGmo3aZPNA4AcQDt5rVdCx3DJme4lCgQ4sHUdCkVEB4cORiISmA6PEmmSb1io7oaZWZIhNN6BU9fQQ0AZpsX3gYnyliON0iZIb5qYPxgwnx4OiRs1nuWESMW0BGQ12iJg0q++lCJ5Z7ETaH51LEtF/xWVTTMxYqAkwdjenofgy7z3QxHJ83S4S//OFrP/nX/7t8rN5+zdmbLx+Tw/c+8NzJl1impxfuX6FB/vrjTyJc+f4/RMlVMiseY2kQMNt8+fvC7Na7DiNzlQGt8oYGGYFRaNJAXPGAUt3xc+D2u6WUN7XSBRBo0pQkP3n8hORxIBpFfMZhohgGiqRkwsVzKRTo9Vw8Jk0RpfyARbgyKOWZXrLXrVpHBBANlncevvf6m/9IxtOx3DHUPAslEBM9JvPnoYgDMo+GjB4iIBFelBhzjYDIlcCsuozRS9B6ZqVJyXXRREAzJlPEcIpFqKkWTy3GD6aioaUYIS2eVzartl2NrIhpaK00NLgqJsPtdKETy70Im6MIs4rYoGI986TV9EQGBMwUsdnQ/Rh2n+liOD7dKhE4PJTkkHdGZbVWM1dtFqxmbKTRBqGOYZZlrhiQKsoWtgau6oI3WnUiSi/PGld9NQE1IagJISvHZJZZwcQiLDy4IsAVfW2U9Cy6lXGES06AcMUmwucVHTXQ6ACyMckSDZ7lZAqWO4YKUdwyeT0yejUBjyAbWpEJC08K6qKn5oq9Ys7C5hrLBkYs4xCyHN3DedWDuozDFDGcYhFyGjFDJZdAVumDXpNfNJiKgFxpQUYEZBA2WZYrjNWFq3qhx6ZJ6MRyL8LmkIx6Xp6UVJWGR9ZTK0QRE9YnepT6dGZD92PYfaaL4fh0qETQgmbt6lYbK4KWMkLsC1rlaMhzaZQG6hiLHllnGJ5p1T7FXq9sUT6oi7YJmsKP9iNus7cYlyvTQ9C+H3Meh1lmRTyjniLOOfT5ufTUPHI8ILdFuIghRHdVctgovDHQiADShaucaIdCmI7ljiHzZM6sLmQiwFSZMAJKHplW0JrhcWTMY2YPemquMouoYkwcZBzRri5j+dTnFbFSd4RwXvWAPCZTxHC6RahE1tyUj8x2omCijAioV0QggqmOiliMiIaqFA3jIkiDJZomoRPLvQiXBJ6RUIAO/ohk7f5G/FFqZ5sNvYhhJtZbVWiL6WI4Pt16i6CdQmsatEdrKSNoNXONbRekiaUfZtyqFWOUGKgLemkkqwsfs+y1XyCoVeMiSJYejV7TCTRKvzGZZVboqZmkdgTNVtfaKCFDdJRx0USI5AqiYwy0aAARdG2yE80ghkxPT6THkYbbMFBIeXw9O/GMJlB4uSogqrewxxjkh75yDjKOJvlEVtP4iUDrmEwRw+kWYVSQwCS1YCYKZhEx6oCIwOiIaRSNHjEEjJuETsxgETZHNRnPqNtqeiqSCDJQGPWtYAb0IoYZ4kPcaoW2mC6G49O530VgQ2EdswvEucsi5ggPOQTJas2lHIJyXkgJeOaWa76NVobTbegRZCwNQ4Qm7LOHMZlxVsQkNWGuEau4SoD8gHrqfBsyTviA+JhCA+FHHSXIQBp9iDKTwdTMJoZMm70ypoqgxwmkyWsvkzvGsyNkewTJRZP2Hd3GoLIJOQTJuXUcpojh1IsQmB7BzM8yfjBDmVsLTQhcs2dugRWrW5q4xTiaJEgzEbNZhM3Jjw+KgAQFqnh8bnMAl5W+xDCorrcQ2mK6GI5P50qE5vCBqUQo9B2hd1nRQeY+hjP4ajJFDL0IM3O/CGeAY9ic6WI4PnNYIlDWscPmurhTOCuaM/cxvP70r8UUyqVlihh6EWbmfhHOAMewOdPFcHzmsEToOM6K5jiGzZkihg5gxouwOY5hc6aL4fi4RJg1zormOIbNmSKGDmDGi7A5jmFzpovh+LhEmDXOiuY4hs2ZIoYOYMaLsDmOYXOmi+H4uESYNc6K5jiGzZkihg5gxouwOY5hc6aL4fi4RJg1zormOIbNmSKGDmDGi7A5jmFzpovh+LhEmDXOiuY4hs2ZIoYOYMaLsDmOYXOmi+H4uESYNc6K5jiGzZkihg5gxouwOY5hc6aL4fi4RJg1zormOIbNmSKGDmDGi7A5jmFzpovh+LhEmDXOiuY4hs2ZIoYOYMaLsDmOYXOmi+H4uESYNc6K5jiGzZkihg5gxouwOY5hc6aL4fi4RJg1zormOIbNmSKGDmDGi7A5jmFzpovh+LhEmDXOiuY4hs2ZIoYOYMaLsDmOYXOmi+H4uESYNc6K5jiGzZkihg5gxouwOY5hc6aL4fi4RJg1zormOIbNmSKGDmDGi7A5jmFzpovh+LhEmDXOiuY4hs2ZIoYOYMaLsDmOYXOmi+H4uESYNc6K5jiGzZkihg5gxouwOY5hc6aL4fi4RJg1zormOIbNmSKGDmDGi7A5jmFzpovh+MyiRLj0+pt5DCOIRhGfcXAMM45hc6aIoQOY8SJsTq9juHLr1YWmFaaL4fjMokQwxhhj5omDnz/ytW9/t1DOHy4RjDHGmAl47tVfXrz3xutu+eNCP3+4RDDGGGMm4ODnj2y+4gaY+xcJLhGMMcaYcdErBJUIc/8iwSWCMcYYMy7xCkHM94sElwjGGGPMWORXCGK+XyS4RDDGGGPGoniFIOb4RYJLBGOMMWZxqq8QxBy/SHCJYIwxxixOfoXwjtXbz9ywM27n9UWCSwRjjDFmEfIrhPU7f+dt5174P86/JEqEeX2R4BLBGGOMWQRKhMe/94J44FvHV22/5pKrD4QGfvSP/1p0mQNcIhhjjDET8L1Xfr75ihv2/O5HCv384RLBdJSrb/po8T8sMWaOYcEXKWA6i0sEY1qGTbP4354aM8ew4IsUMJ3FJYIxLeMSwQwKlwg9Ynglwr/9X2M6hUsEMyjeLBEqWWC6yfd+8vPNe27Y83sfKfTzh0sE01FcIphB4RKhR7hEMKZlXCKYQeESoUe4RDCmZVwimEHhEqFHuEQwpmVcIphB4RKhR7hEMKZlXCKYQeESoUe4RDCmZVwimEHhEqFHuEQwpmVcIphB4RKhR7hEMKZlXCKYQeESoUe4RDCmZVwimEHhEqFHuEQwpmXaKhEO3H53oVk+tl974LmTL736+ht3Hr63aOoy9x39K+YMhX65IVyrtl2NQLiIG7e5dWr4xPGGwHWWn36BS4Qe4RLBmJZppUTg7Jnlyffk8RMMx7G0VKfdDGCqp06d+vrjT15/8x8VTcsK4xKrK9//h8hLWyLg6vC9DyBwVa3QCi4ReoRLBGNaZvYlAt9QdWZzVOjbKoc3MgcSx6FOkVowCBuE0HOGoYE4TWUptygZKw8nDwvZY6OmW+86jKDvu7KPw1KWENNA4JaTVfrNl79PeoTCEqJ7mFW57+hfUSIQKDpqwnnykuVW3rL/WhZ6aumju8blij6PBQoIxLTpxW31qcMSQRpc8RHIgCtyTGPGuEToES4RjGmZ2ZcI+p7KOaRvqJwiyGi45QqFfRAGCOqOUmcPspQ60cMSOMa4xnA6AmWAoDMs23MrIWxCBlo1YTSAoMNVcii5otSTqjtKhkbJwSkDNS1UJagLBl9//El10Tf7LIdzGWMZ3QtGP7W6c5VSso5/ZI0VenVRtRTKEFDSCwNGZD4oNRYySgSBPGK2y4pLhB7hEsGYlpl9iQA6RSQjhKy3C5Kr6HzSmRqnV+6isyosdbbFLYK+v8bhFPrCHll+0DBKPto5GkGFiLzJUh40t3Crc1FKnbgIaJgzAt/OkaWsoqHVGg9byHTXQJI1kyqjn1rTC7catxhLVZGKIU1bj1D71BLoQqDkR0qQXL2dJe/esufPv/yQ6QUHP3/EJYIxbdKFEiFOi6yvglm06iTj0EKJgD4oLPOtejGK9HEEFvbIaBCyfRhzIqouATSyzB5CLtwKdQx01lapHbqQ6a7RC7kgu4LwkKcnG+IpQf7DMg8KtQ8YMmYI2PMHpX6ggACyrN7OkredcyGnjukRe3//o8WuNX+4RDAdpVMlQvE6ugAzWvWjcX2v5TSSUgZ6+x2WkvMtBvTSWwGINxCFPTIaBPxjr8M1jkn10lfnsMweQg7/oN8YQEATX+jlpJbaoQs5Ri/kgtFPXcRT4xZjUTog6N0JxFjxpIUsP3TPlhJEcTtL/Bahd/z1cz8sdq35wyWC6ShtlQg6tDifQgZOlDhmqnCoYMlVZ48s1Z0rhxwanb7YZD/5lgMyhpNQGAAyGgSdlzhH1kBoZKwjH40ss4eQscGAEbEMnzqhma2eF0G9CvLQfBFH5tH0jJoG+vBZyFUWempkrpoeoNS4jMWg8cjoZYCGJpQqF+irXlmOB8QGgdtQyhKQo06aMf5dBNNBXCKYjtJKicD3Wp0o+t6vw5JTREK2zKiLbJB1dAHnlpri1EHQybTQrTzoAK4aIMuV5qmfweuHGmgYV8Mxk+iYPWSZY1LG2T8GxQSq5KEhQsTRq2mg5FbzLORaqoNqYtV44goNQ8cjo+QqPRrVB5CftJCxhJiSihvJgLxQbbTcuEQwHcQlgukorZQIC8HplQ+SAh1phdJMzYzjGWVBUS7MGJcIpoO4RDAdpYMlAl9nuRbQNK8lgr6dFxQ2Y6IAFsTrgYIZx5O56TUDV+TcNEtcIpgO4hLBdJROlQirtl2t84xrAU16yZ/t5wM9V0FhMyYKYEFhE8w+nhpuxoMWuEQwHcQlgukonSoRjFluXCKYDuISwXQUlwhmULhEMB3EJYLpKC4RzKBwiWA6iEsE01FcIphB4RLBdBCXCKajuEQwg8IlgukgLhFMR3GJYAaFSwTTQVwimI7iEsEMCpcIpoO4RDAdxSWCGRQuEUwHcYlgOopLBDMoXCKYDuISwXQUlwhmULhEMB3EJYLpKC4RzKBwiWA6iEsE01Euvf5mNk1jBgILvkgBY1rHJYIxxhhjanCJYIwxxpgaXCIYY4wxpgaXCMYYY4ypwSWCMcYYY2r4dYnw03/7v8YYY4wxgUsEY4wxxtTgEsEYY4wxNbhEMMYYY0wNLhGMMcYYU4NLBGOMMcbU4BLBGGOMMTW4RDDGGGNMDS4RjDHGGFODSwRjjDHG1OASwRhjjDE1uEQwxhhjTA0uEYwxxhhTg0sEY4wxxtTgEsEYY4wxNbhEMMYYY0wNLhGMMcYYU4NLBGOMMcbU8GaJ8M2fvMF/jDHGGGOCb/7kjf8fGO5nNukezwIAAAAASUVORK5CYII=" alt="Performance Analysis Workflow" />
+<p class="caption">Performance Analysis Workflow</p>
+</div>
+<div id="individual-assets" class="section level2">
+<h2>Individual Assets</h2>
+<p>Individual assets are the simplest form of analysis because there is no portfolio aggregation (Step 3A). We’ll re-do the “Quick Example” this time getting the <strong>Sharpe Ratio</strong>, a measure of reward-to-risk.</p>
+<p>Before we get started let’s find the performance function we want to use from <code>PerformanceAnalytics</code>. Searching <code>tq_performance_fun_options</code>, we can see that <code>SharpeRatio</code> is available. Type <code>?SharpeRatio</code>, and we can see that the arguments are:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">args</span>(SharpeRatio)</code></pre></div>
+<pre><code>## function (R, Rf = 0, p = 0.95, FUN = c(&quot;StdDev&quot;, &quot;VaR&quot;, &quot;ES&quot;), 
+##     weights = NULL, annualize = FALSE, ...) 
+## NULL</code></pre>
+<p>We can actually skip the baseline path because the function does not require <code>Rb</code>. The function takes <code>R</code>, which is passed using <code>Ra</code> in <code>tq_performance(Ra, Rb, performance_fun, ...)</code>. A little bit of foresight saves us some work.</p>
+<div id="step-1a-get-stock-prices" class="section level3">
+<h3>Step 1A: Get stock prices</h3>
+<p>Use <code>tq_get()</code> to get stock prices.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stock_prices &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="st">&quot;GOOG&quot;</span>, <span class="st">&quot;NFLX&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get  =</span> <span class="st">&quot;stock.prices&quot;</span>,
+           <span class="dt">from =</span> <span class="st">&quot;2010-01-01&quot;</span>,
+           <span class="dt">to   =</span> <span class="st">&quot;2015-12-31&quot;</span>)
+stock_prices</code></pre></div>
+<pre><code>## # A tibble: 4,530 × 8
+##    symbol       date   open   high    low  close    volume adjusted
+##     &lt;chr&gt;     &lt;date&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1    AAPL 2010-01-04 213.43 214.50 212.38 214.01 123432400 27.72704
+## 2    AAPL 2010-01-05 214.60 215.59 213.25 214.38 150476200 27.77498
+## 3    AAPL 2010-01-06 214.38 215.23 210.75 210.97 138040000 27.33318
+## 4    AAPL 2010-01-07 211.75 212.00 209.05 210.58 119282800 27.28265
+## 5    AAPL 2010-01-08 210.30 212.00 209.06 211.98 111902700 27.46403
+## 6    AAPL 2010-01-11 212.80 213.00 208.45 210.11 115557400 27.22176
+## 7    AAPL 2010-01-12 209.19 209.77 206.42 207.72 148614900 26.91211
+## 8    AAPL 2010-01-13 207.87 210.93 204.10 210.65 151473000 27.29172
+## 9    AAPL 2010-01-14 210.11 210.46 209.02 209.43 108223500 27.13366
+## 10   AAPL 2010-01-15 210.93 211.60 205.87 205.93 148516900 26.68020
+## # ... with 4,520 more rows</code></pre>
+</div>
+<div id="step-2a-mutate-to-returns" class="section level3">
+<h3>Step 2A: Mutate to returns</h3>
+<p>Using the <code>tidyverse</code> split, apply, combine framework, we can mutate groups of stocks by first “grouping” with <code>group_by</code> and then applying a mutating function using <code>tq_transmute</code>. We use the <code>quantmod</code> function <code>periodReturn</code> as the mutating function. We pass along the arguments <code>period = &quot;monthly&quot;</code> to return the results in monthly periodicity. Last, we use the <code>col_rename</code> argument to rename the output column.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stock_returns_monthly &lt;-<span class="st"> </span>stock_prices %&gt;%
+<span class="st">    </span><span class="kw">group_by</span>(symbol) %&gt;%
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun   =</span> Ad, 
+                 <span class="dt">mutate_fun =</span> periodReturn, 
+                 <span class="dt">period     =</span> <span class="st">&quot;monthly&quot;</span>, 
+                 <span class="dt">col_rename =</span> <span class="st">&quot;Ra&quot;</span>)
+stock_returns_monthly</code></pre></div>
+<pre><code>## Source: local data frame [216 x 3]
+## Groups: symbol [3]
+## 
+##    symbol       date          Ra
+##     &lt;chr&gt;     &lt;date&gt;       &lt;dbl&gt;
+## 1    AAPL 2010-01-29 -0.10256526
+## 2    AAPL 2010-02-26  0.06539619
+## 3    AAPL 2010-03-31  0.14847041
+## 4    AAPL 2010-04-30  0.11102125
+## 5    AAPL 2010-05-28 -0.01612472
+## 6    AAPL 2010-06-30 -0.02082686
+## 7    AAPL 2010-07-30  0.02274081
+## 8    AAPL 2010-08-31 -0.05500481
+## 9    AAPL 2010-09-30  0.16721508
+## 10   AAPL 2010-10-29  0.06072249
+## # ... with 206 more rows</code></pre>
+</div>
+<div id="step-3a-aggregate-to-portfolio-returns-skipped" class="section level3">
+<h3>Step 3A: Aggregate to Portfolio Returns (Skipped)</h3>
+<p>Step 3A can be skipped because we are only interested in the Sharpe Ratio for <em>individual stocks</em> (not a portfolio).</p>
+<p>Step 3B can also be skipped because the <code>SharpeRatio</code> function from <code>PerformanceAnalytics</code> does not require a baseline.</p>
+</div>
+<div id="step-4-analyze-performance" class="section level3">
+<h3>Step 4: Analyze Performance</h3>
+<p>The last step is to apply the <code>SharpeRatio</code> function to our groups of stock returns. We do this using <code>tq_performance()</code> with the arguments <code>Ra = Ra</code>, <code>Rb = NULL</code> (not required), and <code>performance_fun = SharpeRatio</code>. We can also pass other arguments of the <code>SharpeRatio</code> function such as <code>Rf</code>, <code>p</code>, <code>FUN</code>, and <code>annualize</code>. We will just use the defaults for this example.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stock_returns_monthly %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, 
+                   <span class="dt">Rb =</span> <span class="ot">NULL</span>, 
+                   <span class="dt">performance_fun =</span> SharpeRatio)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 4]
+## Groups: symbol [3]
+## 
+##   symbol `ESSharpe(Rf=0%,p=95%)` `StdDevSharpe(Rf=0%,p=95%)`
+##    &lt;chr&gt;                   &lt;dbl&gt;                       &lt;dbl&gt;
+## 1   AAPL               0.1682209                   0.2872497
+## 2   GOOG               0.1264633                   0.1992533
+## 3   NFLX               0.2351226                   0.2827729
+## # ... with 1 more variables: `VaRSharpe(Rf=0%,p=95%)` &lt;dbl&gt;</code></pre>
+<p>Now we have the Sharpe Ratio for each of the three stocks. What if we want to adjust the parameters of the function? We can just add on the arguments of the underlying function.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stock_returns_monthly %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, 
+                   <span class="dt">Rb =</span> <span class="ot">NULL</span>, 
+                   <span class="dt">performance_fun =</span> SharpeRatio, 
+                   <span class="dt">Rf =</span> <span class="fl">0.03</span> /<span class="st"> </span><span class="dv">12</span>, 
+                   <span class="dt">p =</span> <span class="fl">0.99</span>)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 4]
+## Groups: symbol [3]
+## 
+##   symbol `ESSharpe(Rf=0.2%,p=99%)` `StdDevSharpe(Rf=0.2%,p=99%)`
+##    &lt;chr&gt;                     &lt;dbl&gt;                         &lt;dbl&gt;
+## 1   AAPL                0.11304625                     0.2528850
+## 2   GOOG                0.08081889                     0.1663198
+## 3   NFLX                0.11634192                     0.2703676
+## # ... with 1 more variables: `VaRSharpe(Rf=0.2%,p=99%)` &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<div id="portfolios-asset-groups" class="section level2">
+<h2>Portfolios (Asset Groups)</h2>
+<p>Portfolios are slightly more complicated because we are now dealing with groups of assets versus individual stocks, and we need to aggregate weighted returns. Fortunately, this is only one extra step with <code>tidyquant</code> using <code>tq_portfolio()</code>.</p>
+<div id="single-portfolio" class="section level3">
+<h3>Single Portfolio</h3>
+<p>Let’s recreate the CAPM analysis in the “Quick Example” this time comparing a portfolio of technology stocks to the SPDR Technology ETF (XLK).</p>
+<div id="steps-1a-and-2a-asset-period-returns" class="section level4">
+<h4>Steps 1A and 2A: Asset Period Returns</h4>
+<p>This is the same as what we did previously to get the monthly returns for groups of individual stock prices. We use the split, apply, combine framework using the workflow of <code>tq_get</code>, <code>group_by</code>, and <code>tq_transmute</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stock_returns_monthly &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="st">&quot;GOOG&quot;</span>, <span class="st">&quot;NFLX&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get  =</span> <span class="st">&quot;stock.prices&quot;</span>,
+           <span class="dt">from =</span> <span class="st">&quot;2010-01-01&quot;</span>,
+           <span class="dt">to   =</span> <span class="st">&quot;2015-12-31&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">group_by</span>(symbol) %&gt;%
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun   =</span> Ad, 
+                 <span class="dt">mutate_fun =</span> periodReturn, 
+                 <span class="dt">period     =</span> <span class="st">&quot;monthly&quot;</span>, 
+                 <span class="dt">col_rename =</span> <span class="st">&quot;Ra&quot;</span>)
+stock_returns_monthly</code></pre></div>
+<pre><code>## Source: local data frame [216 x 3]
+## Groups: symbol [3]
+## 
+##    symbol       date          Ra
+##     &lt;chr&gt;     &lt;date&gt;       &lt;dbl&gt;
+## 1    AAPL 2010-01-29 -0.10256526
+## 2    AAPL 2010-02-26  0.06539619
+## 3    AAPL 2010-03-31  0.14847041
+## 4    AAPL 2010-04-30  0.11102125
+## 5    AAPL 2010-05-28 -0.01612472
+## 6    AAPL 2010-06-30 -0.02082686
+## 7    AAPL 2010-07-30  0.02274081
+## 8    AAPL 2010-08-31 -0.05500481
+## 9    AAPL 2010-09-30  0.16721508
+## 10   AAPL 2010-10-29  0.06072249
+## # ... with 206 more rows</code></pre>
+</div>
+<div id="steps-1b-and-2b-baseline-period-returns" class="section level4">
+<h4>Steps 1B and 2B: Baseline Period Returns</h4>
+<p>This was also done previously.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">baseline_returns_monthly &lt;-<span class="st"> &quot;XLK&quot;</span> %&gt;%
+<span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get  =</span> <span class="st">&quot;stock.prices&quot;</span>,
+           <span class="dt">from =</span> <span class="st">&quot;2010-01-01&quot;</span>,
+           <span class="dt">to   =</span> <span class="st">&quot;2015-12-31&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun   =</span> Ad, 
+                 <span class="dt">mutate_fun =</span> periodReturn, 
+                 <span class="dt">period     =</span> <span class="st">&quot;monthly&quot;</span>, 
+                 <span class="dt">col_rename =</span> <span class="st">&quot;Rb&quot;</span>)
+baseline_returns_monthly</code></pre></div>
+<pre><code>## # A tibble: 72 × 2
+##          date          Rb
+##        &lt;date&gt;       &lt;dbl&gt;
+## 1  2010-01-29 -0.09926949
+## 2  2010-02-26  0.03482834
+## 3  2010-03-31  0.06839788
+## 4  2010-04-30  0.01255406
+## 5  2010-05-28 -0.07481830
+## 6  2010-06-30 -0.05396629
+## 7  2010-07-30  0.07450984
+## 8  2010-08-31 -0.05611310
+## 9  2010-09-30  0.11663639
+## 10 2010-10-29  0.05777586
+## # ... with 62 more rows</code></pre>
+</div>
+<div id="step-3a-aggregate-to-portfolio-period-returns" class="section level4">
+<h4>Step 3A: Aggregate to Portfolio Period Returns</h4>
+<p>The <code>tidyquant</code> function, <code>tq_portfolio()</code> aggregates a group of individual assets into a single return using a weighted composition of the underlying assets. To do this we need to first develop portfolio weights. There are two ways to do this for a single portfolio:</p>
+<ol style="list-style-type: decimal">
+<li>Supplying a vector of weights</li>
+<li>Supplying a two column tidy data frame (tibble) with stock symbols in the first column and weights to map in the second.</li>
+</ol>
+<p>Suppose we want to split our portfolio evenly between AAPL and NFLX. We’ll show this using both methods.</p>
+<div id="method-1-aggregating-a-portfolio-using-vector-of-weights" class="section level5">
+<h5>Method 1: Aggregating a Portfolio using Vector of Weights</h5>
+<p>We’ll use the weight vector, <code>c(0.5, 0, 0.5)</code>. Two important aspects to supplying a numeric vector of weights: First, notice that the length (3) is equal to the number of assets (3). This is a requirement. Second, notice that the sum of the weighting vector is equal to 1. This is not “required”, but is best practice. If the sum is not 1, the weights will be distributed accordingly by scaling the vector to 1, and a warning message will appear.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wts &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.5</span>, <span class="fl">0.0</span>, <span class="fl">0.5</span>)
+portfolio_returns_monthly &lt;-<span class="st"> </span>stock_returns_monthly %&gt;%
+<span class="st">    </span><span class="kw">tq_portfolio</span>(<span class="dt">assets_col  =</span> symbol, 
+                 <span class="dt">returns_col =</span> Ra, 
+                 <span class="dt">weights     =</span> wts, 
+                 <span class="dt">col_rename  =</span> <span class="st">&quot;Ra&quot;</span>)
+portfolio_returns_monthly</code></pre></div>
+<pre><code>## # A tibble: 72 × 2
+##          date          Ra
+##        &lt;date&gt;       &lt;dbl&gt;
+## 1  2010-01-29  0.03071069
+## 2  2010-02-26  0.06293880
+## 3  2010-03-31  0.13040921
+## 4  2010-04-30  0.23915514
+## 5  2010-05-28  0.06821979
+## 6  2010-06-30 -0.02188252
+## 7  2010-07-30 -0.02723285
+## 8  2010-08-31  0.11648599
+## 9  2010-09-30  0.25123937
+## 10 2010-10-29  0.06742970
+## # ... with 62 more rows</code></pre>
+<p>We now have an aggregated portfolio that is a 50/50 blend of AAPL and NFLX.</p>
+<p>You may be asking why didn’t we use GOOG? <strong>The important thing to understand is that all of the assets from the asset returns don’t need to be used when creating the portfolio!</strong> This enables us to scale individual stock returns and then vary weights to optimize the portfolio (this will be a further subject that we address in the future!)</p>
+</div>
+<div id="method-2-aggregating-a-portfolio-using-two-column-tibble-with-symbols-and-weights" class="section level5">
+<h5>Method 2: Aggregating a Portfolio using Two Column Tibble with Symbols and Weights</h5>
+<p>A possibly more useful method of aggregating returns is using a tibble of symbols and weights that are mapped to the portfolio. We’ll recreate the previous portfolio example using mapped weights.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wts_map &lt;-<span class="st"> </span><span class="kw">tibble</span>(
+    <span class="dt">symbols =</span> <span class="kw">c</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="st">&quot;NFLX&quot;</span>),
+    <span class="dt">weights =</span> <span class="kw">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>)
+)
+wts_map</code></pre></div>
+<pre><code>## # A tibble: 2 × 2
+##   symbols weights
+##     &lt;chr&gt;   &lt;dbl&gt;
+## 1    AAPL     0.5
+## 2    NFLX     0.5</code></pre>
+<p>Next, supply this two column tibble, with symbols in the first column and weights in the second, to the <code>weights</code> argument in <code>tq_performance()</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stock_returns_monthly %&gt;%
+<span class="st">    </span><span class="kw">tq_portfolio</span>(<span class="dt">assets_col  =</span> symbol, 
+                 <span class="dt">returns_col =</span> Ra, 
+                 <span class="dt">weights     =</span> wts_map, 
+                 <span class="dt">col_rename  =</span> <span class="st">&quot;Ra_using_wts_map&quot;</span>)</code></pre></div>
+<pre><code>## # A tibble: 72 × 2
+##          date Ra_using_wts_map
+##        &lt;date&gt;            &lt;dbl&gt;
+## 1  2010-01-29       0.03071069
+## 2  2010-02-26       0.06293880
+## 3  2010-03-31       0.13040921
+## 4  2010-04-30       0.23915514
+## 5  2010-05-28       0.06821979
+## 6  2010-06-30      -0.02188252
+## 7  2010-07-30      -0.02723285
+## 8  2010-08-31       0.11648599
+## 9  2010-09-30       0.25123937
+## 10 2010-10-29       0.06742970
+## # ... with 62 more rows</code></pre>
+<p>The aggregated returns are exactly the same. The advantage with this method is that not all symbols need to be specified. Any symbol not specified by default gets a weight of zero.</p>
+<p>Now, imagine if you had an entire index, such as the Russell 2000, of 2000 individual stock returns in a nice tidy data frame. It would be very easy to adjust portfolios and compute blended returns, and you only need to supply the symbols that you want to blend. All other symbols default to zero!</p>
+</div>
+</div>
+<div id="step-3b-merging-ra-and-rb" class="section level4">
+<h4>Step 3B: Merging Ra and Rb</h4>
+<p>Now that we have the aggregated portfolio returns (“Ra”) from Step 3A and the baseline returns (“Rb”) from Step 2B, we can merge to get our consolidated table of asset and baseline returns. Nothing new here.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_single_portfolio &lt;-<span class="st"> </span><span class="kw">left_join</span>(portfolio_returns_monthly, 
+                                   baseline_returns_monthly,
+                                   <span class="dt">by =</span> <span class="st">&quot;date&quot;</span>)
+RaRb_single_portfolio</code></pre></div>
+<pre><code>## # A tibble: 72 × 3
+##          date          Ra          Rb
+##        &lt;date&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+## 1  2010-01-29  0.03071069 -0.09926949
+## 2  2010-02-26  0.06293880  0.03482834
+## 3  2010-03-31  0.13040921  0.06839788
+## 4  2010-04-30  0.23915514  0.01255406
+## 5  2010-05-28  0.06821979 -0.07481830
+## 6  2010-06-30 -0.02188252 -0.05396629
+## 7  2010-07-30 -0.02723285  0.07450984
+## 8  2010-08-31  0.11648599 -0.05611310
+## 9  2010-09-30  0.25123937  0.11663639
+## 10 2010-10-29  0.06742970  0.05777586
+## # ... with 62 more rows</code></pre>
+</div>
+<div id="step-4-computing-the-capm-table" class="section level4">
+<h4>Step 4: Computing the CAPM Table</h4>
+<p>The CAPM table is computed with the function <code>table.CAPM</code> from <code>PerformanceAnalytics</code>. We just perform the same task that we performed in the “Quick Example”.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_single_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, <span class="dt">Rb =</span> Rb, <span class="dt">performance_fun =</span> table.CAPM)</code></pre></div>
+<pre><code>## # A tibble: 1 × 12
+##   ActivePremium  Alpha AnnualizedAlpha   Beta `Beta-` `Beta+` Correlation
+## *         &lt;dbl&gt;  &lt;dbl&gt;           &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;       &lt;dbl&gt;
+## 1        0.3251 0.0297          0.4209 0.7648 -0.2186  0.5035      0.2869
+## # ... with 5 more variables: `Correlationp-value` &lt;dbl&gt;,
+## #   InformationRatio &lt;dbl&gt;, `R-squared` &lt;dbl&gt;, TrackingError &lt;dbl&gt;,
+## #   TreynorRatio &lt;dbl&gt;</code></pre>
+<p>Now we have the CAPM performance metrics for a portfolio! While this is cool, it’s cooler to do multiple portfolios. Let’s see how.</p>
+</div>
+</div>
+<div id="multiple-portfolios" class="section level3">
+<h3>Multiple Portfolios</h3>
+<p>Once you understand the process for a single portfolio using Step 3A, Method 2 (aggregating weights by mapping), scaling to multiple portfolios is just building on this concept. Let’s recreate the same example from the “Single Portfolio” Example this time with three portfolios:</p>
+<ol style="list-style-type: decimal">
+<li>50% AAPL, 25% GOOG, 25% NFLX</li>
+<li>25% AAPL, 50% GOOG, 25% NFLX</li>
+<li>25% AAPL, 25% GOOG, 50% NFLX</li>
+</ol>
+<div id="steps-1-and-2-are-the-exact-same-as-the-single-portfolio-example" class="section level4">
+<h4>Steps 1 and 2 are the Exact Same as the Single Portfolio Example</h4>
+<p>First, get individual asset returns grouped by asset, which is the exact same as Steps 1A and 1B from the Single Portfolio example.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stock_returns_monthly &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="st">&quot;GOOG&quot;</span>, <span class="st">&quot;NFLX&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get  =</span> <span class="st">&quot;stock.prices&quot;</span>,
+           <span class="dt">from =</span> <span class="st">&quot;2010-01-01&quot;</span>,
+           <span class="dt">to   =</span> <span class="st">&quot;2015-12-31&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">group_by</span>(symbol) %&gt;%
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun   =</span> Ad, 
+                 <span class="dt">mutate_fun =</span> periodReturn, 
+                 <span class="dt">period     =</span> <span class="st">&quot;monthly&quot;</span>, 
+                 <span class="dt">col_rename =</span> <span class="st">&quot;Ra&quot;</span>)</code></pre></div>
+<p>Second, get baseline asset returns, which is the exact same as Steps 1B and 2B from the Single Portfolio example.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">baseline_returns_monthly &lt;-<span class="st"> &quot;XLK&quot;</span> %&gt;%
+<span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get  =</span> <span class="st">&quot;stock.prices&quot;</span>,
+           <span class="dt">from =</span> <span class="st">&quot;2010-01-01&quot;</span>,
+           <span class="dt">to   =</span> <span class="st">&quot;2015-12-31&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun   =</span> Ad, 
+                 <span class="dt">mutate_fun =</span> periodReturn, 
+                 <span class="dt">period     =</span> <span class="st">&quot;monthly&quot;</span>, 
+                 <span class="dt">col_rename =</span> <span class="st">&quot;Rb&quot;</span>)</code></pre></div>
+</div>
+<div id="step-3a-aggregate-portfolio-returns-for-multiple-portfolios" class="section level4">
+<h4>Step 3A: Aggregate Portfolio Returns for Multiple Portfolios</h4>
+<p>This is where it gets fun. If you picked up on Single Portfolio, Step3A, Method 2 (mapping weights), this is just an extension for multiple portfolios.</p>
+<p>First, we need to grow our portfolios. <code>tidyquant</code> has a handy, albeit simple, function, <code>tq_repeat_df()</code>, for scaling a single portfolio to many. It takes a data frame, and the number of repeats, <code>n</code>, and the <code>index_col_name</code>, which adds a sequential index. Let’s see how it works for our example. We need three portfolios:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stock_returns_monthly_multi &lt;-<span class="st"> </span>stock_returns_monthly %&gt;%
+<span class="st">    </span><span class="kw">tq_repeat_df</span>(<span class="dt">n =</span> <span class="dv">3</span>)
+stock_returns_monthly_multi</code></pre></div>
+<pre><code>## Source: local data frame [648 x 4]
+## Groups: portfolio [3]
+## 
+##    portfolio symbol       date          Ra
+##        &lt;int&gt;  &lt;chr&gt;     &lt;date&gt;       &lt;dbl&gt;
+## 1          1   AAPL 2010-01-29 -0.10256526
+## 2          1   AAPL 2010-02-26  0.06539619
+## 3          1   AAPL 2010-03-31  0.14847041
+## 4          1   AAPL 2010-04-30  0.11102125
+## 5          1   AAPL 2010-05-28 -0.01612472
+## 6          1   AAPL 2010-06-30 -0.02082686
+## 7          1   AAPL 2010-07-30  0.02274081
+## 8          1   AAPL 2010-08-31 -0.05500481
+## 9          1   AAPL 2010-09-30  0.16721508
+## 10         1   AAPL 2010-10-29  0.06072249
+## # ... with 638 more rows</code></pre>
+<p>Examining the results, we can see that a few things happened:</p>
+<ol style="list-style-type: decimal">
+<li>The length (number of rows) has tripled. This is the essence of <code>tq_repeat_df</code>: it grows the data frame length-wise, repeating the data frame <code>n</code> times. In our case, <code>n = 3</code>.</li>
+<li>Our data frame, which was grouped by symbol, was ungrouped. This is needed to prevent <code>tq_portfolio</code> from blending on the individual stocks. <code>tq_portfolio</code> only works on groups of stocks.</li>
+<li>We have a new column, named “portfolio”. The “portfolio” column name is a key that tells <code>tq_portfolio</code> that multiple groups exist to analyze. Just note that for multiple portfolio analysis, the “portfolio” column name is required.</li>
+<li>We have three groups of portfolios. This is what <code>tq_portfolio</code> will split, apply (aggregate), then combine on.</li>
+</ol>
+<p>Now the tricky part: We need a new table of weights to map on. There’s a few requirements:</p>
+<ol style="list-style-type: decimal">
+<li>We must supply a three column tibble with the following columns: “portfolio”, asset, and weight in that order.</li>
+<li>The “portfolio” column must be named “portfolio” since this is a key name for mapping.</li>
+<li>The tibble must be grouped by the portfolio column.</li>
+</ol>
+<p>Here’s what the weights table should look like for our example:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">weights &lt;-<span class="st"> </span><span class="kw">c</span>(
+    <span class="fl">0.50</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>,
+    <span class="fl">0.25</span>, <span class="fl">0.50</span>, <span class="fl">0.25</span>,
+    <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.50</span>
+)
+stocks &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="st">&quot;GOOG&quot;</span>, <span class="st">&quot;NFLX&quot;</span>)
+weights_table &lt;-<span class="st">  </span><span class="kw">tibble</span>(stocks) %&gt;%
+<span class="st">    </span><span class="kw">tq_repeat_df</span>(<span class="dt">n =</span> <span class="dv">3</span>) %&gt;%
+<span class="st">    </span><span class="kw">bind_cols</span>(<span class="kw">tibble</span>(weights)) %&gt;%
+<span class="st">    </span><span class="kw">group_by</span>(portfolio)
+weights_table</code></pre></div>
+<pre><code>## Source: local data frame [9 x 3]
+## Groups: portfolio [3]
+## 
+##   portfolio stocks weights
+##       &lt;int&gt;  &lt;chr&gt;   &lt;dbl&gt;
+## 1         1   AAPL    0.50
+## 2         1   GOOG    0.25
+## 3         1   NFLX    0.25
+## 4         2   AAPL    0.25
+## 5         2   GOOG    0.50
+## 6         2   NFLX    0.25
+## 7         3   AAPL    0.25
+## 8         3   GOOG    0.25
+## 9         3   NFLX    0.50</code></pre>
+<p>Now just pass the the expanded <code>stock_returns_monthly_multi</code> and the <code>weights_table</code> to <code>tq_portfolio</code> for portfolio aggregation.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">portfolio_returns_monthly_multi &lt;-<span class="st"> </span>stock_returns_monthly_multi %&gt;%
+<span class="st">    </span><span class="kw">tq_portfolio</span>(<span class="dt">assets_col  =</span> symbol, 
+                 <span class="dt">returns_col =</span> Ra, 
+                 <span class="dt">weights     =</span> weights_table, 
+                 <span class="dt">col_rename  =</span> <span class="st">&quot;Ra&quot;</span>)
+portfolio_returns_monthly_multi</code></pre></div>
+<pre><code>## Source: local data frame [216 x 3]
+## Groups: portfolio [3]
+## 
+##    portfolio       date            Ra
+##        &lt;int&gt;     &lt;date&gt;         &lt;dbl&gt;
+## 1          1 2010-01-29 -0.0489018445
+## 2          1 2010-02-26  0.0482132938
+## 3          1 2010-03-31  0.1233848612
+## 4          1 2010-04-30  0.1446899884
+## 5          1 2010-05-28  0.0245280152
+## 6          1 2010-06-30 -0.0307681832
+## 7          1 2010-07-30  0.0006001173
+## 8          1 2010-08-31  0.0474360262
+## 9          1 2010-09-30  0.2222062947
+## 10         1 2010-10-29  0.0788975110
+## # ... with 206 more rows</code></pre>
+<p>Let’s assess the output. We now have a single, “long” format data frame of portfolio returns. It has three groups with the aggregated portfolios blended by mapping the <code>weight_table</code>.</p>
+</div>
+<div id="steps-3b-and-4-merging-and-assessing-performance" class="section level4">
+<h4>Steps 3B and 4: Merging and Assessing Performance</h4>
+<p>These steps are the exact same as the Single Portfolio example.</p>
+<p>First, we merge with the baseline using “date” as the key.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio &lt;-<span class="st"> </span><span class="kw">left_join</span>(portfolio_returns_monthly_multi, 
+                                     baseline_returns_monthly,
+                                     <span class="dt">by =</span> <span class="st">&quot;date&quot;</span>)
+RaRb_multiple_portfolio</code></pre></div>
+<pre><code>## Source: local data frame [216 x 4]
+## Groups: portfolio [?]
+## 
+##    portfolio       date            Ra          Rb
+##        &lt;int&gt;     &lt;date&gt;         &lt;dbl&gt;       &lt;dbl&gt;
+## 1          1 2010-01-29 -0.0489018445 -0.09926949
+## 2          1 2010-02-26  0.0482132938  0.03482834
+## 3          1 2010-03-31  0.1233848612  0.06839788
+## 4          1 2010-04-30  0.1446899884  0.01255406
+## 5          1 2010-05-28  0.0245280152 -0.07481830
+## 6          1 2010-06-30 -0.0307681832 -0.05396629
+## 7          1 2010-07-30  0.0006001173  0.07450984
+## 8          1 2010-08-31  0.0474360262 -0.05611310
+## 9          1 2010-09-30  0.2222062947  0.11663639
+## 10         1 2010-10-29  0.0788975110  0.05777586
+## # ... with 206 more rows</code></pre>
+<p>Finally, we calculate the performance of each of the portfolios using <code>tq_performance</code>. Make sure the data frame is grouped on “portfolio”.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, <span class="dt">Rb =</span> Rb, <span class="dt">performance_fun =</span> table.CAPM)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 13]
+## Groups: portfolio [3]
+## 
+##   portfolio ActivePremium  Alpha AnnualizedAlpha   Beta `Beta-` `Beta+`
+##       &lt;int&gt;         &lt;dbl&gt;  &lt;dbl&gt;           &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1         1        0.2294 0.0191          0.2549 0.9174  0.3425  0.7418
+## 2         2        0.2175 0.0190          0.2538 0.8939  0.4581  0.6605
+## 3         3        0.3167 0.0306          0.4355 0.7311 -0.1593  0.3944
+## # ... with 6 more variables: Correlation &lt;dbl&gt;,
+## #   `Correlationp-value` &lt;dbl&gt;, InformationRatio &lt;dbl&gt;, `R-squared` &lt;dbl&gt;,
+## #   TrackingError &lt;dbl&gt;, TreynorRatio &lt;dbl&gt;</code></pre>
+<p>Inspecting the results, we now have a multiple portfolio comparison of the CAPM table from <code>PerformanceAnalytics</code>. We can do the same thing with <code>SharpeRatio</code> as well.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, <span class="dt">Rb =</span> <span class="ot">NULL</span>, <span class="dt">performance_fun =</span> SharpeRatio)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 4]
+## Groups: portfolio [3]
+## 
+##   portfolio `ESSharpe(Rf=0%,p=95%)` `StdDevSharpe(Rf=0%,p=95%)`
+##       &lt;int&gt;                   &lt;dbl&gt;                       &lt;dbl&gt;
+## 1         1               0.1699068                   0.3509816
+## 2         2               0.1451809                   0.3298835
+## 3         3               0.1492360                   0.3141580
+## # ... with 1 more variables: `VaRSharpe(Rf=0%,p=95%)` &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="available-functions" class="section level1">
+<h1>Available Functions</h1>
+<p>We’ve only scratched the surface of the analysis functions available through <code>PerformanceAnalytics</code>. The list below includes all of the compatible functions grouped by function type. The table functions are the most useful to get a cross section of metrics. We’ll touch on a few. We’ll also go over <code>VaR</code> and <code>SharpeRatio</code> as these are very commonly used as performance measures.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tq_performance_fun_options</span>()</code></pre></div>
+<pre><code>## $table.funs
+##  [1] &quot;table.AnnualizedReturns&quot; &quot;table.Arbitrary&quot;        
+##  [3] &quot;table.Autocorrelation&quot;   &quot;table.CAPM&quot;             
+##  [5] &quot;table.CaptureRatios&quot;     &quot;table.Correlation&quot;      
+##  [7] &quot;table.Distributions&quot;     &quot;table.DownsideRisk&quot;     
+##  [9] &quot;table.DownsideRiskRatio&quot; &quot;table.DrawdownsRatio&quot;   
+## [11] &quot;table.HigherMoments&quot;     &quot;table.InformationRatio&quot; 
+## [13] &quot;table.SFM&quot;               &quot;table.SpecificRisk&quot;     
+## [15] &quot;table.Stats&quot;             &quot;table.TrailingPeriods&quot;  
+## [17] &quot;table.UpDownRatios&quot;      &quot;table.Variability&quot;      
+## 
+## $CAPM.funs
+##  [1] &quot;CAPM.alpha&quot;       &quot;CAPM.beta&quot;        &quot;CAPM.beta.bear&quot;  
+##  [4] &quot;CAPM.beta.bull&quot;   &quot;CAPM.CML&quot;         &quot;CAPM.CML.slope&quot;  
+##  [7] &quot;CAPM.dynamic&quot;     &quot;CAPM.epsilon&quot;     &quot;CAPM.jensenAlpha&quot;
+## [10] &quot;CAPM.RiskPremium&quot; &quot;CAPM.SML.slope&quot;   &quot;TimingRatio&quot;     
+## [13] &quot;MarketTiming&quot;    
+## 
+## $SFM.funs
+## [1] &quot;SFM.alpha&quot;       &quot;SFM.beta&quot;        &quot;SFM.CML&quot;         &quot;SFM.CML.slope&quot;  
+## [5] &quot;SFM.dynamic&quot;     &quot;SFM.epsilon&quot;     &quot;SFM.jensenAlpha&quot;
+## 
+## $descriptive.funs
+## [1] &quot;mean&quot;           &quot;sd&quot;             &quot;min&quot;            &quot;max&quot;           
+## [5] &quot;cor&quot;            &quot;mean.geometric&quot; &quot;mean.stderr&quot;    &quot;mean.LCL&quot;      
+## [9] &quot;mean.UCL&quot;      
+## 
+## $annualized.funs
+## [1] &quot;Return.annualized&quot;        &quot;Return.annualized.excess&quot;
+## [3] &quot;sd.annualized&quot;            &quot;SharpeRatio.annualized&quot;  
+## 
+## $VaR.funs
+## [1] &quot;VaR&quot;  &quot;ES&quot;   &quot;ETL&quot;  &quot;CDD&quot;  &quot;CVaR&quot;
+## 
+## $moment.funs
+##  [1] &quot;var&quot;              &quot;cov&quot;              &quot;skewness&quot;        
+##  [4] &quot;kurtosis&quot;         &quot;CoVariance&quot;       &quot;CoSkewness&quot;      
+##  [7] &quot;CoSkewnessMatrix&quot; &quot;CoKurtosis&quot;       &quot;CoKurtosisMatrix&quot;
+## [10] &quot;M3.MM&quot;            &quot;M4.MM&quot;            &quot;BetaCoVariance&quot;  
+## [13] &quot;BetaCoSkewness&quot;   &quot;BetaCoKurtosis&quot;  
+## 
+## $drawdown.funs
+## [1] &quot;AverageDrawdown&quot;   &quot;AverageLength&quot;     &quot;AverageRecovery&quot;  
+## [4] &quot;DrawdownDeviation&quot; &quot;DrawdownPeak&quot;      &quot;maxDrawdown&quot;      
+## 
+## $Bacon.risk.funs
+## [1] &quot;MeanAbsoluteDeviation&quot; &quot;Frequency&quot;             &quot;SharpeRatio&quot;          
+## [4] &quot;MSquared&quot;              &quot;MSquaredExcess&quot;        &quot;HurstIndex&quot;           
+## 
+## $Bacon.regression.funs
+##  [1] &quot;CAPM.alpha&quot;       &quot;CAPM.beta&quot;        &quot;CAPM.epsilon&quot;    
+##  [4] &quot;CAPM.jensenAlpha&quot; &quot;SystematicRisk&quot;   &quot;SpecificRisk&quot;    
+##  [7] &quot;TotalRisk&quot;        &quot;TreynorRatio&quot;     &quot;AppraisalRatio&quot;  
+## [10] &quot;FamaBeta&quot;         &quot;Selectivity&quot;      &quot;NetSelectivity&quot;  
+## 
+## $Bacon.relative.risk.funs
+## [1] &quot;ActivePremium&quot;    &quot;ActiveReturn&quot;     &quot;TrackingError&quot;   
+## [4] &quot;InformationRatio&quot;
+## 
+## $Bacon.drawdown.funs
+## [1] &quot;PainIndex&quot;     &quot;PainRatio&quot;     &quot;CalmarRatio&quot;   &quot;SterlingRatio&quot;
+## [5] &quot;BurkeRatio&quot;    &quot;MartinRatio&quot;   &quot;UlcerIndex&quot;   
+## 
+## $Bacon.downside.risk.funs
+##  [1] &quot;DownsideDeviation&quot;     &quot;DownsidePotential&quot;    
+##  [3] &quot;DownsideFrequency&quot;     &quot;SemiDeviation&quot;        
+##  [5] &quot;SemiVariance&quot;          &quot;UpsideRisk&quot;           
+##  [7] &quot;UpsidePotentialRatio&quot;  &quot;UpsideFrequency&quot;      
+##  [9] &quot;BernardoLedoitRatio&quot;   &quot;DRatio&quot;               
+## [11] &quot;Omega&quot;                 &quot;OmegaSharpeRatio&quot;     
+## [13] &quot;OmegaExcessReturn&quot;     &quot;SortinoRatio&quot;         
+## [15] &quot;M2Sortino&quot;             &quot;Kappa&quot;                
+## [17] &quot;VolatilitySkewness&quot;    &quot;AdjustedSharpeRatio&quot;  
+## [19] &quot;SkewnessKurtosisRatio&quot; &quot;ProspectRatio&quot;        
+## 
+## $misc.funs
+## [1] &quot;KellyRatio&quot;   &quot;Modigliani&quot;   &quot;UpDownRatios&quot;</code></pre>
+<div id="table.stats" class="section level2">
+<h2>table.Stats</h2>
+<p>Returns a basic set of statistics that match the period of the data passed in (e.g., monthly returns will get monthly statistics, daily will be daily stats, and so on).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, <span class="dt">Rb =</span> <span class="ot">NULL</span>, <span class="dt">performance_fun =</span> table.Stats)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 17]
+## Groups: portfolio [3]
+## 
+##   portfolio ArithmeticMean GeometricMean Kurtosis `LCLMean(0.95)` Maximum
+##       &lt;int&gt;          &lt;dbl&gt;         &lt;dbl&gt;    &lt;dbl&gt;           &lt;dbl&gt;   &lt;dbl&gt;
+## 1         1         0.0290        0.0257   1.0984          0.0096  0.2222
+## 2         2         0.0287        0.0249   1.6075          0.0083  0.2270
+## 3         3         0.0385        0.0310   1.7844          0.0097  0.3699
+## # ... with 11 more variables: Median &lt;dbl&gt;, Minimum &lt;dbl&gt;, NAs &lt;dbl&gt;,
+## #   Observations &lt;dbl&gt;, Quartile1 &lt;dbl&gt;, Quartile3 &lt;dbl&gt;, SEMean &lt;dbl&gt;,
+## #   Skewness &lt;dbl&gt;, Stdev &lt;dbl&gt;, `UCLMean(0.95)` &lt;dbl&gt;, Variance &lt;dbl&gt;</code></pre>
+</div>
+<div id="table.capm" class="section level2">
+<h2>table.CAPM</h2>
+<p>Takes a set of returns and relates them to a benchmark return. Provides a set of measures related to an excess return single factor model, or CAPM.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, <span class="dt">Rb =</span> Rb, <span class="dt">performance_fun =</span> table.CAPM)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 13]
+## Groups: portfolio [3]
+## 
+##   portfolio ActivePremium  Alpha AnnualizedAlpha   Beta `Beta-` `Beta+`
+##       &lt;int&gt;         &lt;dbl&gt;  &lt;dbl&gt;           &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1         1        0.2294 0.0191          0.2549 0.9174  0.3425  0.7418
+## 2         2        0.2175 0.0190          0.2538 0.8939  0.4581  0.6605
+## 3         3        0.3167 0.0306          0.4355 0.7311 -0.1593  0.3944
+## # ... with 6 more variables: Correlation &lt;dbl&gt;,
+## #   `Correlationp-value` &lt;dbl&gt;, InformationRatio &lt;dbl&gt;, `R-squared` &lt;dbl&gt;,
+## #   TrackingError &lt;dbl&gt;, TreynorRatio &lt;dbl&gt;</code></pre>
+</div>
+<div id="table.annualizedreturns" class="section level2">
+<h2>table.AnnualizedReturns</h2>
+<p>Table of Annualized Return, Annualized Std Dev, and Annualized Sharpe.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, <span class="dt">Rb =</span> <span class="ot">NULL</span>, <span class="dt">performance_fun =</span> table.AnnualizedReturns)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 4]
+## Groups: portfolio [3]
+## 
+##   portfolio AnnualizedReturn `AnnualizedSharpe(Rf=0%)` AnnualizedStdDev
+##       &lt;int&gt;            &lt;dbl&gt;                     &lt;dbl&gt;            &lt;dbl&gt;
+## 1         1           0.3553                    1.2395           0.2866
+## 2         2           0.3434                    1.1391           0.3015
+## 3         3           0.4427                    1.0426           0.4246</code></pre>
+</div>
+<div id="table.correlation" class="section level2">
+<h2>table.Correlation</h2>
+<p>This is a wrapper for calculating correlation and significance against each column of the data provided.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, <span class="dt">Rb =</span> Rb, <span class="dt">performance_fun =</span> table.Correlation)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 5]
+## Groups: portfolio [3]
+## 
+##   portfolio    `p-value` `Lower CI` `Upper CI`     to.Rb
+##       &lt;int&gt;        &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;
+## 1         1 2.362581e-05 0.27478771  0.6374931 0.4761450
+## 2         2 1.053541e-04 0.23323258  0.6103689 0.4410690
+## 3         3 2.984745e-02 0.02605864  0.4605179 0.2561806</code></pre>
+</div>
+<div id="table.downsiderisk" class="section level2">
+<h2>table.DownsideRisk</h2>
+<p>Creates a table of estimates of downside risk measures for comparison across multiple instruments or funds.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, <span class="dt">Rb =</span> <span class="ot">NULL</span>, <span class="dt">performance_fun =</span> table.DownsideRisk)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 12]
+## Groups: portfolio [3]
+## 
+##   portfolio `DownsideDeviation(0%)` `DownsideDeviation(MAR=10%)`
+##       &lt;int&gt;                   &lt;dbl&gt;                        &lt;dbl&gt;
+## 1         1                  0.0453                       0.0492
+## 2         2                  0.0503                       0.0541
+## 3         3                  0.0687                       0.0723
+## # ... with 9 more variables: `DownsideDeviation(Rf=0%)` &lt;dbl&gt;,
+## #   GainDeviation &lt;dbl&gt;, `HistoricalES(95%)` &lt;dbl&gt;,
+## #   `HistoricalVaR(95%)` &lt;dbl&gt;, LossDeviation &lt;dbl&gt;,
+## #   MaximumDrawdown &lt;dbl&gt;, `ModifiedES(95%)` &lt;dbl&gt;,
+## #   `ModifiedVaR(95%)` &lt;dbl&gt;, SemiDeviation &lt;dbl&gt;</code></pre>
+</div>
+<div id="table.downsideriskratio" class="section level2">
+<h2>table.DownsideRiskRatio</h2>
+<p>Table of Monthly downside risk, Annualized downside risk, Downside potential, Omega, Sortino ratio, Upside potential, Upside potential ratio and Omega-Sharpe ratio.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, <span class="dt">Rb =</span> <span class="ot">NULL</span>, <span class="dt">performance_fun =</span> table.DownsideRiskRatio)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 9]
+## Groups: portfolio [3]
+## 
+##   portfolio Annualiseddownsiderisk Downsidepotential Monthlydownsiderisk
+##       &lt;int&gt;                  &lt;dbl&gt;             &lt;dbl&gt;               &lt;dbl&gt;
+## 1         1                 0.1571            0.0201              0.0453
+## 2         2                 0.1743            0.0220              0.0503
+## 3         3                 0.2378            0.0296              0.0687
+## # ... with 5 more variables: Omega &lt;dbl&gt;, `Omega-sharperatio` &lt;dbl&gt;,
+## #   Sortinoratio &lt;dbl&gt;, Upsidepotential &lt;dbl&gt;, Upsidepotentialratio &lt;dbl&gt;</code></pre>
+</div>
+<div id="table.highermoments" class="section level2">
+<h2>table.HigherMoments</h2>
+<p>Summary of the higher moments and Co-Moments of the return distribution. Used to determine diversification potential. Also called “systematic” moments by several papers.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, <span class="dt">Rb =</span> Rb, <span class="dt">performance_fun =</span> table.HigherMoments)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 6]
+## Groups: portfolio [3]
+## 
+##   portfolio BetaCoKurtosis BetaCoSkewness BetaCoVariance CoKurtosis
+##       &lt;int&gt;          &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;      &lt;dbl&gt;
+## 1         1         0.7593         0.2388         0.9174          0
+## 2         2         0.7748         2.0455         0.8939          0
+## 3         3         0.4591         0.5074         0.7311          0
+## # ... with 1 more variables: CoSkewness &lt;dbl&gt;</code></pre>
+</div>
+<div id="table.informationratio" class="section level2">
+<h2>table.InformationRatio</h2>
+<p>Table of Tracking error, Annualized tracking error and Information ratio.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, <span class="dt">Rb =</span> Rb, <span class="dt">performance_fun =</span> table.InformationRatio)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 4]
+## Groups: portfolio [3]
+## 
+##   portfolio AnnualisedTrackingError InformationRatio TrackingError
+##       &lt;int&gt;                   &lt;dbl&gt;            &lt;dbl&gt;         &lt;dbl&gt;
+## 1         1                  0.2524           0.9088        0.0729
+## 2         2                  0.2711           0.8024        0.0782
+## 3         3                  0.4124           0.7681        0.1190</code></pre>
+</div>
+<div id="table.variability" class="section level2">
+<h2>table.Variability</h2>
+<p>Table of Mean absolute difference, Monthly standard deviation and annualized standard deviation.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, <span class="dt">Rb =</span> <span class="ot">NULL</span>, <span class="dt">performance_fun =</span> table.Variability)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 4]
+## Groups: portfolio [3]
+## 
+##   portfolio AnnualizedStdDev MeanAbsolutedeviation MonthlyStdDev
+##       &lt;int&gt;            &lt;dbl&gt;                 &lt;dbl&gt;         &lt;dbl&gt;
+## 1         1           0.2866                0.0660        0.0827
+## 2         2           0.3015                0.0682        0.0870
+## 3         3           0.4246                0.0913        0.1226</code></pre>
+</div>
+<div id="var" class="section level2">
+<h2>VaR</h2>
+<p>Calculates Value-at-Risk (VaR) for univariate, component, and marginal cases using a variety of analytical methods.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, <span class="dt">Rb =</span> <span class="ot">NULL</span>, <span class="dt">performance_fun =</span> VaR)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 2]
+## Groups: portfolio [3]
+## 
+##   portfolio        VaR
+##       &lt;int&gt;      &lt;dbl&gt;
+## 1         1 -0.1120763
+## 2         2 -0.1233272
+## 3         3 -0.1635992</code></pre>
+</div>
+<div id="sharperatio" class="section level2">
+<h2>SharpeRatio</h2>
+<p>The Sharpe ratio is simply the return per unit of risk (represented by variability). In the classic case, the unit of risk is the standard deviation of the returns.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, <span class="dt">Rb =</span> <span class="ot">NULL</span>, <span class="dt">performance_fun =</span> SharpeRatio)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 4]
+## Groups: portfolio [3]
+## 
+##   portfolio `ESSharpe(Rf=0%,p=95%)` `StdDevSharpe(Rf=0%,p=95%)`
+##       &lt;int&gt;                   &lt;dbl&gt;                       &lt;dbl&gt;
+## 1         1               0.1699068                   0.3509816
+## 2         2               0.1451809                   0.3298835
+## 3         3               0.1492360                   0.3141580
+## # ... with 1 more variables: `VaRSharpe(Rf=0%,p=95%)` &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<div id="customizing-using-the" class="section level1">
+<h1>Customizing using the …</h1>
+<p>One of the best features of <code>tq_portfolio</code> and <code>tq_performance</code> is to be able to pass features through to the underlying functions. After all, these are just wrappers for <code>PerformanceAnalytics</code>, so you probably want to be able <strong>to make full use of the underlying functions</strong>. Passing through parameters using the <code>...</code> can be incredibly useful, so let’s see how.</p>
+<div id="customizing-tq_portfolio" class="section level2">
+<h2>Customizing tq_portfolio</h2>
+<p>The <code>tq_portfolio</code> function is a wrapper for <code>Return.portfolio</code>. This means that during the portfolio aggregation process, we can make use of most of the <code>Return.portfolio</code> arguments such as <code>wealth.index</code>, <code>contribution</code>, <code>geometric</code>, <code>rebalance_on</code>, and <code>value</code>. Here’s the arguments of the underlying function:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">args</span>(Return.portfolio)</code></pre></div>
+<pre><code>## function (R, weights = NULL, wealth.index = FALSE, contribution = FALSE, 
+##     geometric = TRUE, rebalance_on = c(NA, &quot;years&quot;, &quot;quarters&quot;, 
+##         &quot;months&quot;, &quot;weeks&quot;, &quot;days&quot;), value = 1, verbose = FALSE, 
+##     ...) 
+## NULL</code></pre>
+<p>Let’s see an example of passing parameters to the <code>...</code>. Suppose we want to instead see how our money is grows for a $10,000 investment. We’ll use the “Single Portfolio” example, where our portfolio mix was 50% AAPL, 0% GOOG, and 50% NFLX.</p>
+<p>Method 3A, Aggregating Portfolio Returns, showed us two methods to aggregate for a single portfolio. Either will work for this example. For simplicity, we’ll examine the first.</p>
+<p>Here’s the original output, without adjusting parameters.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wts &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.5</span>, <span class="fl">0.0</span>, <span class="fl">0.5</span>)
+portfolio_returns_monthly &lt;-<span class="st"> </span>stock_returns_monthly %&gt;%
+<span class="st">    </span><span class="kw">tq_portfolio</span>(<span class="dt">assets_col  =</span> symbol, 
+                 <span class="dt">returns_col =</span> Ra, 
+                 <span class="dt">weights     =</span> wts, 
+                 <span class="dt">col_rename  =</span> <span class="st">&quot;Ra&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">portfolio_returns_monthly %&gt;%
+<span class="st">    </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> date, <span class="dt">y =</span> Ra)) +
+<span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>, <span class="dt">fill =</span> <span class="kw">palette_light</span>()[[<span class="dv">1</span>]]) +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;Portfolio Returns&quot;</span>,
+         <span class="dt">subtitle =</span> <span class="st">&quot;50% AAPL, 0% GOOG, and 50% NFLX&quot;</span>,
+         <span class="dt">caption =</span> <span class="st">&quot;Shows an above-zero trend meaning positive returns&quot;</span>,
+         <span class="dt">x =</span> <span class="st">&quot;&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Monthly Returns&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>) +
+<span class="st">    </span><span class="kw">theme_tq</span>() +
+<span class="st">    </span><span class="kw">scale_color_tq</span>() +
+<span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales::percent)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>This is good, but we want to see how our $10,000 initial investment is growing. This is simple with the underlying <code>Return.portfolio</code> argument, <code>wealth.index = TRUE</code>. All we need to do is add these as additional parameters to <code>tq_portfolio</code>!</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wts &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.5</span>, <span class="dv">0</span>, <span class="fl">0.5</span>)
+portfolio_growth_monthly &lt;-<span class="st"> </span>stock_returns_monthly %&gt;%
+<span class="st">    </span><span class="kw">tq_portfolio</span>(<span class="dt">assets_col   =</span> symbol, 
+                 <span class="dt">returns_col  =</span> Ra, 
+                 <span class="dt">weights      =</span> wts, 
+                 <span class="dt">col_rename   =</span> <span class="st">&quot;investment.growth&quot;</span>,
+                 <span class="dt">wealth.index =</span> <span class="ot">TRUE</span>) %&gt;%
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">investment.growth =</span> investment.growth *<span class="st"> </span><span class="dv">10000</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">portfolio_growth_monthly %&gt;%
+<span class="st">    </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> date, <span class="dt">y =</span> investment.growth)) +
+<span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">size =</span> <span class="dv">2</span>, <span class="dt">color =</span> <span class="kw">palette_light</span>()[[<span class="dv">1</span>]]) +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;Portfolio Growth&quot;</span>,
+         <span class="dt">subtitle =</span> <span class="st">&quot;50% AAPL, 0% GOOG, and 50% NFLX&quot;</span>,
+         <span class="dt">caption =</span> <span class="st">&quot;Now we can really visualize performance!&quot;</span>,
+         <span class="dt">x =</span> <span class="st">&quot;&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Portfolio Value&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;loess&quot;</span>) +
+<span class="st">    </span><span class="kw">theme_tq</span>() +
+<span class="st">    </span><span class="kw">scale_color_tq</span>() +
+<span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales::dollar)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Finally, taking this one step further, we apply the same process to the “Multiple Portfolio” example:</p>
+<ol style="list-style-type: decimal">
+<li>50% AAPL, 25% GOOG, 25% NFLX</li>
+<li>25% AAPL, 50% GOOG, 25% NFLX</li>
+<li>25% AAPL, 25% GOOG, 50% NFLX</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">portfolio_growth_monthly_multi &lt;-<span class="st"> </span>stock_returns_monthly_multi %&gt;%
+<span class="st">    </span><span class="kw">tq_portfolio</span>(<span class="dt">assets_col   =</span> symbol, 
+                 <span class="dt">returns_col  =</span> Ra, 
+                 <span class="dt">weights      =</span> weights_table, 
+                 <span class="dt">col_rename   =</span> <span class="st">&quot;investment.growth&quot;</span>,
+                 <span class="dt">wealth.index =</span> <span class="ot">TRUE</span>) %&gt;%
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">investment.growth =</span> investment.growth *<span class="st"> </span><span class="dv">10000</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">portfolio_growth_monthly_multi %&gt;%
+<span class="st">    </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> date, <span class="dt">y =</span> investment.growth, <span class="dt">color =</span> <span class="kw">factor</span>(portfolio))) +
+<span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">size =</span> <span class="dv">2</span>) +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;Portfolio Growth&quot;</span>,
+         <span class="dt">subtitle =</span> <span class="st">&quot;Comparing Multiple Portfolios&quot;</span>,
+         <span class="dt">caption =</span> <span class="st">&quot;Portfolio 3 is a Standout!&quot;</span>,
+         <span class="dt">x =</span> <span class="st">&quot;&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Portfolio Value&quot;</span>,
+         <span class="dt">color =</span> <span class="st">&quot;Portfolio&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;loess&quot;</span>) +
+<span class="st">    </span><span class="kw">theme_tq</span>() +
+<span class="st">    </span><span class="kw">scale_color_tq</span>() +
+<span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales::dollar)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="customizing-tq_performance" class="section level2">
+<h2>Customizing tq_performance</h2>
+<p>Finally, the same concept of passing arguments works with all the <code>tidyquant</code> functions that are wrappers including <code>tq_transmute</code>, <code>tq_mutate</code>, <code>tq_performance</code>, etc. Let’s use a final example with the <code>SharpeRatio</code>, which has the following arguments.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">args</span>(SharpeRatio)</code></pre></div>
+<pre><code>## function (R, Rf = 0, p = 0.95, FUN = c(&quot;StdDev&quot;, &quot;VaR&quot;, &quot;ES&quot;), 
+##     weights = NULL, annualize = FALSE, ...) 
+## NULL</code></pre>
+<p>We can see that the parameters <code>Rf</code> allows us to apply a risk-free rate and <code>p</code> allows us to vary the confidence interval. Let’s compare the Sharpe ratio with an annualized risk-free rate of 3% and a confidence interval of 0.99.</p>
+<p>Default:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra              =</span> Ra, 
+                   <span class="dt">performance_fun =</span> SharpeRatio)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 4]
+## Groups: portfolio [3]
+## 
+##   portfolio `ESSharpe(Rf=0%,p=95%)` `StdDevSharpe(Rf=0%,p=95%)`
+##       &lt;int&gt;                   &lt;dbl&gt;                       &lt;dbl&gt;
+## 1         1               0.1699068                   0.3509816
+## 2         2               0.1451809                   0.3298835
+## 3         3               0.1492360                   0.3141580
+## # ... with 1 more variables: `VaRSharpe(Rf=0%,p=95%)` &lt;dbl&gt;</code></pre>
+<p>With <code>Rf = 0.03 / 12</code> (adjusted for monthly periodicity):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra              =</span> Ra, 
+                   <span class="dt">performance_fun =</span> SharpeRatio,
+                   <span class="dt">Rf              =</span> <span class="fl">0.03</span> /<span class="st"> </span><span class="dv">12</span>)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 4]
+## Groups: portfolio [3]
+## 
+##   portfolio `ESSharpe(Rf=0.2%,p=95%)` `StdDevSharpe(Rf=0.2%,p=95%)`
+##       &lt;int&gt;                     &lt;dbl&gt;                         &lt;dbl&gt;
+## 1         1                 0.1552815                     0.3207696
+## 2         2                 0.1325399                     0.3011603
+## 3         3                 0.1395468                     0.2937612
+## # ... with 1 more variables: `VaRSharpe(Rf=0.2%,p=95%)` &lt;dbl&gt;</code></pre>
+<p>And, with both <code>Rf = 0.03 / 12</code> (adjusted for monthly periodicity) and <code>p = 0.99</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra              =</span> Ra, 
+                   <span class="dt">performance_fun =</span> SharpeRatio,
+                   <span class="dt">Rf              =</span> <span class="fl">0.03</span> /<span class="st"> </span><span class="dv">12</span>, 
+                   <span class="dt">p               =</span> <span class="fl">0.99</span>)</code></pre></div>
+<pre><code>## Source: local data frame [3 x 4]
+## Groups: portfolio [3]
+## 
+##   portfolio `ESSharpe(Rf=0.2%,p=99%)` `StdDevSharpe(Rf=0.2%,p=99%)`
+##       &lt;int&gt;                     &lt;dbl&gt;                         &lt;dbl&gt;
+## 1         1                0.10407622                     0.3207696
+## 2         2                0.09374465                     0.3011603
+## 3         3                0.09063379                     0.2937612
+## # ... with 1 more variables: `VaRSharpe(Rf=0.2%,p=99%)` &lt;dbl&gt;</code></pre>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

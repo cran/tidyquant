@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Matt Dancho" />
+
+<meta name="date" content="2017-03-02" />
+
+<title>Scaling and Modeling with tidyquant</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Scaling and Modeling with tidyquant</h1>
+<h4 class="author"><em>Matt Dancho</em></h4>
+<h4 class="date"><em>2017-03-02</em></h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#scaling-the-getting-of-financial-data">Scaling the Getting of Financial Data</a><ul>
+<li><a href="#method-1-map-a-character-vector-with-multiple-stock-symbols">Method 1: Map a character vector with multiple stock symbols</a></li>
+<li><a href="#method-2-map-a-tibble-with-stocks-in-first-column">Method 2: Map a tibble with stocks in first column</a></li>
+<li><a href="#method-3-use-purrr-to-map-a-function">Method 3: Use purrr to map a function</a></li>
+<li><a href="#method-4-compound-getters">Method 4: Compound Getters</a></li>
+</ul></li>
+<li><a href="#scaling-the-mutation-of-financial-data">Scaling the Mutation of Financial Data</a></li>
+<li><a href="#modeling-financial-data-using-purrr">Modeling Financial Data using purrr</a><ul>
+<li><a href="#example-applying-a-regression-model-to-detect-a-positive-trend">Example: Applying a Regression Model to Detect a Positive Trend</a></li>
+</ul></li>
+<li><a href="#error-handling-when-scaling">Error Handling when Scaling</a><ul>
+<li><a href="#pros-and-cons-to-built-in-error-handling">Pros and Cons to Built-In Error-Handling</a></li>
+<li><a href="#bad-apples-fail-gracefully-tq_get">Bad Apples Fail Gracefully, tq_get</a></li>
+</ul></li>
+</ul>
+</div>
+
+<blockquote>
+<p>Designed for the data science workflow of the <code>tidyverse</code></p>
+</blockquote>
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>The greatest benefit to <code>tidyquant</code> is the ability to apply the data science workflow to easily model and scale your financial analysis as described in <a href="http://r4ds.had.co.nz/"><em>R for Data Science</em></a>. Scaling is the process of creating an analysis for one asset and then extending it to multiple groups. This idea of scaling is incredibly useful to financial analysts because typically one wants to compare many assets to make informed decisions. Fortunately, the <code>tidyquant</code> package integrates with the <code>tidyverse</code> making scaling super simple!</p>
+<p>All <code>tidyquant</code> functions return data in the <code>tibble</code> (tidy data frame) format, which allows for interaction within the <code>tidyverse</code>. This means we can:</p>
+<ul>
+<li>Seamlessly scale data retrieval and mutations</li>
+<li>Use the pipe (<code>%&gt;%</code>) for chaining operations</li>
+<li>Use <code>dplyr</code> and <code>tidyr</code>: <code>select</code>, <code>filter</code>, <code>group_by</code>, <code>nest</code>/<code>unnest</code>, <code>spread</code>/<code>gather</code>, etc</li>
+<li>Use <code>purrr</code>: mapping functions with <code>map</code></li>
+<li>Model financial analysis using the data science workflow in <a href="http://r4ds.had.co.nz/"><em>R for Data Science</em></a></li>
+</ul>
+<p>We’ll go through some useful techniques for getting and manipulating groups of data.</p>
+</div>
+<div id="prerequisites" class="section level1">
+<h1>Prerequisites</h1>
+<p>Load the <code>tidyquant</code> package to get started.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Loads tidyquant, tidyverse, lubridate, xts, quantmod, TTR </span>
+<span class="kw">library</span>(tidyquant)  </code></pre></div>
+</div>
+<div id="scaling-the-getting-of-financial-data" class="section level1">
+<h1>Scaling the Getting of Financial Data</h1>
+<p>A very basic example is retrieving the stock prices for multiple stocks. There are three primary ways to do this:</p>
+<div id="method-1-map-a-character-vector-with-multiple-stock-symbols" class="section level2">
+<h2>Method 1: Map a character vector with multiple stock symbols</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">c</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="st">&quot;GOOG&quot;</span>, <span class="st">&quot;FB&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>, <span class="dt">from =</span> <span class="st">&quot;2016-01-01&quot;</span>, <span class="dt">to =</span> <span class="st">&quot;2017-01-01&quot;</span>)</code></pre></div>
+<pre><code>## # A tibble: 756 × 8
+##    symbol       date   open   high    low  close   volume  adjusted
+##     &lt;chr&gt;     &lt;date&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1    AAPL 2016-01-04 102.61 105.37 102.00 105.35 67649400 102.61218
+## 2    AAPL 2016-01-05 105.75 105.85 102.41 102.71 55791000 100.04079
+## 3    AAPL 2016-01-06 100.56 102.37  99.87 100.70 68457400  98.08303
+## 4    AAPL 2016-01-07  98.68 100.13  96.43  96.45 81094400  93.94347
+## 5    AAPL 2016-01-08  98.55  99.11  96.76  96.96 70798000  94.44022
+## 6    AAPL 2016-01-11  98.97  99.06  97.34  98.53 49739400  95.96942
+## 7    AAPL 2016-01-12 100.55 100.69  98.84  99.96 49154200  97.36226
+## 8    AAPL 2016-01-13 100.32 101.19  97.30  97.39 62439600  94.85905
+## 9    AAPL 2016-01-14  97.96 100.48  95.74  99.52 63170100  96.93369
+## 10   AAPL 2016-01-15  96.20  97.71  95.36  97.13 79010000  94.60580
+## # ... with 746 more rows</code></pre>
+<p>The output is a single level tibble with all or the stock prices in one tibble. The auto-generated column name is “symbol”, which can be pre-emptively renamed by giving the vector a name (e.g. <code>stocks &lt;- c(&quot;AAPL&quot;, &quot;GOOG&quot;, &quot;FB&quot;)</code>) and then piping to <code>tq_get</code>.</p>
+</div>
+<div id="method-2-map-a-tibble-with-stocks-in-first-column" class="section level2">
+<h2>Method 2: Map a tibble with stocks in first column</h2>
+<p>First, get a stock list in data frame format either by making the tibble or retrieving from <code>tq_index</code> / <code>tq_exchange</code>. The stock symbols must be in the first column.</p>
+<div id="method-2a-make-a-tibble" class="section level3">
+<h3>Method 2A: Make a tibble</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stock_list &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">stocks =</span> <span class="kw">c</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="st">&quot;JPM&quot;</span>, <span class="st">&quot;CVX&quot;</span>),
+                     <span class="dt">industry =</span> <span class="kw">c</span>(<span class="st">&quot;Technology&quot;</span>, <span class="st">&quot;Financial&quot;</span>, <span class="st">&quot;Energy&quot;</span>))
+stock_list</code></pre></div>
+<pre><code>## # A tibble: 3 × 2
+##   stocks   industry
+##    &lt;chr&gt;      &lt;chr&gt;
+## 1   AAPL Technology
+## 2    JPM  Financial
+## 3    CVX     Energy</code></pre>
+<p>Second, send the stock list to <code>tq_get</code>. Notice how the symbol and industry columns are automatically expanded the length of the stock prices.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stock_list %&gt;%
+<span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>, <span class="dt">from =</span> <span class="st">&quot;2016-01-01&quot;</span>, <span class="dt">to =</span> <span class="st">&quot;2017-01-01&quot;</span>)</code></pre></div>
+<pre><code>## # A tibble: 756 × 9
+##    stocks   industry       date   open   high    low  close   volume
+##     &lt;chr&gt;      &lt;chr&gt;     &lt;date&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
+## 1    AAPL Technology 2016-01-04 102.61 105.37 102.00 105.35 67649400
+## 2    AAPL Technology 2016-01-05 105.75 105.85 102.41 102.71 55791000
+## 3    AAPL Technology 2016-01-06 100.56 102.37  99.87 100.70 68457400
+## 4    AAPL Technology 2016-01-07  98.68 100.13  96.43  96.45 81094400
+## 5    AAPL Technology 2016-01-08  98.55  99.11  96.76  96.96 70798000
+## 6    AAPL Technology 2016-01-11  98.97  99.06  97.34  98.53 49739400
+## 7    AAPL Technology 2016-01-12 100.55 100.69  98.84  99.96 49154200
+## 8    AAPL Technology 2016-01-13 100.32 101.19  97.30  97.39 62439600
+## 9    AAPL Technology 2016-01-14  97.96 100.48  95.74  99.52 63170100
+## 10   AAPL Technology 2016-01-15  96.20  97.71  95.36  97.13 79010000
+## # ... with 746 more rows, and 1 more variables: adjusted &lt;dbl&gt;</code></pre>
+</div>
+<div id="method-2b-use-index-or-exchange" class="section level3">
+<h3>Method 2B: Use index or exchange</h3>
+<p>Get an index…</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tq_index</span>(<span class="st">&quot;DOWJONES&quot;</span>)</code></pre></div>
+<pre><code>## # A tibble: 65 × 2
+##    symbol                      company
+##     &lt;chr&gt;                        &lt;chr&gt;
+## 1     MMM                           3M
+## 2     ALK             ALASKA AIR GROUP
+## 3     AAL AMERICAN AIRLINES GROUP INC.
+## 4     AEP      AMERICAN ELECTRIC POWER
+## 5     AXP             AMERICAN EXPRESS
+## 6     AWK         AMERICAN WATER WORKS
+## 7    AAPL                        APPLE
+## 8     CAR            AVIS BUDGET GROUP
+## 9     CAT                  CATERPILLAR
+## 10    CNP           CENTERPOINT ENERGY
+## # ... with 55 more rows</code></pre>
+<p>…or, get an exchange.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tq_exchange</span>(<span class="st">&quot;NYSE&quot;</span>)</code></pre></div>
+<pre><code>## # A tibble: 3,153 × 7
+##    symbol                company last.sale.price market.cap ipo.year
+##     &lt;chr&gt;                  &lt;chr&gt;           &lt;dbl&gt;      &lt;chr&gt;    &lt;dbl&gt;
+## 1     DDD 3D Systems Corporation           15.09      $1.7B       NA
+## 2     MMM             3M Company          189.86   $113.19B       NA
+## 3    WBAI        500.com Limited           12.87   $534.08M     2013
+## 4    WUBA            58.com Inc.           37.04     $5.36B     2013
+## 5     AHC  A.H. Belo Corporation            6.25   $135.48M       NA
+## 6    ATEN     A10 Networks, Inc.            9.56   $653.39M     2014
+## 7     AAC     AAC Holdings, Inc.            8.91   $211.23M     2014
+## 8     AIR              AAR Corp.           34.95      $1.2B       NA
+## 9     AAN     Aaron&amp;#39;s,  Inc.           27.74     $2.01B       NA
+## 10    ABB                ABB Ltd           22.98    $49.08B       NA
+## # ... with 3,143 more rows, and 2 more variables: sector &lt;chr&gt;,
+## #   industry &lt;chr&gt;</code></pre>
+<p>Send the index or exchange to <code>tq_get</code>. <em>Important Note: This can take several minutes depending on the size of the index or exchange, which is why only the first three stocks are evaluated in the vignette.</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tq_index</span>(<span class="st">&quot;DOWJONES&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">slice</span>(<span class="dv">1</span>:<span class="dv">3</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>)</code></pre></div>
+<pre><code>## # A tibble: 7,674 × 9
+##    symbol company       date  open  high   low close  volume adjusted
+##     &lt;chr&gt;   &lt;chr&gt;     &lt;date&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+## 1     MMM      3M 2007-01-03 77.53 78.85 77.38 78.26 3781500 59.92042
+## 2     MMM      3M 2007-01-04 78.40 78.41 77.45 77.95 2968400 59.68306
+## 3     MMM      3M 2007-01-05 77.89 77.90 77.01 77.42 2765200 59.27726
+## 4     MMM      3M 2007-01-08 77.42 78.04 76.97 77.59 2434500 59.40742
+## 5     MMM      3M 2007-01-09 78.00 78.23 77.44 77.68 1896800 59.47633
+## 6     MMM      3M 2007-01-10 77.31 77.96 77.04 77.85 1787500 59.60649
+## 7     MMM      3M 2007-01-11 78.05 79.03 77.88 78.65 2372500 60.21902
+## 8     MMM      3M 2007-01-12 78.41 79.50 78.22 79.36 2582200 60.76264
+## 9     MMM      3M 2007-01-16 79.48 79.62 78.92 79.56 2526600 60.91577
+## 10    MMM      3M 2007-01-17 79.33 79.51 78.75 78.91 2711300 60.41810
+## # ... with 7,664 more rows</code></pre>
+<p>You can use any applicable “getter” to get data for <strong>every stock in an index or an exchange</strong>! This includes: “stock.prices”, “key.ratios”, “key.stats”, “financials”, and more.</p>
+</div>
+</div>
+<div id="method-3-use-purrr-to-map-a-function" class="section level2">
+<h2>Method 3: Use purrr to map a function</h2>
+<p>We can pipe a tibble of stock symbols to a mutation that maps the <code>tq_get(get = &quot;stock.prices&quot;)</code> function. The result is all of the stock prices in nested format.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tibble</span>(<span class="dt">symbol =</span> <span class="kw">c</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="st">&quot;GOOG&quot;</span>, <span class="st">&quot;AMZN&quot;</span>, <span class="st">&quot;FB&quot;</span>)) %&gt;%
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">stock.prices =</span> <span class="kw">map</span>(<span class="dt">.x =</span> symbol, ~<span class="st"> </span><span class="kw">tq_get</span>(.x, <span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>)))</code></pre></div>
+<pre><code>## # A tibble: 4 × 2
+##   symbol         stock.prices
+##    &lt;chr&gt;               &lt;list&gt;
+## 1   AAPL &lt;tibble [2,558 × 7]&gt;
+## 2   GOOG &lt;tibble [2,558 × 7]&gt;
+## 3   AMZN &lt;tibble [2,558 × 7]&gt;
+## 4     FB &lt;tibble [1,203 × 7]&gt;</code></pre>
+</div>
+<div id="method-4-compound-getters" class="section level2">
+<h2>Method 4: Compound Getters</h2>
+<p>In financial analysis, it’s very common to need data from various sources to combine in an analysis. For this reason multiple <code>get</code> options (“compound getters”) can be used to return a “compound get”. A quick example:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">c</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="st">&quot;GOOG&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get =</span> <span class="kw">c</span>(<span class="st">&quot;stock.prices&quot;</span>, <span class="st">&quot;financials&quot;</span>))</code></pre></div>
+<pre><code>## # A tibble: 2 × 3
+##   symbol         stock.prices       financials
+##    &lt;chr&gt;               &lt;list&gt;           &lt;list&gt;
+## 1   AAPL &lt;tibble [2,558 × 7]&gt; &lt;tibble [3 × 3]&gt;
+## 2   GOOG &lt;tibble [2,558 × 7]&gt; &lt;tibble [3 × 3]&gt;</code></pre>
+<p>This returns the stock prices and financials for each stock as one nested data frame! Any of the <code>get</code> options that accept stock symbols can be used in this manner: <code>&quot;stock.prices&quot;</code>, <code>&quot;financials&quot;</code>, <code>&quot;key.ratios&quot;</code>, <code>&quot;key.stats&quot;</code>, <code>&quot;dividends&quot;</code>, and <code>&quot;splits&quot;</code>.</p>
+</div>
+</div>
+<div id="scaling-the-mutation-of-financial-data" class="section level1">
+<h1>Scaling the Mutation of Financial Data</h1>
+<p>Once you get the data, you typically want to do something with it. You can easily do this at scale. Let’s get the yearly returns for multiple stocks using <code>tq_transmute</code>. First, get the prices. We’ll use the <code>FANG</code> data set, but you typically will use <code>tq_get</code> to retrieve data in “tibble” format.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;FANG&quot;</span>)
+FANG</code></pre></div>
+<pre><code>## # A tibble: 4,032 × 8
+##    symbol       date  open  high   low close    volume adjusted
+##     &lt;chr&gt;     &lt;date&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1      FB 2013-01-02 27.44 28.18 27.42 28.00  69846400    28.00
+## 2      FB 2013-01-03 27.88 28.47 27.59 27.77  63140600    27.77
+## 3      FB 2013-01-04 28.01 28.93 27.83 28.76  72715400    28.76
+## 4      FB 2013-01-07 28.69 29.79 28.65 29.42  83781800    29.42
+## 5      FB 2013-01-08 29.51 29.60 28.86 29.06  45871300    29.06
+## 6      FB 2013-01-09 29.67 30.60 29.49 30.59 104787700    30.59
+## 7      FB 2013-01-10 30.60 31.45 30.28 31.30  95316400    31.30
+## 8      FB 2013-01-11 31.28 31.96 31.10 31.72  89598000    31.72
+## 9      FB 2013-01-14 32.08 32.21 30.62 30.95  98892800    30.95
+## 10     FB 2013-01-15 30.64 31.71 29.88 30.10 173242600    30.10
+## # ... with 4,022 more rows</code></pre>
+<p>Second, use <code>group_by</code> to group by stock symbol. Third, apply the mutation. We can do this in one easy workflow. The <code>periodReturns</code> function is applied to each group of stock prices, and a new data frame was returned with the annual returns in the correct periodicity.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">FANG_returns_yearly &lt;-<span class="st"> </span>FANG %&gt;%
+<span class="st">    </span><span class="kw">group_by</span>(symbol) %&gt;%
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun   =</span> Ad, 
+                 <span class="dt">mutate_fun =</span> periodReturn, 
+                 <span class="dt">period     =</span> <span class="st">&quot;yearly&quot;</span>, 
+                 <span class="dt">col_rename =</span> <span class="st">&quot;yearly.returns&quot;</span>) </code></pre></div>
+<p>Last, we can visualize the returns.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">FANG_returns_yearly %&gt;%
+<span class="st">    </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">year</span>(date), <span class="dt">y =</span> yearly.returns, <span class="dt">fill =</span> symbol)) +
+<span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">position =</span> <span class="st">&quot;dodge&quot;</span>, <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>) +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;FANG: Annual Returns&quot;</span>, 
+         <span class="dt">subtitle =</span> <span class="st">&quot;Mutating at scale is quick and easy!&quot;</span>,
+         <span class="dt">y =</span> <span class="st">&quot;Returns&quot;</span>, <span class="dt">x =</span> <span class="st">&quot;&quot;</span>, <span class="dt">color =</span> <span class="st">&quot;&quot;</span>) +
+<span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales::percent) +
+<span class="st">    </span><span class="kw">theme_tq</span>() +
+<span class="st">    </span><span class="kw">scale_fill_tq</span>()</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p><a class="anchor" id="purrr-function-mapping"></a></p>
+</div>
+<div id="modeling-financial-data-using-purrr" class="section level1">
+<h1>Modeling Financial Data using purrr</h1>
+<p>Eventually you will want to begin modeling (or more generally applying functions) at scale! One of the <strong>best</strong> features of the <code>tidyverse</code> is the ability to map functions to nested tibbles using <code>purrr</code>. From the Many Models chapter of “<a href="http://r4ds.had.co.nz/">R for Data Science</a>”, we can apply the same modeling workflow to financial analysis. Using a two step workflow:</p>
+<ol style="list-style-type: decimal">
+<li>Model a single stock</li>
+<li>Scale to many stocks</li>
+</ol>
+<p>Let’s go through an example to illustrate.</p>
+<div id="example-applying-a-regression-model-to-detect-a-positive-trend" class="section level2">
+<h2>Example: Applying a Regression Model to Detect a Positive Trend</h2>
+<p>In this example, we’ll use a simple linear model to identify the trend in annual returns to determine if the stock returns are decreasing or increasing over time.</p>
+<div id="analyze-a-single-stock" class="section level3">
+<h3>Analyze a Single Stock</h3>
+<p>First, let’s come up with a function to help us collect annual log returns. The function below performs three operations internally. It first gets the stock prices using <code>tq_get()</code>. Then, it mutates the stock prices to period returns using <code>tq_transmute()</code>. We add the <code>type = &quot;log&quot;</code> and <code>period = &quot;monthly&quot;</code> arguments to ensure we retrieve a tibble of monthly log returns. Last, we take the mean of the monthly returns to get MMLR.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">get_annual_returns &lt;-<span class="st"> </span>function(stock.symbol) {
+    stock.symbol %&gt;%
+<span class="st">        </span><span class="kw">tq_get</span>(<span class="dt">get  =</span> <span class="st">&quot;stock.prices&quot;</span>,
+               <span class="dt">from =</span> <span class="st">&quot;2007-01-01&quot;</span>,
+               <span class="dt">to   =</span> <span class="st">&quot;2016-12-31&quot;</span>) %&gt;%
+<span class="st">        </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun   =</span> Ad, 
+                     <span class="dt">mutate_fun =</span> periodReturn, 
+                     <span class="dt">type       =</span> <span class="st">&quot;log&quot;</span>, 
+                     <span class="dt">period     =</span> <span class="st">&quot;yearly&quot;</span>)
+}</code></pre></div>
+<p>Let’s test <code>get_annual_returns</code> out. We now have the annual log returns over the past ten years.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">AAPL_annual_log_returns &lt;-<span class="st"> </span><span class="kw">get_annual_returns</span>(<span class="st">&quot;AAPL&quot;</span>)
+AAPL_annual_log_returns</code></pre></div>
+<pre><code>## # A tibble: 10 × 2
+##          date yearly.returns
+##        &lt;date&gt;          &lt;dbl&gt;
+## 1  2007-12-31     0.86023789
+## 2  2008-12-31    -0.84191057
+## 3  2009-12-31     0.90381734
+## 4  2010-12-31     0.42571147
+## 5  2011-12-30     0.22759789
+## 6  2012-12-31     0.28191714
+## 7  2013-12-31     0.07760424
+## 8  2014-12-31     0.34090883
+## 9  2015-12-31    -0.03060060
+## 10 2016-12-30     0.11760900</code></pre>
+<p>Let’s visualize to identify trends. We can see from the linear trend line that AAPL’s stock returns are declining.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">AAPL_annual_log_returns %&gt;%
+<span class="st">    </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">year</span>(date), <span class="dt">y =</span> yearly.returns)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="dv">0</span>, <span class="dt">color =</span> <span class="kw">palette_light</span>()[[<span class="dv">1</span>]]) +
+<span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">size =</span> <span class="dv">2</span>, <span class="dt">color =</span> <span class="kw">palette_light</span>()[[<span class="dv">3</span>]]) +
+<span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">size =</span> <span class="dv">1</span>, <span class="dt">color =</span> <span class="kw">palette_light</span>()[[<span class="dv">3</span>]]) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">se =</span> <span class="ot">FALSE</span>) +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;AAPL: Visualizing Trends in Annual Returns&quot;</span>,
+         <span class="dt">x =</span> <span class="st">&quot;&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Annual Returns&quot;</span>, <span class="dt">color =</span> <span class="st">&quot;&quot;</span>) +
+<span class="st">    </span><span class="kw">theme_tq</span>()</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Now, we can get the linear model using the <code>lm()</code> function. However, there is one problem: the output is not “tidy”.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mod &lt;-<span class="st"> </span><span class="kw">lm</span>(yearly.returns ~<span class="st"> </span><span class="kw">year</span>(date), <span class="dt">data =</span> AAPL_annual_log_returns)
+mod</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = yearly.returns ~ year(date), data = AAPL_annual_log_returns)
+## 
+## Coefficients:
+## (Intercept)   year(date)  
+##    58.86280     -0.02915</code></pre>
+<p>We can utilize the <code>broom</code> package to get “tidy” data from the model. There’s three primary functions:</p>
+<ol style="list-style-type: decimal">
+<li><code>augment</code>: adds columns to the original data such as predictions, residuals and cluster assignments</li>
+<li><code>glance</code>: provides a one-row summary of model-level statistics</li>
+<li><code>tidy</code>: summarizes a model’s statistical findings such as coefficients of a regression</li>
+</ol>
+<p>We’ll use <code>tidy</code> to retrieve the model coefficients.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(broom)
+<span class="kw">tidy</span>(mod)</code></pre></div>
+<pre><code>##          term    estimate   std.error  statistic   p.value
+## 1 (Intercept) 58.86280021 113.1073651  0.5204153 0.6168659
+## 2  year(date) -0.02914567   0.0562303 -0.5183267 0.6182573</code></pre>
+<p>Adding to our workflow, we have the following:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">get_model &lt;-<span class="st"> </span>function(stock.symbol) {
+    annual_returns &lt;-<span class="st"> </span><span class="kw">get_annual_returns</span>(stock.symbol)
+    mod &lt;-<span class="st"> </span><span class="kw">lm</span>(yearly.returns ~<span class="st"> </span><span class="kw">year</span>(date), <span class="dt">data =</span> annual_returns)
+    <span class="kw">tidy</span>(mod)
+}</code></pre></div>
+<p>Testing it out on a single stock. We can see that the “term” that contains the direction of the trend (the slope) is “year(date)”. The interpetation is that as year increases one unit, the annual returns decrease by 3%.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">get_model</span>(<span class="st">&quot;AAPL&quot;</span>)</code></pre></div>
+<pre><code>##          term    estimate   std.error  statistic   p.value
+## 1 (Intercept) 58.86280021 113.1073651  0.5204153 0.6168659
+## 2  year(date) -0.02914567   0.0562303 -0.5183267 0.6182573</code></pre>
+<p>Now that we have identified the trend direction, it looks like we are ready to scale.</p>
+</div>
+<div id="scale-to-many-stocks" class="section level3">
+<h3>Scale to Many Stocks</h3>
+<p>Once the analysis for one stock is done scale to many stocks is simple. For brevity, we’ll randomly sample ten stocks from the S&amp;P500 with a call to <code>dplyr::sample_n()</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">10</span>)
+stocks &lt;-<span class="st"> </span><span class="kw">tq_index</span>(<span class="st">&quot;SP500&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">sample_n</span>(<span class="dv">5</span>)
+stocks</code></pre></div>
+<pre><code>## # A tibble: 5 × 2
+##   symbol       company
+##    &lt;chr&gt;         &lt;chr&gt;
+## 1    KMI KINDER MORGAN
+## 2    LLY     ELI LILLY
+## 3    HAS        HASBRO
+## 4    PFE        PFIZER
+## 5   AAPL         APPLE</code></pre>
+<p>We can now apply our analysis function to the stocks using <code>dplyr::mutate</code> and <code>purrr::map</code>. The <code>mutate()</code> function adds a column to our tibble, and the <code>map()</code> function maps our custom <code>get_model</code> function to our tibble of stocks using the <code>symbol</code> column. The <code>tidyr::unnest</code> function unrolls the nested data frame so all of the model statistics are accessable in the top data frame level. The <code>filter</code>, <code>arrange</code> and <code>select</code> steps just manipulate the data frame to isolate and arrange the data for our viewing.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stocks_model_stats &lt;-<span class="st"> </span>stocks %&gt;%
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">model =</span> <span class="kw">map</span>(symbol, get_model)) %&gt;%
+<span class="st">    </span><span class="kw">unnest</span>() %&gt;%
+<span class="st">    </span><span class="kw">filter</span>(term ==<span class="st"> &quot;year(date)&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">arrange</span>(<span class="kw">desc</span>(estimate)) %&gt;%
+<span class="st">    </span><span class="kw">select</span>(-term)
+stocks_model_stats</code></pre></div>
+<pre><code>## # A tibble: 5 × 6
+##   symbol       company    estimate  std.error  statistic   p.value
+##    &lt;chr&gt;         &lt;chr&gt;       &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;
+## 1    LLY     ELI LILLY  0.02361584 0.01912303  1.2349420 0.2518902
+## 2    PFE        PFIZER  0.02153178 0.01427804  1.5080347 0.1699769
+## 3    HAS        HASBRO  0.01624251 0.02641365  0.6149289 0.5556847
+## 4   AAPL         APPLE -0.02914567 0.05623030 -0.5183267 0.6182573
+## 5    KMI KINDER MORGAN -0.04970700 0.12666334 -0.3924340 0.7147511</code></pre>
+<p>We’re done! We now have the coefficient of the linear regression that tracks the direction of the trend line. We can easily extend this type of analysis to larger lists or stock indexes. For example, the entire S&amp;P500 could be analyzed removing the <code>sample_n()</code> following the call to <code>tq_index(&quot;SP500&quot;)</code>.</p>
+</div>
+</div>
+</div>
+<div id="error-handling-when-scaling" class="section level1">
+<h1>Error Handling when Scaling</h1>
+<p>Eventually you will run into a stock index, stock symbol, FRED data code, etc that cannot be retrieved. Possible reasons are:</p>
+<ul>
+<li>An index becomes out of date</li>
+<li>A company goes private</li>
+<li>A stock ticker symbol changes</li>
+<li>Yahoo / FRED just doesn’t like your stock symbol / FRED code</li>
+</ul>
+<p>This becomes painful when scaling if the functions return errors. So, the <code>tq_get()</code> function is designed to handle errors <em>gracefully</em>. What this means is an <code>NA</code> value is returned when an error is generated along with a <em>gentle error warning</em>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tq_get</span>(<span class="st">&quot;XYZ&quot;</span>, <span class="st">&quot;stock.prices&quot;</span>)</code></pre></div>
+<pre><code>## [1] NA</code></pre>
+<div id="pros-and-cons-to-built-in-error-handling" class="section level2">
+<h2>Pros and Cons to Built-In Error-Handling</h2>
+<p>There are pros and cons to this approach that you may not agree with, but I believe helps in the long run. Just be aware of what happens:</p>
+<ul>
+<li><p><strong>Pros</strong>: Long running scripts are not interrupted because of one error</p></li>
+<li><p><strong>Cons</strong>: Errors can be inadvertently handled or flow downstream if the users does not read the warnings</p></li>
+</ul>
+</div>
+<div id="bad-apples-fail-gracefully-tq_get" class="section level2">
+<h2>Bad Apples Fail Gracefully, tq_get</h2>
+<p>Let’s see an example when using <code>tq_get()</code> to get the stock prices for a long list of stocks with one <code>BAD APPLE</code>. The argument <code>complete_cases</code> comes in handy. The default is <code>TRUE</code>, which removes “bad apples” so future analysis have complete cases to compute on. Note that a gentle warning stating that an error occurred and was dealt with by removing the rows from the results.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">c</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="st">&quot;GOOG&quot;</span>, <span class="st">&quot;BAD APPLE&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>, <span class="dt">complete_cases =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## Warning in value[[3L]](cond): Error at BAD APPLE during call to get =
+## 'stock.prices'. Removing BAD APPLE.</code></pre>
+<pre><code>## # A tibble: 5,116 × 8
+##    symbol       date  open  high   low close    volume adjusted
+##     &lt;chr&gt;     &lt;date&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1    AAPL 2007-01-03 86.29 86.58 81.90 83.80 309579900 10.85709
+## 2    AAPL 2007-01-04 84.05 85.95 83.82 85.66 211815100 11.09807
+## 3    AAPL 2007-01-05 85.77 86.20 84.40 85.05 208685400 11.01904
+## 4    AAPL 2007-01-08 85.96 86.53 85.28 85.47 199276700 11.07345
+## 5    AAPL 2007-01-09 86.45 92.98 85.15 92.57 837324600 11.99333
+## 6    AAPL 2007-01-10 94.75 97.80 93.45 97.00 738220000 12.56728
+## 7    AAPL 2007-01-11 95.94 96.78 95.10 95.80 360063200 12.41180
+## 8    AAPL 2007-01-12 94.59 95.06 93.23 94.62 328172600 12.25892
+## 9    AAPL 2007-01-16 95.68 97.25 95.45 97.10 311019100 12.58023
+## 10   AAPL 2007-01-17 97.56 97.60 94.82 94.95 411565000 12.30168
+## # ... with 5,106 more rows</code></pre>
+<p>Now switching <code>complete_cases = FALSE</code> will retain any errors as <code>NA</code> values in a nested data frame. Notice that the error message and output change. The error message now states that the <code>NA</code> values exist in the output and the return is a “nested” data structure.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">c</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="st">&quot;GOOG&quot;</span>, <span class="st">&quot;BAD APPLE&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>, <span class="dt">complete_cases =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<pre><code>## Warning in value[[3L]](cond): Error at BAD APPLE during call to get =
+## 'stock.prices'.</code></pre>
+<pre><code>## Warning in value[[3L]](cond): Returning as nested data frame.</code></pre>
+<pre><code>## # A tibble: 3 × 2
+##      symbol         stock.prices
+##       &lt;chr&gt;               &lt;list&gt;
+## 1      AAPL &lt;tibble [2,558 × 7]&gt;
+## 2      GOOG &lt;tibble [2,558 × 7]&gt;
+## 3 BAD APPLE            &lt;lgl [1]&gt;</code></pre>
+<p>In both cases, the prudent user will review the warnings to determine what happened and whether or not this is acceptable. In the <code>complete_cases = FALSE</code> example, if the user attempts to perform downstream computations at scale, the computations will likely fail grinding the analysis to a hault. But, the advantage is that the user will more easily be able to filter to the problem childs to determine what happened and decide whether this is acceptable or not.</p>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

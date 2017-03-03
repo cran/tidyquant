@@ -1,69 +1,68 @@
-#' Get quantitative data in \code{tibble} format
+#' Get quantitative data in `tibble` format
 #'
-#' @param x A single character string, a character vector or tibble representing a single or multiple stock index,
+#' @param x A single character string, a character vector or tibble representing a single (or multiple)
 #' stock symbol, metal symbol, currency combination, FRED code, etc.
 #' @param get A character string representing the type of data to get
-#' for \code{x}. Options include:
+#' for `x`. Options include:
 #' \itemize{
-#'   \item \code{"stock.index"}: Get all stock symbols in any of \strong{18 stock indexes}
-#'   from \href{http://www.marketvolume.com/indexes_exchanges/}{marketvolume.com}.
-#'   \item \code{"stock.prices"}: Get the open, high, low, close, volumen and adjusted
+#'   \item `"stock.prices"`: Get the open, high, low, close, volume and adjusted
 #'   stock prices for a stock symbol from
 #'   \href{https://finance.yahoo.com/}{Yahoo Finance}.
-#'   \item \code{"financials"}: Get the income, balance sheet, and cash flow
+#'   \item `"financials"`: Get the income, balance sheet, and cash flow
 #'   financial statements for a stock symbol from
 #'   \href{https://www.google.com/finance}{Google Finance}.
-#'   \item \code{"key.ratios"}: These are key historical ratios. Get \strong{89 historical growth, profitablity, financial health,
+#'   \item `"key.ratios"`: These are key historical ratios. Get \strong{89 historical growth, profitablity, financial health,
 #'   efficiency, and valuation ratios that span 10-years} from
-#'   \href{https://www.morningstar.com}{morningstar.com}.
-#'   \item \code{"key.stats"}: These are key current statistics. Get \strong{55 current key statistics} such as
+#'   \href{https://www.morningstar.com}{Morningstar}.
+#'   \item `"key.stats"`: These are key current statistics. Get \strong{55 current key statistics} such as
 #'   Ask, Bid, Day's High, Day's Low, Last Trade Price, current P/E Ratio, EPS,
 #'   Market Cap, EPS Projected Current Year, EPS Projected Next Year and many more from
 #'   \href{https://finance.yahoo.com/}{Yahoo Finance}.
-#'   \item \code{"dividends"}: Get the dividends for a stock symbol
+#'   \item `"dividends"`: Get the dividends for a stock symbol
 #'   from \href{https://finance.yahoo.com/}{Yahoo Finance}.
-#'   \item \code{"splits"}: Get the splits for a stock symbol
+#'   \item `"splits"`: Get the splits for a stock symbol
 #'   from \href{https://finance.yahoo.com/}{Yahoo Finance}.
-#'   \item \code{"economic.data"}: Get economic data from
+#'   \item `"economic.data"`: Get economic data from
 #'   \href{https://fred.stlouisfed.org/}{FRED}.
-#'   \item \code{"metal.prices"}: Get the metal prices from
+#'   \item `"metal.prices"`: Get the metal prices from
 #'   \href{https://www.oanda.com/}{Oanda}.
-#'   \item \code{"exchange.rates"}: Get exchange rates from
+#'   \item `"exchange.rates"`: Get exchange rates from
 #'   \href{https://www.oanda.com/currency/converter/}{Oanda}.
 #' }
-#' @param ... Additional parameters passed to the appropriate \code{quantmod}
+#' @param complete_cases Removes symbols that return an NA value due to an error with the get
+#' call such as sending an incorrect symbol "XYZ" to get = "stock.prices". This is useful in
+#' scaling so user does not need to
+#' add an extra step to remove these rows. `TRUE` by default, and a warning
+#' message is generated for any rows removed.
+#' @param ... Additional parameters passed to the appropriate `quantmod`
 #' function. Common optional parameters include:
 #' \itemize{
-#'   \item \code{from}: Optional. A character string representing a start date in
-#'   YYYY-MM-DD format. No effect on \code{get = "stock.index"},
-#'   \code{"financials"}, or \code{"key.ratios"}.
-#'   \item \code{to}: A character string representing a end date in
-#'   YYYY-MM-DD format. No effect on \code{get = "stock.index"},
-#'   \code{get = "financials"}, or \code{"key.ratios"}.
-#'   \item \code{use_fallback}: Used with \code{get = "stock.index"} only.
-#'   Set to \code{FALSE} by default. A boolean
-#'   representing whether to use the fall back data set for a stock index. Useful
-#'   if the data cannot be fetched from the website. The fallback data returned is
-#'   accurate as of the date the package was last updated.
+#'   \item `from`: Optional. A character string representing a start date in
+#'   YYYY-MM-DD format. No effect on
+#'   `"financials"`, `"key.ratios"`, or `"key.stats"`.
+#'   \item `to`: A character string representing a end date in
+#'   YYYY-MM-DD format. No effect on
+#'   `get = "financials"`,  `"key.ratios"`, or `"key.stats"`.
 #' }
 #'
 #'
-#' @return Returns data in the form of a \code{tibble} object.
+#' @return Returns data in the form of a `tibble` object.
 #'
 #' @details
-#' \code{tq_get()} is a consolidated function that gets data from various
-#' web sources. The function is a wrapper for several \code{quantmod}
-#' functions. The results are always returned as a \code{tibble}. The advantages
+#' `tq_get()` is a consolidated function that gets data from various
+#' web sources. The function is a wrapper for several `quantmod`
+#' functions. The results are always returned as a `tibble`. The advantages
 #' are (1) only one function is needed for all data sources and (2) the function
-#' can be seemlessly used with the tidyverse: \code{purrr}, \code{tidyr}, and
-#' \code{dplyr} verbs.
+#' can be seemlessly used with the tidyverse: `purrr`, `tidyr`, and
+#' `dplyr` verbs.
 #'
-#' \code{tq_get_options()} returns a list of valid `get` options you can
+#' `tq_get_options()` returns a list of valid `get` options you can
 #' choose from.
 #'
-#' \code{tq_get_stock_index_options()} returns a list of stock indexes you can
-#' choose from. Alternatively \code{tq_get("options", get = "stock.index")}
-#' can be used.
+#' `tq_get_stock_index_options()` Is deprecated and will be removed in the
+#' next version. Please use `tq_index_options()` instead.
+#'
+#' @seealso [tq_index()] to get a ful list of stocks in an index.
 #'
 #' @rdname tq_get
 #'
@@ -73,14 +72,8 @@
 #' # Load libraries
 #' library(tidyquant)
 #'
-#' ##### Basic Functionality
-#'
 #' # Get the list of `get` options
 #' tq_get_options()
-#'
-#' # Get all stocks in a stock index from www.marketvolume.com
-#' tq_get_stock_index_options() # Get stock index options
-#' tq_get("SP500", get = "stock.index")
 #'
 #' # Get stock prices for a stock from Yahoo
 #' aapl_stock_prices <- tq_get("AAPL")
@@ -90,19 +83,51 @@
 #'                       get  = "stock.prices",
 #'                       from = "2016-01-01",
 #'                       to   = "2017-01-01")
+#'
+#' # Multiple gets
+#' mult_gets <- tq_get("AAPL",
+#'                     get = c("stock.prices", "financials"),
+#'                     from = "2016-01-01",
+#'                     to   = "2017-01-01")
 
 
 
 
 # PRIMARY FUNCTIONS ----
 
-tq_get <- function(x, get = "stock.prices", ...) {
+tq_get <- function(x, get = "stock.prices", complete_cases = TRUE, ...) {
 
-    # Handle x
-    if (inherits(x, "data.frame")) {
+    # Deprecated, remove next version
+    if ("stock.index" %in% get) {
+        warning("The 'stock.index' option is deprecated and will be removed in the next version. Please use tq_index() instead.")
+    }
 
+    # Validate compound gets
+    if (length(get) > 1) validate_compound_gets(get)
+
+    # Distribute operations based on x
+    if (is.character(x) && length(x) == 1 && length(get) == 1) {
+
+        # Expedite get and return
+        return(tq_get_base(x, get, complete_cases = complete_cases, map = FALSE, ...))
+
+    } else if (is.character(x)) {
+
+        col_name <- names(x)
+
+        if (is.null(col_name)) col_name <- "symbol"
+
+        x_tib <- tibble::tibble(symbol.. = x)
+
+        ret <- tq_get_map(x = x_tib, get = get, complete_cases, ...)
+
+        names(ret)[[1]] <- col_name[[1]]
+
+    } else if (inherits(x, "data.frame")) {
+
+        # Prevent issues with grouped_df's
         if (inherits(x, "grouped_df")) {
-            warning("Ungrouping grouped data.frame")
+            warning("Ungrouping grouped data frame")
             x <- dplyr::ungroup(x)
         }
 
@@ -110,28 +135,12 @@ tq_get <- function(x, get = "stock.prices", ...) {
 
         names(x)[[1]] <- "symbol.."
 
-        x <- x %>%
+        x_tib <- x %>%
             tibble::as_tibble()
 
-        ret <- tq_get_multiple(x = x, get = get, ...)
+        ret <- tq_get_map(x = x_tib, get = get, complete_cases, ...)
 
-        names(ret)[[1]] <- col_name
-
-    } else if (is.character(x) && length(x) > 1) {
-
-        col_name <- names(x)
-
-        if (is.null(col_name)) col_name <- "symbol.x"
-
-        x <- tibble::tibble(symbol.. = x)
-
-        ret <- tq_get_multiple(x = x, get = get, ...)
-
-        names(ret)[[1]] <- col_name
-
-    } else if (is.character(x) && length(x) == 1) {
-
-        ret <- tq_get_base(x = x, get = get, ...)
+        names(ret)[[1]] <- col_name[[1]]
 
     } else {
 
@@ -139,22 +148,60 @@ tq_get <- function(x, get = "stock.prices", ...) {
 
     }
 
-    ret
+    # Unnest if only 1 get option
+    if (length(get) == 1) {
+
+        ret <- tryCatch({
+            ret %>%
+                tidyr::unnest()
+        }, error = function(e) {
+            warning("Returning as nested data frame.")
+            ret
+        })
+
+    }
+
+    return(ret)
 
 }
 
-tq_get_multiple <- function(x, get, ...) {
+tq_get_map <- function(x, get, complete_cases, ...) {
 
-    # Map tq_get_base
-    ret <- x %>%
-        dplyr::mutate(data.. = purrr::map(.x = symbol..,
-                                         ~ tq_get_base(x = .x,
-                                                       get = get,
-                                                       ...)),
-                      class.. = purrr::map_chr(.x = data.., ~ class(.x)[[1]])) %>%
-        dplyr::filter(class.. != "logical") %>%
-        dplyr::select(-class..) %>%
-        tidyr::unnest()
+    ret <- x
+
+    # Loop through each get option, mapping tq_get_base
+    for (i in seq_along(get)) {
+
+        if (complete_cases) {
+
+            ret <- ret %>%
+                dplyr::mutate(data.. = purrr::map(.x = symbol..,
+                                                  ~ tq_get_base(x = .x,
+                                                                get = get[[i]],
+                                                                complete_cases = complete_cases,
+                                                                map = TRUE,
+                                                                ...)),
+                              class.. = purrr::map_chr(.x = data..,
+                                                       ~ class(.x)[[1]])
+                              ) %>%
+                dplyr::filter(class.. != "logical") %>%
+                dplyr::select(-class..)
+
+        } else {
+
+            ret <- ret %>%
+                dplyr::mutate(data.. = purrr::map(.x = symbol..,
+                                                  ~ tq_get_base(x = .x,
+                                                                get = get[[i]],
+                                                                complete_cases = complete_cases,
+                                                                map = TRUE,
+                                                                ...)))
+
+        }
+
+        colnames(ret)[length(colnames(ret))] <- get[[i]]
+
+    }
 
     ret
 
@@ -162,37 +209,24 @@ tq_get_multiple <- function(x, get, ...) {
 
 tq_get_base <- function(x, get, ...) {
 
-    # Check get
-    get <- stringr::str_to_lower(get) %>%
-        stringr::str_trim(side = "both") %>%
-        stringr::str_replace_all("[[:punct:]]", "") %>%
-        stringr::str_replace_all("s$", "")
+    # Clean get
+    get <- clean_get(get)
 
-    get_list <- tq_get_options() %>%
-        stringr::str_replace_all("[[:punct:]]", "") %>%
-        stringr::str_replace_all("s$", "")
-    if (!(get %in% get_list)) {
-        stop("Error: `get` must be a valid entry")
-    }
-
-    # Check x
-    if (length(x) != 1) {
-        stop("Error: Enter one value of x per request.
-             Use purrr::map() to iterate a tibble.")
-    }
+    # Validate get
+    validate_get(get)
 
     # Setup switches based on get
     ret <- switch(get,
-                  stockprice   = tq_get_util_2(x, get, ...),
-                  dividend     = tq_get_util_2(x, get, ...),
-                  split        = tq_get_util_2(x, get, ...),
-                  financial    = tq_get_util_2(x, get, ...),
-                  keystat      = tq_get_util_4(x, get, ...),
-                  keyratio     = tq_get_util_1(x, get, ...),
-                  metalprice   = tq_get_util_2(x, get, ...),
-                  exchangerate = tq_get_util_2(x, get, ...),
-                  economicdata = tq_get_util_2(x, get, ...),
-                  stockindex   = tq_get_util_3(x, get, ...)
+                  stockprice   = tq_get_util_1(x, get, ...),
+                  dividend     = tq_get_util_1(x, get, ...),
+                  split        = tq_get_util_1(x, get, ...),
+                  financial    = tq_get_util_1(x, get, ...),
+                  keystat      = tq_get_util_3(x, get, ...),
+                  keyratio     = tq_get_util_2(x, get, ...),
+                  metalprice   = tq_get_util_1(x, get, ...),
+                  exchangerate = tq_get_util_1(x, get, ...),
+                  economicdata = tq_get_util_1(x, get, ...),
+                  stockindex   = tq_index(x) # Deprecated, remove next version
                   )
 
     ret
@@ -203,7 +237,6 @@ tq_get_base <- function(x, get, ...) {
 #' @export
 tq_get_options <- function() {
     c("stock.prices",
-      "stock.index",
       "financials",
       "key.stats",
       "key.ratios",
@@ -215,100 +248,247 @@ tq_get_options <- function() {
       )
 }
 
-
+# Deprecated, remove next version
 #' @rdname tq_get
 #' @export
 tq_get_stock_index_options <- function() {
-    c(  "DOWJONES",
-        "DJI",
-        "DJT",
-        "DJU",
-        "SP100",
-        "SP400",
-        "SP500",
-        "SP600",
-        "RUSSELL1000",
-        "RUSSELL2000",
-        "RUSSELL3000",
-        "AMEX",
-        "AMEXGOLD",
-        "AMEXOIL",
-        "NASDAQ",
-        "NASDAQ100",
-        "NYSE",
-        "SOX"
-    )
+    warning("tq_get_stock_index_options() is deprecated and will be removed in the next version. Please use tq_index_options().")
+    tq_index_options()
 }
+
 
 # UTILITY FUNCTIONS ----
 
-# Util 1: Used for tq_get() `get` options:
-#     key.ratios -> From www.morningstar.com
-tq_get_util_1 <- function(x, get, ...) {
+# Util 1: stock.prices, financials, economic.data -----
+tq_get_util_1 <-
+    function(x,
+             get,
+             complete_cases,
+             map,
+             from = as.character(paste0(lubridate::year(lubridate::today()) - 10, "-01-01")),
+             to   = as.character(lubridate::today()),
+             ...) {
+
+    # Check x
+    if (!is.character(x)) {
+        stop("x must be a character string in the form of a valid symbol.")
+    }
+
+    # Setup switches based on get
+    vars <- switch(get,
+                   stockprice   = list(chr_get    = "stock.prices",
+                                       fun        = quantmod::getSymbols,
+                                       chr_fun    = "quantmod::getSymbols",
+                                       list_names = c("open", "high", "low", "close", "volume", "adjusted"),
+                                       source     = "yahoo"),
+                   dividend     = list(chr_get    = "dividends",
+                                       fun        = quantmod::getDividends,
+                                       chr_fun    = "quantmod::getDividends",
+                                       list_names = "dividends",
+                                       source     = "yahoo"),
+                   split        = list(chr_get    = "splits",
+                                       fun        = quantmod::getSplits,
+                                       chr_fun    = "quantmod::getSplits",
+                                       list_names = "splits",
+                                       source     = "yahoo"),
+                   financial    = list(chr_get    = "financials",
+                                       fun        = quantmod::getFinancials,
+                                       chr_fun    = "quantmod::getFinancials",
+                                       source     = "google"),
+                   metalprice   = list(chr_get    = "metal.prices",
+                                       fun        = quantmod::getMetals,
+                                       chr_fun    = "quantmod::getMetals",
+                                       list_names = "price",
+                                       source     = "oanda"),
+                   exchangerate = list(chr_get    = "exchange.rates",
+                                       fun        = quantmod::getFX,
+                                       chr_fun    = "quantmod::getFX",
+                                       list_names = "exchange.rate",
+                                       source     = "oanda"),
+                   economicdata = list(chr_get    = "economic.data",
+                                       fun        = quantmod::getSymbols,
+                                       chr_fun    = "quantmod::getSymbols.FRED",
+                                       list_names = "price",
+                                       source     = "FRED")
+    )
+
+    # Get data; Handle errors
+    ret <- tryCatch({
+
+        suppressWarnings(
+            suppressMessages(
+                vars$fun(x, src = vars$source, auto.assign = FALSE, from = from, to = to, ...)
+            )
+        )
+
+    }, error = function(e) {
+
+        warn <- paste0("Error at ", x, " during call to get = '", vars$chr_get, "'.")
+        if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
+        warning(warn)
+        return(NA) # Return NA on error
+
+    })
+
+    # coerce financials to tibble
+    if (identical(get, "financial") && class(ret) == "financials") {
+
+        # Tidy a single financial statement
+        tidy_fin <- function(x) {
+
+            group <- 1:nrow(x)
+
+            df <- dplyr::bind_cols(tibble::tibble(group),
+                                   tidyquant::as_tibble(x, preserve_row_names = TRUE)) %>%
+                dplyr::rename(category = row.names) %>%
+                tidyr::gather(date, value, -c(category, group)) %>%
+                dplyr::mutate(date = lubridate::as_date(date)) %>%
+                dplyr::arrange(group)
+
+            df
+
+        }
+
+        # Setup tibble and map tidy_fin function
+        ret <- tibble::tibble(
+            type = c("IS", "IS", "BS", "BS", "CF", "CF"),
+            period = rep(c("A", "Q"), 3)) %>%
+            dplyr::mutate(retrieve = paste0("ret$", type, "$", period)) %>%
+            dplyr::mutate(data = purrr::map(retrieve, ~ eval(parse(text = .x)))) %>%
+            dplyr::mutate(data = purrr::map(data, tidy_fin)) %>%
+            dplyr::select(-retrieve) %>%
+            tidyr::spread(key = period, value = data) %>%
+            dplyr::rename(annual = A, quarter = Q)
+
+    }
+
+    # Coerce any xts to tibble
+    if (xts::is.xts(ret)) {
+        names(ret) <- vars$list_names
+        ret <- ret %>%
+            tidyquant::as_tibble(preserve_row_names = TRUE) %>%
+            dplyr::rename(date = row.names) %>%
+            dplyr::mutate(date = lubridate::as_date(date))
+
+        # Filter economic data by date
+        if (identical(get, "economicdata")) {
+            ret <- ret %>%
+                dplyr::filter(date >= lubridate::as_date(from) & date <= lubridate::as_date(to))
+        }
+    }
+
+    ret
+
+}
+
+# Util 2: key.ratios -----
+tq_get_util_2 <- function(x, get, complete_cases, map, ...) {
+
+    # Check x
+    if (!is.character(x)) {
+        stop("x must be a character string in the form of a valid symbol.")
+    }
 
     # Convert x to uppercase
     x <- stringr::str_to_upper(x) %>%
         stringr::str_trim(side = "both") %>%
         stringr::str_replace_all("[[:punct:]]", "")
 
-    # Check x
-    if (!is.character(x)) {
-        err <- "Error: x must be a character string in the form of a valid stock symbol."
-        stop(err)
-    }
-
     tryCatch({
 
         # Download file
-        tmp <- tempfile()
-        stock_exchange <- c("XNAS", "XNYS") # mornginstar gets from various exchanges
+        stock_exchange <- c("XNAS", "XNYS", "XASE") # mornginstar gets from various exchanges
         url_base_1 <- 'http://financials.morningstar.com/finan/ajax/exportKR2CSV.html?&callback=?&t='
         url_base_2 <- '&region=usa&culture=en-US&cur=&order=asc'
-        # Two URLs to try
+        # Three URLs to try
         url <- paste0(url_base_1, stock_exchange, ":", x, url_base_2)
 
         # Try various stock exchanges
-        download.file(url[1], destfile = tmp, quiet = TRUE)
-        if (length(readLines(tmp)) == 0) {
-            download.file(url[2], destfile = tmp, quiet = TRUE)
+        for(i in 1:3) {
+            text <- httr::RETRY("GET", url[i], times = 5) %>%
+                httr::content()
+
+            if(!is.null(text)) {
+
+                # Test to see if file returned is just a message containing "We're sorry"
+                text_test <- text %>%
+                    xml2::as_list() %>%
+                    unlist() %>%
+                    stringr::str_detect("^We.re sorry")
+
+                # If text does not contain "We're sorry" message, break
+                if (!text_test) {
+                    break
+                }
+            }
         }
 
-
-        # Setup Tibble Part 1
-        key_ratios_1 <- tibble::tibble(
-            section            = c(rep("Financials", 15),
-                                   rep("Profitability", 17),
-                                   rep("Growth", 16),
-                                   rep("Cash Flow", 5),
-                                   rep("Financial Health", 24),
-                                   rep("Efficiency Ratios", 8)),
-            sub.section        = c(rep("Financials", 15),
-                                   rep("Margin of Sales %", 9),
-                                   rep("Profitability", 8),
-                                   rep("Revenue %", 4),
-                                   rep("Operating Income %", 4),
-                                   rep("Net Income %", 4),
-                                   rep("EPS %", 4),
-                                   rep("Cash Flow Ratios", 5),
-                                   rep("Balance Sheet Items (in %)", 20),
-                                   rep("Liquidty/Financial Health", 4),
-                                   rep("Efficiency", 8))
-        )
-
-        # Setup Tibble Part 2
-
         # Read lines
-        skip_rows <- c(1:2, 19:21, 31:32, 41:44, 49, 54, 59, 64:66, 72:74, 95:96, 101:103)
-        text <- readr::read_lines(tmp)[-skip_rows]
+        text <- text %>%
+            xml2::as_list() %>%
+            unlist() %>%
+            readr::read_lines()
 
-        # Unlink tmp
-        unlink(tmp)
+        # Skip rows & setup key ratio categories
+
+        # Patch for stocks with only 110 lines, missing Free Cash Flow/Net Income (line 71)
+        if (length(text) == 111)  {
+            # 111 Lines is normal
+            skip_rows <- c(1:2, 19:21, 31:32, 41:44, 49, 54, 59, 64:66, 72:74, 95:96, 101:103)
+
+            key_ratios_1 <- tibble::tibble(
+                section            = c(rep("Financials", 15),
+                                       rep("Profitability", 17),
+                                       rep("Growth", 16),
+                                       rep("Cash Flow", 5),
+                                       rep("Financial Health", 24),
+                                       rep("Efficiency Ratios", 8)),
+                sub.section        = c(rep("Financials", 15),
+                                       rep("Margin of Sales %", 9),
+                                       rep("Profitability", 8),
+                                       rep("Revenue %", 4),
+                                       rep("Operating Income %", 4),
+                                       rep("Net Income %", 4),
+                                       rep("EPS %", 4),
+                                       rep("Cash Flow Ratios", 5),
+                                       rep("Balance Sheet Items (in %)", 20),
+                                       rep("Liquidty/Financial Health", 4),
+                                       rep("Efficiency", 8)),
+                group               = 1:85
+            )
+        } else {
+            # Patch for stocks with 110 lines
+            skip_rows <- c(1:2, 19:21, 31:32, 41:44, 49, 54, 59, 64:66, 71:73, 94:95, 100:102)
+
+            key_ratios_1 <- tibble::tibble(
+                section            = c(rep("Financials", 15),
+                                       rep("Profitability", 17),
+                                       rep("Growth", 16),
+                                       rep("Cash Flow", 4), # One less
+                                       rep("Financial Health", 24),
+                                       rep("Efficiency Ratios", 8)),
+                sub.section        = c(rep("Financials", 15),
+                                       rep("Margin of Sales %", 9),
+                                       rep("Profitability", 8),
+                                       rep("Revenue %", 4),
+                                       rep("Operating Income %", 4),
+                                       rep("Net Income %", 4),
+                                       rep("EPS %", 4),
+                                       rep("Cash Flow Ratios", 4), # One less
+                                       rep("Balance Sheet Items (in %)", 20),
+                                       rep("Liquidty/Financial Health", 4),
+                                       rep("Efficiency", 8)),
+                group              = c(1:52, 54:85)
+            )
+        }
+
+        text <- text[-skip_rows]
 
         # Parse text
         key_ratios_2 <-
             suppressMessages(
                 suppressWarnings(
-                    utils::read.csv(text = text, na.strings=c("","NA")) %>%
+                    utils::read.csv(text = text, na.strings=c("", "NA")) %>%
                         tibble::as_tibble() %>%
                         dplyr::mutate_all(as.character)
                 )
@@ -322,7 +502,6 @@ tq_get_util_1 <- function(x, get, ...) {
         key_ratios_bind <- key_ratios_raw %>%
             dplyr::select(-TTM) %>%
             dplyr::rename(category = X) %>%
-            tibble::rownames_to_column(var = "group") %>%
             dplyr::mutate(group = as.numeric(group)) %>%
             tidyr::gather(key = date, value = value, -c(group, section, sub.section, category)) %>%
             dplyr::arrange(group) %>%
@@ -338,7 +517,7 @@ tq_get_util_1 <- function(x, get, ...) {
         # Get stock prices
         from = lubridate::today() - lubridate::years(12)
         valuations_2 <- tq_get(x, get = "stock.prices", from = from) %>%
-            tq_transform_xy(adjusted, transform_fun = to.period, period = "years") %>%
+            tq_transmute_xy(adjusted, mutate_fun = to.period, period = "years") %>%
             dplyr::mutate(year = lubridate::year(date)) %>%
             dplyr::select(year, date, adjusted)
 
@@ -374,7 +553,7 @@ tq_get_util_1 <- function(x, get, ...) {
                           `Price to Cash Flow`) %>%
             tidyr::gather(key = category, value = value, -date) %>%
             dplyr::select(category, date, value) %>%
-            dplyr::mutate(date = lubridate::ymd(date))
+            dplyr::mutate(date = lubridate::as_date(date))
 
         # Get last group number
         last_group_num <- key_ratios_bind$group %>% max()
@@ -392,9 +571,17 @@ tq_get_util_1 <- function(x, get, ...) {
 
         return(key_ratios)
 
+    }, warning = function(w) {
+
+        warn <- w
+        if (map == TRUE) warn <- paste0(x, ": ", w)
+        warning(warn)
+        return(key_ratios)
+
     }, error = function(e) {
 
-        warn <- paste0("Error at ", x, " during call to get = key.ratios")
+        warn <- paste0("Error at ", x, " during call to get = 'key.ratios'.")
+        if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
         warning(warn)
         return(NA) # Return NA on error
 
@@ -402,330 +589,18 @@ tq_get_util_1 <- function(x, get, ...) {
 
 }
 
-
-# Util 2: Used for tq_get() `get` options:
-#     financials      -> from quantmod::getFinancials()
-#     metal.prices    -> from quantmod::getMetals()
-#     exchange.rates  -> from quantmod::getFX()
-#     economic.data   -> from quantmod::getSymbols.FRED()
-tq_get_util_2 <-
-    function(x,
-             get,
-             from = as.character(paste0(lubridate::year(lubridate::today()) - 10, "-01-01")),
-             to   = as.character(lubridate::today()),
-             ...) {
-
-    # Setup switches based on get
-    vars <- switch(get,
-                   stockprice   = list(chr_x      = "stock symbol",
-                                       fun        = quantmod::getSymbols,
-                                       chr_fun    = "quantmod::getSymbols",
-                                       list_names = c("open", "high", "low", "close", "volume", "adjusted"),
-                                       source     = "yahoo"),
-                   dividend     = list(chr_x      = "stock symbol",
-                                       fun        = quantmod::getDividends,
-                                       chr_fun    = "quantmod::getDividends",
-                                       list_names = "dividends",
-                                       source     = "yahoo"),
-                   split        = list(chr_x      = "stock symbol",
-                                       fun        = quantmod::getSplits,
-                                       chr_fun    = "quantmod::getSplits",
-                                       list_names = "splits",
-                                       source     = "yahoo"),
-                   financial    = list(chr_x      = "stock symbol",
-                                       fun        = quantmod::getFinancials,
-                                       chr_fun    = "quantmod::getFinancials",
-                                       source     = "google"),
-                   metalprice   = list(chr_x      = "metal symbol",
-                                       fun        = quantmod::getMetals,
-                                       chr_fun    = "quantmod::getMetals",
-                                       list_names = "price",
-                                       source     = "oanda"),
-                   exchangerate = list(chr_x      = "exchange rate combination",
-                                       fun        = quantmod::getFX,
-                                       chr_fun    = "quantmod::getFX",
-                                       list_names = "exchange.rate",
-                                       source     = "oanda"),
-                   economicdata = list(chr_x      = "economic symbol",
-                                       fun        = quantmod::getSymbols,
-                                       chr_fun    = "quantmod::getSymbols.FRED",
-                                       list_names = "price",
-                                       source     = "FRED")
-    )
+# Util 3: key.stats -----
+tq_get_util_3 <- function(x, get, complete_cases, map, ...) {
 
     # Check x
     if (!is.character(x)) {
-        err <- paste0("Error: x must be a character string in the form of a valid ",
-                      vars$chr_x)
-        stop(err)
+        stop("x must be a character string in the form of a valid symbol.")
     }
-
-    # Get data; Handle errors
-    ret <- tryCatch({
-
-        suppressWarnings(
-            suppressMessages(
-                vars$fun(x, src = vars$source, auto.assign = FALSE, from = from, to = to, ...)
-            )
-        )
-
-    }, error = function(e) {
-
-        warn <- paste0("Error at ", vars$chr_x, " ", x,
-                       " during call to ", vars$chr_fun, ".")
-        warning(warn)
-        return(NA) # Return NA on error
-
-    })
-
-    # coerce financials to tibble
-    if (identical(get, "financial") && class(ret) == "financials") {
-
-        # Tidy a single financial statement
-        tidy_fin <- function(x) {
-
-            group <- 1:nrow(x)
-
-            df <- dplyr::bind_cols(tibble::tibble(group),
-                                   tidyquant::as_tibble(x, preserve_row_names = TRUE)) %>%
-                dplyr::rename(category = row.names) %>%
-                tidyr::gather(date, value, -c(category, group)) %>%
-                dplyr::mutate(date = lubridate::ymd(date)) %>%
-                dplyr::arrange(group)
-
-            df
-
-        }
-
-        # Setup tibble and map tidy_fin function
-        ret <- tibble::tibble(
-            type = c("IS", "IS", "BS", "BS", "CF", "CF"),
-            period = rep(c("A", "Q"), 3)) %>%
-            dplyr::mutate(retrieve = paste0("ret$", type, "$", period)) %>%
-            dplyr::mutate(data = purrr::map(retrieve, ~ eval(parse(text = .x)))) %>%
-            dplyr::mutate(data = purrr::map(data, tidy_fin)) %>%
-            dplyr::select(-retrieve) %>%
-            tidyr::spread(key = period, value = data) %>%
-            dplyr::rename(annual = A, quarter = Q)
-
-    }
-
-    # Coerce any xts to tibble
-    if (xts::is.xts(ret)) {
-        names(ret) <- vars$list_names
-        ret <- ret %>%
-            tidyquant::as_tibble(preserve_row_names = TRUE) %>%
-            dplyr::rename(date = row.names) %>%
-            dplyr::mutate(date = lubridate::ymd(date))
-
-        # Filter economic data by date
-        if (identical(get, "economicdata")) {
-            ret <- ret %>%
-                dplyr::filter(date >= lubridate::ymd(from) & date <= lubridate::ymd(to))
-        }
-    }
-
-    ret
-
-}
-
-
-# Util 3: Used for tq_get() `get` options:
-#     stock.index     -> web scraped from www.marketvolume.com
-tq_get_util_3 <-
-    function(x, get, use_fallback = FALSE, ...) {
-
-    x <- stringr::str_to_upper(x) %>%
-         stringr::str_trim(side = "both") %>%
-         stringr::str_replace_all("[[:punct:]]", "")
-
-    # Check if x is an appropriate index
-    index_list <- tq_get_stock_index_options()
-    if (!(x %in% c(index_list, "OPTIONS"))) {
-        err <- paste0("Error: x must be a character string in the form of a valid index.",
-                      " The following are valid options:\n",
-                      stringr::str_c(index_list, collapse = ", ")
-        )
-        stop(err)
-    }
-
-    # Show options or collect data
-    if (x == "OPTIONS") {
-
-        ret <- index_list
-
-    } else {
-
-        # Setup switches based on `get`
-        vars <- switch(x,
-                       DJI              = list(chr_x      = "index",
-                                               a          = "dji_components",
-                                               b          = "DJI",
-                                               max_page   = 1),
-                       DJT              = list(chr_x      = "index",
-                                               a          = "djt_components",
-                                               b          = "DJT",
-                                               max_page   = 1),
-                       DJU              = list(chr_x      = "index",
-                                               a          = "dju_components",
-                                               b          = "DJU",
-                                               max_page   = 1),
-                       DOWJONES         = list(chr_x      = "index",
-                                               a          = "dja_components",
-                                               b          = "DJA",
-                                               max_page   = 1),
-                       NASDAQ100        = list(chr_x      = "index",
-                                               a          = "n100_components",
-                                               b          = "SPX",
-                                               max_page   = 2),
-                       SP100            = list(chr_x      = "index",
-                                               a          = "sp100_components",
-                                               b          = "OEX",
-                                               max_page   = 1),
-                       SP400            = list(chr_x      = "index",
-                                               a          = "sp400_components",
-                                               b          = "SP400",
-                                               max_page   = 2),
-                       SP500            = list(chr_x      = "index",
-                                               a          = "sp500_components",
-                                               b          = "SPX",
-                                               max_page   = 2),
-                       SP600            = list(chr_x      = "index",
-                                               a          = "sp600_components",
-                                               b          = "SP600",
-                                               max_page   = 3),
-                       RUSSELL1000      = list(chr_x      = "index",
-                                               a          = "r1000_components",
-                                               b          = "RUI",
-                                               max_page   = 4),
-                       RUSSELL2000      = list(chr_x      = "index",
-                                               a          = "r2000_components",
-                                               b          = "RUT",
-                                               max_page   = 9),
-                       RUSSELL3000      = list(chr_x      = "index",
-                                               a          = "r3000_components",
-                                               b          = "RUA",
-                                               max_page   = 13),
-                       AMEX             = list(chr_x      = "exchange",
-                                               a          = "amex_components",
-                                               b          = "XAX",
-                                               max_page   = 2),
-                       NASDAQ           = list(chr_x      = "exchange",
-                                               a          = "nasdaq_components",
-                                               b          = "COMP",
-                                               max_page   = 9),
-                       NYSE             = list(chr_x      = "index",
-                                               a          = "nyse_components",
-                                               b          = "NYA",
-                                               max_page   = 11),
-                       AMEXGOLD         = list(chr_x      = "index",
-                                               a          = "gold_components",
-                                               b          = "HUI",
-                                               max_page   = 1),
-                       AMEXOIL          = list(chr_x      = "index",
-                                               a          = "oil_components",
-                                               b          = "XOI",
-                                               max_page   = 1),
-                       SOX              = list(chr_x      = "index",
-                                               a          = "sem_components",
-                                               b          = "SOX",
-                                               max_page   = 1)
-
-        )
-
-        if (!use_fallback) {
-
-            # Base path and page rows from www.marketvolume.com
-            base_path_1 <- "http://www.marketvolume.com/indexes_exchanges/"
-            base_path_2 <- ".asp?s="
-            base_path_3 <- "&row="
-            base_path <- paste0(base_path_1, vars$a, base_path_2, vars$b, base_path_3)
-
-            # Get page numbers; Add 1 to max page to adjust for 250 stock list expansion.
-            row_num <- seq(from = 0, by = 250, length.out = vars$max_page + 1)
-
-            message("Getting data...\n")
-
-            # Function to map
-            get_stock_index <- function(base_path, row_num) {
-                path <- paste0(base_path, row_num)
-                # rvest functions: Get table of stocks
-                stock_table <- xml2::read_html(curl::curl(path, handle = curl::new_handle("useragent" = "Mozilla/5.0"))) %>%
-                    rvest::html_node("table") %>%
-                    rvest::html_table()
-                # Format table
-                stock_table <- stock_table[-1, 1:2] %>%
-                    tibble::as_tibble() %>%
-                    dplyr::rename(symbol = X1, company = X2)
-                stock_table
-            }
-
-            # Map function; return stockindex
-            stock_index <- tryCatch({
-
-                tibble::tibble(row_num) %>%
-                    dplyr::mutate(
-                        stock_table = purrr::map(row_num,
-                                                 function(.x) get_stock_index(base_path = base_path, row_num = .x)
-                        )
-                    ) %>%
-                    tidyr::unnest() %>%
-                    dplyr::select(-row_num) %>%
-                    dplyr::mutate_all(function(x) stringr::str_trim(x, side = 'both') %>%
-                                          stringr::str_to_upper()) %>%
-                    dplyr::distinct()
-
-            }, error = function(e) {
-
-                path <- paste0(base_path, 0)
-                con <- pipe(path)
-                close(con)
-                warning(paste0("Could not access ", path, ". ",
-                                "If problem persists, try setting `use_fallback = TRUE` ",
-                                "to return the last dowloaded data set."))
-
-                NA
-
-            })
-
-        } else {
-
-            # load("R/sysdata.rda")
-            date.dload <- stock_indexes %>%
-                dplyr::filter(index.option == x) %>%
-                dplyr::select(date.downloaded)
-            message(paste0("Using fallback dataset last downloaded ",
-                           date.dload[[1]]), ".")
-            stock_index <- stock_indexes %>%
-                dplyr::filter(index.option == x) %>%
-                dplyr::select(index.components) %>%
-                tidyr::unnest()
-
-        }
-
-
-        ret <- stock_index
-
-    }
-
-    ret
-
-}
-
-# Util 1: Used for tq_get() `get` options:
-#     key.statistics -> From Yahoo Finance
-tq_get_util_4 <- function(x, get, ...) {
 
     # Convert x to uppercase
     x <- stringr::str_to_upper(x) %>%
         stringr::str_trim(side = "both") %>%
         stringr::str_replace_all("[[:punct:]]", "")
-
-    # Check x
-    if (!is.character(x)) {
-        err <- "Error: x must be a character string in the form of a valid stock symbol."
-        stop(err)
-    }
 
     tryCatch({
 
@@ -757,56 +632,64 @@ tq_get_util_4 <- function(x, get, ...) {
             make.names()
         names(key_stats_raw) <- key_stat_names
 
-        # Formatting Functions
-        convert_to_numeric <- function(x) {
-            # x = character such as "23.4B"
-            units <- stringr::str_sub(x, -1, -1)
-
-            if (units %in% c("T", "B", "M")) {
-                value <- stringr::str_sub(x, 1, -2) %>%
-                    as.numeric()
-
-                if (units == "T") {
-                    value <- value * 1e12
-                } else if (units == "B") {
-                    value <- value * 1e9
-                } else if (units == "M") {
-                    value <- value * 1e6
-                }
-            } else (
-                value <- as.numeric(value)
-            )
-
-            value
-        }
-
-        convert_to_percent <- function(x) {
-            # x = character such as "-0.6104%"
-            units <- stringr::str_sub(x, -1, -1)
-
-            if (units %in% c("%")) {
-                value <- stringr::str_sub(x, 1, -2) %>%
-                    as.numeric()
-
-                value <- value * 1 / 100
-            }
-
-            value
-        }
-
         # Main formatting script
         suppressWarnings(
             key_stats <- key_stats_raw %>%
-                dplyr::mutate(Last.Trade.Date = lubridate::mdy(Last.Trade.Date),
-                              Market.Capitalization = convert_to_numeric(Market.Capitalization),
-                              EBITDA = convert_to_numeric(EBITDA),
-                              Percent.Change.From.52.week.Low = convert_to_percent(Percent.Change.From.52.week.Low),
-                              Percent.Change.From.50.day.Moving.Average = convert_to_percent(Percent.Change.From.50.day.Moving.Average),
-                              Percent.Change.From.200.day.Moving.Average = convert_to_percent(Percent.Change.From.200.day.Moving.Average),
+                dplyr::mutate(Ask = as.numeric(Ask),
+                              Ask.Size = as.numeric(Ask.Size),
+                              Average.Daily.Volume = as.numeric(Average.Daily.Volume),
+                              Bid = as.numeric(Bid),
+                              Bid.Size = as.numeric(Bid.Size),
+                              Book.Value = as.numeric(Book.Value),
+                              Change = as.numeric(Change),
+                              Change.From.200.day.Moving.Average = as.numeric(Change.From.200.day.Moving.Average),
+                              Change.From.50.day.Moving.Average = as.numeric(Change.From.50.day.Moving.Average),
+                              Change.From.52.week.High = as.numeric(Change.From.52.week.High),
+                              Change.From.52.week.Low = as.numeric(Change.From.52.week.Low),
                               Change.in.Percent = convert_to_percent(Change.in.Percent),
-                              Ex.Dividend.Date = lubridate::mdy(Ex.Dividend.Date),
+                              Currency = as.character(Currency),
+                              Days.High = as.numeric(Days.High),
+                              Days.Low = as.numeric(Days.Low),
+                              Days.Range = as.character(Days.Range),
                               Dividend.Pay.Date = lubridate::mdy(Dividend.Pay.Date),
-                              Revenue = convert_to_numeric(Revenue)
+                              Dividend.per.Share = as.numeric(Dividend.per.Share),
+                              Dividend.Yield = as.numeric(Dividend.Yield),
+                              EBITDA = convert_to_numeric(EBITDA),
+                              EPS = as.numeric(EPS),
+                              EPS.Estimate.Current.Year = as.numeric(EPS.Estimate.Current.Year),
+                              EPS.Estimate.Next.Quarter = as.numeric(EPS.Estimate.Next.Quarter),
+                              EPS.Estimate.Next.Year = as.numeric(EPS.Estimate.Next.Year),
+                              Ex.Dividend.Date = lubridate::mdy(Ex.Dividend.Date),
+                              Float.Shares = as.numeric(Float.Shares),
+                              High.52.week = as.numeric(High.52.week),
+                              Last.Trade.Date = lubridate::mdy(Last.Trade.Date),
+                              Last.Trade.Price.Only = as.numeric(Last.Trade.Price.Only),
+                              Last.Trade.Size = as.numeric(Last.Trade.Size),
+                              Last.Trade.With.Time = as.character(Last.Trade.With.Time),
+                              Low.52.week = as.numeric(Low.52.week),
+                              Market.Capitalization = convert_to_numeric(Market.Capitalization),
+                              Moving.Average.200.day = as.numeric(Moving.Average.200.day),
+                              Moving.Average.50.day = as.numeric(Moving.Average.50.day),
+                              Name = as.character(Name),
+                              Open = as.numeric(Open),
+                              PE.Ratio = as.numeric(PE.Ratio),
+                              PEG.Ratio = as.numeric(PEG.Ratio),
+                              Percent.Change.From.200.day.Moving.Average = convert_to_percent(Percent.Change.From.200.day.Moving.Average),
+                              Percent.Change.From.50.day.Moving.Average = convert_to_percent(Percent.Change.From.50.day.Moving.Average),
+                              Percent.Change.From.52.week.High = convert_to_percent(Percent.Change.From.52.week.High),
+                              Percent.Change.From.52.week.Low = convert_to_percent(Percent.Change.From.52.week.Low),
+                              Previous.Close = as.numeric(Previous.Close),
+                              Price.to.Book = as.numeric(Price.to.Book),
+                              Price.to.EPS.Estimate.Current.Year = as.numeric(Price.to.EPS.Estimate.Current.Year),
+                              Price.to.EPS.Estimate.Next.Year = as.numeric(Price.to.EPS.Estimate.Next.Year),
+                              Price.to.Sales = as.numeric(Price.to.Sales),
+                              Range.52.week = as.character(Range.52.week),
+                              Revenue = convert_to_numeric(Revenue),
+                              Shares.Outstanding = as.numeric(Shares.Outstanding),
+                              Short.Ratio = as.numeric(Short.Ratio),
+                              Stock.Exchange = as.character(Stock.Exchange),
+                              Target.Price.1.yr. = as.numeric(Target.Price.1.yr.),
+                              Volume = as.numeric(Volume)
                 )
         )
 
@@ -817,10 +700,50 @@ tq_get_util_4 <- function(x, get, ...) {
 
     }, error = function(e) {
 
-        warn <- paste0("Error at ", x, " during call to get = key.stats")
+        warn <- paste0("Error at ", x, " during call to get = 'key.stats'.")
+        if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
         warning(warn)
         return(NA) # Return NA on error
 
     })
 
+}
+
+# Clean Get ----
+clean_get <- function(get) {
+    stringr::str_to_lower(get) %>%
+        stringr::str_trim(side = "both") %>%
+        stringr::str_replace_all("[[:punct:]]", "") %>%
+        stringr::str_replace_all("s$", "")
+}
+
+# Validate Gets -----
+validate_get <- function(get) {
+
+    get_options <- tq_get_options() %>%
+        stringr::str_replace_all("[[:punct:]]", "") %>%
+        stringr::str_replace_all("s$", "")
+
+    # Deprecated, remove "stockindex" in next version
+    if (!all(get %in% c(get_options, "stockindex"))) {
+        stop("Get must be a valid entry. Use tq_get_options() to see valid options.")
+    }
+
+    return(get)
+}
+
+validate_compound_gets <- function(get) {
+
+    get <- stringr::str_to_lower(get) %>%
+        stringr::str_trim(side = "both") %>%
+        stringr::str_replace_all("[[:punct:]]", "") %>%
+        stringr::str_replace_all("s$", "")
+
+    compound_get_options <- tq_get_options()[1:6] %>%
+        stringr::str_replace_all("[[:punct:]]", "") %>%
+        stringr::str_replace_all("s$", "")
+
+    if (!all(get %in% compound_get_options)) {
+        stop("Get options for compound get are not valid.")
+    }
 }
