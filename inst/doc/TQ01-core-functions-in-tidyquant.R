@@ -24,6 +24,9 @@ tq_get_options()
 aapl_prices  <- tq_get("AAPL", get = "stock.prices", from = " 1990-01-01")
 aapl_prices 
 
+## ---- eval = F-----------------------------------------------------------
+#  x8411T <- tq_get("8411.T", get = "stock.prices.japan", from = "2016-01-01", to  = "2016-12-31")
+
 ## ------------------------------------------------------------------------
 aapl_divs <- tq_get("AAPL", get = "dividends", from = "1990-01-01")
 aapl_divs
@@ -93,6 +96,35 @@ c("AAPL", "FB", "GOOG") %>%
 #  collect_real_time_data("AAPL", interval_sec = 3, n = 5) %>%
 #      select(Ask, Ask.Size, Bid, Bid.Size, Open, Change)
 
+## ---- eval = F-----------------------------------------------------------
+#  quandl_api_key("enter-your-api-key-here")
+
+## ---- eval = F-----------------------------------------------------------
+#  quandl_search(query = "Oil", database_code = "NSE", per_page = 3)
+
+## ---- eval = F-----------------------------------------------------------
+#  c("WIKI/FB", "WIKI/AAPL") %>%
+#      tq_get(get  = "quandl",
+#             from = "2016-01-01",
+#             to   = "2016-12-31")
+
+## ---- eval = F-----------------------------------------------------------
+#  c("WIKI/FB", "WIKI/AAPL") %>%
+#      tq_get(get          = "quandl",
+#             from         = "2007-01-01",
+#             to           = "2016-12-31",
+#             column_index = 11,
+#             collapse     = "annual",
+#             transform    = "rdiff")
+
+## ---- eval = F-----------------------------------------------------------
+#  # Zacks Fundamentals Collection B (DOW 30 Available to non subscribers)
+#  tq_get("ZACKS/FC", get = "quandl.datatable")   # Zacks Fundamentals Condensed
+#  tq_get("ZACKS/FR", get = "quandl.datatable")   # Zacks Fundamental Ratios
+#  tq_get("ZACKS/MT", get = "quandl.datatable")   # Zacks Master Table
+#  tq_get("ZACKS/MKTV", get = "quandl.datatable") # Zacks Market Value Supplement
+#  tq_get("ZACKS/SHRS", get = "quandl.datatable") # Zacks Shares Out Supplement
+
 ## ------------------------------------------------------------------------
 wti_price_usd <- tq_get("DCOILWTICO", get = "economic.data")
 wti_price_usd 
@@ -113,23 +145,51 @@ FANG
 ## ------------------------------------------------------------------------
 FANG %>%
     group_by(symbol) %>%
-    tq_transmute(ohlc_fun = Ad, mutate_fun = to.monthly)
-
-## ------------------------------------------------------------------------
-FANG %>%
-    group_by(symbol) %>%
-    tq_mutate(ohlc_fun = Cl, mutate_fun = MACD, col_rename = c("MACD", "Signal"))
-
-## ---- message=FALSE, warning=FALSE---------------------------------------
-FANG %>%
-    group_by(symbol) %>%
-    tq_mutate_xy(x = close, y = volume, mutate_fun = EVWMA, col_rename = "EVWMA")
+    tq_transmute(select = adjusted, mutate_fun = to.monthly)
 
 ## ---- message=FALSE, warning=FALSE---------------------------------------
 wti_prices <- tq_get("DCOILWTICO", get = "economic.data") 
 wti_prices %>%    
-    tq_transmute_xy(x = price, mutate_fun = to.period,
-                    period = "months", col_rename = "WTI Price")
+    tq_transmute(mutate_fun = to.period,
+                 period = "months", 
+                 col_rename = "WTI Price")
+
+## ------------------------------------------------------------------------
+FANG %>%
+    group_by(symbol) %>%
+    tq_mutate(select = close, 
+              mutate_fun = MACD, 
+              col_rename = c("MACD", "Signal"))
+
+## ------------------------------------------------------------------------
+fb_returns <- tq_get("FB", get  = "stock.prices", from = "2016-01-01", to   = "2016-12-31") %>%
+    tq_transmute(adjusted, periodReturn, period = "weekly", col_rename = "fb.returns")
+
+xlk_returns <- tq_get("XLK", from = "2016-01-01", to = "2016-12-31") %>%
+    tq_transmute(adjusted, periodReturn, period = "weekly", col_rename = "xlk.returns")
+
+returns_combined <- left_join(fb_returns, xlk_returns, by = "date")
+returns_combined
+
+## ------------------------------------------------------------------------
+regr_fun <- function(data) {
+    coef(lm(fb.returns ~ xlk.returns, data = as_tibble(data)))
+}
+
+## ------------------------------------------------------------------------
+returns_combined %>%
+    tq_mutate(mutate_fun = rollapply,
+              width      = 12,
+              FUN        = regr_fun,
+              by.column  = FALSE,
+              col_rename = c("coef.0", "coef.1"))
+returns_combined
+
+## ---- message=FALSE, warning=FALSE---------------------------------------
+FANG %>%
+    group_by(symbol) %>%
+    tq_mutate_xy(x = close, y = volume, 
+                 mutate_fun = EVWMA, col_rename = "EVWMA")
 
 ## ------------------------------------------------------------------------
 AAPL_xts <- quantmod::getSymbols("AAPL", auto.assign = FALSE) 

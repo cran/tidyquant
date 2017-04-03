@@ -12,7 +12,7 @@
 
 <meta name="author" content="Matt Dancho" />
 
-<meta name="date" content="2017-03-02" />
+<meta name="date" content="2017-03-28" />
 
 <title>Performance Analysis with tidyquant</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Performance Analysis with tidyquant</h1>
 <h4 class="author"><em>Matt Dancho</em></h4>
-<h4 class="date"><em>2017-03-02</em></h4>
+<h4 class="date"><em>2017-03-28</em></h4>
 
 
 <div id="TOC">
@@ -140,7 +140,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
            <span class="dt">from =</span> <span class="st">&quot;2010-01-01&quot;</span>,
            <span class="dt">to   =</span> <span class="st">&quot;2015-12-31&quot;</span>) %&gt;%
 <span class="st">    </span><span class="kw">group_by</span>(symbol) %&gt;%
-<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun   =</span> Ad, 
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">select     =</span> adjusted, 
                  <span class="dt">mutate_fun =</span> periodReturn, 
                  <span class="dt">period     =</span> <span class="st">&quot;monthly&quot;</span>, 
                  <span class="dt">col_rename =</span> <span class="st">&quot;Ra&quot;</span>)
@@ -166,7 +166,7 @@ Ra</code></pre></div>
 <span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get  =</span> <span class="st">&quot;stock.prices&quot;</span>,
            <span class="dt">from =</span> <span class="st">&quot;2010-01-01&quot;</span>,
            <span class="dt">to   =</span> <span class="st">&quot;2015-12-31&quot;</span>) %&gt;%
-<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun   =</span> Ad, 
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">select     =</span> adjusted, 
                  <span class="dt">mutate_fun =</span> periodReturn, 
                  <span class="dt">period     =</span> <span class="st">&quot;monthly&quot;</span>, 
                  <span class="dt">col_rename =</span> <span class="st">&quot;Rb&quot;</span>)
@@ -174,16 +174,16 @@ Rb</code></pre></div>
 <pre><code>## # A tibble: 72 × 2
 ##          date          Rb
 ##        &lt;date&gt;       &lt;dbl&gt;
-## 1  2010-01-29 -0.09926949
-## 2  2010-02-26  0.03482834
-## 3  2010-03-31  0.06839788
-## 4  2010-04-30  0.01255406
-## 5  2010-05-28 -0.07481830
+## 1  2010-01-29 -0.09926952
+## 2  2010-02-26  0.03482833
+## 3  2010-03-31  0.06839787
+## 4  2010-04-30  0.01255411
+## 5  2010-05-28 -0.07481831
 ## 6  2010-06-30 -0.05396629
-## 7  2010-07-30  0.07450984
-## 8  2010-08-31 -0.05611310
-## 9  2010-09-30  0.11663639
-## 10 2010-10-29  0.05777586
+## 7  2010-07-30  0.07450982
+## 8  2010-08-31 -0.05611312
+## 9  2010-09-30  0.11663646
+## 10 2010-10-29  0.05777587
 ## # ... with 62 more rows</code></pre>
 <p>Now, we combine the two data sets using the “date” field using <code>left_join</code> from the <code>dplyr</code> package. Review the results and see that we still have three groups of returns, and columns “Ra” and “Rb” are side-by-side.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb &lt;-<span class="st"> </span><span class="kw">left_join</span>(Ra, Rb, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;date&quot;</span> =<span class="st"> &quot;date&quot;</span>))
@@ -193,20 +193,22 @@ RaRb</code></pre></div>
 ## 
 ##    symbol       date          Ra          Rb
 ##     &lt;chr&gt;     &lt;date&gt;       &lt;dbl&gt;       &lt;dbl&gt;
-## 1    AAPL 2010-01-29 -0.10256526 -0.09926949
-## 2    AAPL 2010-02-26  0.06539619  0.03482834
-## 3    AAPL 2010-03-31  0.14847041  0.06839788
-## 4    AAPL 2010-04-30  0.11102125  0.01255406
-## 5    AAPL 2010-05-28 -0.01612472 -0.07481830
+## 1    AAPL 2010-01-29 -0.10256526 -0.09926952
+## 2    AAPL 2010-02-26  0.06539619  0.03482833
+## 3    AAPL 2010-03-31  0.14847041  0.06839787
+## 4    AAPL 2010-04-30  0.11102125  0.01255411
+## 5    AAPL 2010-05-28 -0.01612472 -0.07481831
 ## 6    AAPL 2010-06-30 -0.02082686 -0.05396629
-## 7    AAPL 2010-07-30  0.02274081  0.07450984
-## 8    AAPL 2010-08-31 -0.05500481 -0.05611310
-## 9    AAPL 2010-09-30  0.16721508  0.11663639
-## 10   AAPL 2010-10-29  0.06072249  0.05777586
+## 7    AAPL 2010-07-30  0.02274081  0.07450982
+## 8    AAPL 2010-08-31 -0.05500481 -0.05611312
+## 9    AAPL 2010-09-30  0.16721508  0.11663646
+## 10   AAPL 2010-10-29  0.06072249  0.05777587
 ## # ... with 206 more rows</code></pre>
 <p>Finally, we can retrieve the performance metrics using <code>tq_performance()</code>. You can use <code>tq_performance_fun_options()</code> to see the full list of compatible performance functions.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_capm &lt;-<span class="st"> </span>RaRb %&gt;%
-<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, <span class="dt">Rb =</span> Rb, <span class="dt">performance_fun =</span> table.CAPM)
+<span class="st">    </span><span class="kw">tq_performance</span>(<span class="dt">Ra =</span> Ra, 
+                   <span class="dt">Rb =</span> Rb, 
+                   <span class="dt">performance_fun =</span> table.CAPM)
 RaRb_capm</code></pre></div>
 <pre><code>## Source: local data frame [3 x 13]
 ## Groups: symbol [3]
@@ -221,7 +223,7 @@ RaRb_capm</code></pre></div>
 ## #   TrackingError &lt;dbl&gt;, TreynorRatio &lt;dbl&gt;</code></pre>
 <p>We can quickly isolate attributes, such as alpha, the measure of growth, and beta, the measure of risk.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_capm %&gt;%
-<span class="st">    </span><span class="kw">select</span>(symbol, Alpha, Beta)</code></pre></div>
+<span class="st">    </span><span class="kw">select</span>(Alpha, Beta)</code></pre></div>
 <pre><code>## Source: local data frame [3 x 3]
 ## Groups: symbol [3]
 ## 
@@ -277,7 +279,7 @@ stock_prices</code></pre></div>
 <p>Using the <code>tidyverse</code> split, apply, combine framework, we can mutate groups of stocks by first “grouping” with <code>group_by</code> and then applying a mutating function using <code>tq_transmute</code>. We use the <code>quantmod</code> function <code>periodReturn</code> as the mutating function. We pass along the arguments <code>period = &quot;monthly&quot;</code> to return the results in monthly periodicity. Last, we use the <code>col_rename</code> argument to rename the output column.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stock_returns_monthly &lt;-<span class="st"> </span>stock_prices %&gt;%
 <span class="st">    </span><span class="kw">group_by</span>(symbol) %&gt;%
-<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun   =</span> Ad, 
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">select     =</span> adjusted, 
                  <span class="dt">mutate_fun =</span> periodReturn, 
                  <span class="dt">period     =</span> <span class="st">&quot;monthly&quot;</span>, 
                  <span class="dt">col_rename =</span> <span class="st">&quot;Ra&quot;</span>)
@@ -352,7 +354,7 @@ stock_returns_monthly</code></pre></div>
            <span class="dt">from =</span> <span class="st">&quot;2010-01-01&quot;</span>,
            <span class="dt">to   =</span> <span class="st">&quot;2015-12-31&quot;</span>) %&gt;%
 <span class="st">    </span><span class="kw">group_by</span>(symbol) %&gt;%
-<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun   =</span> Ad, 
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">select     =</span> adjusted, 
                  <span class="dt">mutate_fun =</span> periodReturn, 
                  <span class="dt">period     =</span> <span class="st">&quot;monthly&quot;</span>, 
                  <span class="dt">col_rename =</span> <span class="st">&quot;Ra&quot;</span>)
@@ -381,7 +383,7 @@ stock_returns_monthly</code></pre></div>
 <span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get  =</span> <span class="st">&quot;stock.prices&quot;</span>,
            <span class="dt">from =</span> <span class="st">&quot;2010-01-01&quot;</span>,
            <span class="dt">to   =</span> <span class="st">&quot;2015-12-31&quot;</span>) %&gt;%
-<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun   =</span> Ad, 
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">select     =</span> adjusted, 
                  <span class="dt">mutate_fun =</span> periodReturn, 
                  <span class="dt">period     =</span> <span class="st">&quot;monthly&quot;</span>, 
                  <span class="dt">col_rename =</span> <span class="st">&quot;Rb&quot;</span>)
@@ -389,16 +391,16 @@ baseline_returns_monthly</code></pre></div>
 <pre><code>## # A tibble: 72 × 2
 ##          date          Rb
 ##        &lt;date&gt;       &lt;dbl&gt;
-## 1  2010-01-29 -0.09926949
-## 2  2010-02-26  0.03482834
-## 3  2010-03-31  0.06839788
-## 4  2010-04-30  0.01255406
-## 5  2010-05-28 -0.07481830
+## 1  2010-01-29 -0.09926952
+## 2  2010-02-26  0.03482833
+## 3  2010-03-31  0.06839787
+## 4  2010-04-30  0.01255411
+## 5  2010-05-28 -0.07481831
 ## 6  2010-06-30 -0.05396629
-## 7  2010-07-30  0.07450984
-## 8  2010-08-31 -0.05611310
-## 9  2010-09-30  0.11663639
-## 10 2010-10-29  0.05777586
+## 7  2010-07-30  0.07450982
+## 8  2010-08-31 -0.05611312
+## 9  2010-09-30  0.11663646
+## 10 2010-10-29  0.05777587
 ## # ... with 62 more rows</code></pre>
 </div>
 <div id="step-3a-aggregate-to-portfolio-period-returns" class="section level4">
@@ -483,16 +485,16 @@ RaRb_single_portfolio</code></pre></div>
 <pre><code>## # A tibble: 72 × 3
 ##          date          Ra          Rb
 ##        &lt;date&gt;       &lt;dbl&gt;       &lt;dbl&gt;
-## 1  2010-01-29  0.03071069 -0.09926949
-## 2  2010-02-26  0.06293880  0.03482834
-## 3  2010-03-31  0.13040921  0.06839788
-## 4  2010-04-30  0.23915514  0.01255406
-## 5  2010-05-28  0.06821979 -0.07481830
+## 1  2010-01-29  0.03071069 -0.09926952
+## 2  2010-02-26  0.06293880  0.03482833
+## 3  2010-03-31  0.13040921  0.06839787
+## 4  2010-04-30  0.23915514  0.01255411
+## 5  2010-05-28  0.06821979 -0.07481831
 ## 6  2010-06-30 -0.02188252 -0.05396629
-## 7  2010-07-30 -0.02723285  0.07450984
-## 8  2010-08-31  0.11648599 -0.05611310
-## 9  2010-09-30  0.25123937  0.11663639
-## 10 2010-10-29  0.06742970  0.05777586
+## 7  2010-07-30 -0.02723285  0.07450982
+## 8  2010-08-31  0.11648599 -0.05611312
+## 9  2010-09-30  0.25123937  0.11663646
+## 10 2010-10-29  0.06742970  0.05777587
 ## # ... with 62 more rows</code></pre>
 </div>
 <div id="step-4-computing-the-capm-table" class="section level4">
@@ -526,7 +528,7 @@ RaRb_single_portfolio</code></pre></div>
            <span class="dt">from =</span> <span class="st">&quot;2010-01-01&quot;</span>,
            <span class="dt">to   =</span> <span class="st">&quot;2015-12-31&quot;</span>) %&gt;%
 <span class="st">    </span><span class="kw">group_by</span>(symbol) %&gt;%
-<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun   =</span> Ad, 
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">select     =</span> adjusted, 
                  <span class="dt">mutate_fun =</span> periodReturn, 
                  <span class="dt">period     =</span> <span class="st">&quot;monthly&quot;</span>, 
                  <span class="dt">col_rename =</span> <span class="st">&quot;Ra&quot;</span>)</code></pre></div>
@@ -535,7 +537,7 @@ RaRb_single_portfolio</code></pre></div>
 <span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get  =</span> <span class="st">&quot;stock.prices&quot;</span>,
            <span class="dt">from =</span> <span class="st">&quot;2010-01-01&quot;</span>,
            <span class="dt">to   =</span> <span class="st">&quot;2015-12-31&quot;</span>) %&gt;%
-<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun   =</span> Ad, 
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">select     =</span> adjusted, 
                  <span class="dt">mutate_fun =</span> periodReturn, 
                  <span class="dt">period     =</span> <span class="st">&quot;monthly&quot;</span>, 
                  <span class="dt">col_rename =</span> <span class="st">&quot;Rb&quot;</span>)</code></pre></div>
@@ -640,16 +642,16 @@ RaRb_multiple_portfolio</code></pre></div>
 ## 
 ##    portfolio       date            Ra          Rb
 ##        &lt;int&gt;     &lt;date&gt;         &lt;dbl&gt;       &lt;dbl&gt;
-## 1          1 2010-01-29 -0.0489018445 -0.09926949
-## 2          1 2010-02-26  0.0482132938  0.03482834
-## 3          1 2010-03-31  0.1233848612  0.06839788
-## 4          1 2010-04-30  0.1446899884  0.01255406
-## 5          1 2010-05-28  0.0245280152 -0.07481830
+## 1          1 2010-01-29 -0.0489018445 -0.09926952
+## 2          1 2010-02-26  0.0482132938  0.03482833
+## 3          1 2010-03-31  0.1233848612  0.06839787
+## 4          1 2010-04-30  0.1446899884  0.01255411
+## 5          1 2010-05-28  0.0245280152 -0.07481831
 ## 6          1 2010-06-30 -0.0307681832 -0.05396629
-## 7          1 2010-07-30  0.0006001173  0.07450984
-## 8          1 2010-08-31  0.0474360262 -0.05611310
-## 9          1 2010-09-30  0.2222062947  0.11663639
-## 10         1 2010-10-29  0.0788975110  0.05777586
+## 7          1 2010-07-30  0.0006001173  0.07450982
+## 8          1 2010-08-31  0.0474360262 -0.05611312
+## 9          1 2010-09-30  0.2222062947  0.11663646
+## 10         1 2010-10-29  0.0788975110  0.05777587
 ## # ... with 206 more rows</code></pre>
 <p>Finally, we calculate the performance of each of the portfolios using <code>tq_performance</code>. Make sure the data frame is grouped on “portfolio”.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RaRb_multiple_portfolio %&gt;%
@@ -820,9 +822,9 @@ RaRb_multiple_portfolio</code></pre></div>
 ## 
 ##   portfolio    `p-value` `Lower CI` `Upper CI`     to.Rb
 ##       &lt;int&gt;        &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;
-## 1         1 2.362581e-05 0.27478771  0.6374931 0.4761450
-## 2         2 1.053541e-04 0.23323258  0.6103689 0.4410690
-## 3         3 2.984745e-02 0.02605864  0.4605179 0.2561806</code></pre>
+## 1         1 2.362576e-05 0.27478777  0.6374931 0.4761451
+## 2         2 1.053540e-04 0.23323261  0.6103690 0.4410690
+## 3         3 2.984743e-02 0.02605867  0.4605179 0.2561807</code></pre>
 </div>
 <div id="table.downsiderisk" class="section level2">
 <h2>table.DownsideRisk</h2>
@@ -871,7 +873,7 @@ RaRb_multiple_portfolio</code></pre></div>
 ##       &lt;int&gt;          &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;      &lt;dbl&gt;
 ## 1         1         0.7593         0.2388         0.9174          0
 ## 2         2         0.7748         2.0455         0.8939          0
-## 3         3         0.4591         0.5074         0.7311          0
+## 3         3         0.4591         0.5073         0.7311          0
 ## # ... with 1 more variables: CoSkewness &lt;dbl&gt;</code></pre>
 </div>
 <div id="table.informationratio" class="section level2">

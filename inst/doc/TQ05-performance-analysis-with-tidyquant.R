@@ -15,7 +15,7 @@ Ra <- c("AAPL", "GOOG", "NFLX") %>%
            from = "2010-01-01",
            to   = "2015-12-31") %>%
     group_by(symbol) %>%
-    tq_transmute(ohlc_fun   = Ad, 
+    tq_transmute(select     = adjusted, 
                  mutate_fun = periodReturn, 
                  period     = "monthly", 
                  col_rename = "Ra")
@@ -26,7 +26,7 @@ Rb <- "XLK" %>%
     tq_get(get  = "stock.prices",
            from = "2010-01-01",
            to   = "2015-12-31") %>%
-    tq_transmute(ohlc_fun   = Ad, 
+    tq_transmute(select     = adjusted, 
                  mutate_fun = periodReturn, 
                  period     = "monthly", 
                  col_rename = "Rb")
@@ -38,12 +38,14 @@ RaRb
 
 ## ------------------------------------------------------------------------
 RaRb_capm <- RaRb %>%
-    tq_performance(Ra = Ra, Rb = Rb, performance_fun = table.CAPM)
+    tq_performance(Ra = Ra, 
+                   Rb = Rb, 
+                   performance_fun = table.CAPM)
 RaRb_capm
 
 ## ------------------------------------------------------------------------
 RaRb_capm %>%
-    select(symbol, Alpha, Beta)
+    select(Alpha, Beta)
 
 ## ------------------------------------------------------------------------
 args(SharpeRatio)
@@ -58,7 +60,7 @@ stock_prices
 ## ------------------------------------------------------------------------
 stock_returns_monthly <- stock_prices %>%
     group_by(symbol) %>%
-    tq_transmute(ohlc_fun   = Ad, 
+    tq_transmute(select     = adjusted, 
                  mutate_fun = periodReturn, 
                  period     = "monthly", 
                  col_rename = "Ra")
@@ -84,7 +86,7 @@ stock_returns_monthly %>%
 #             from = "2010-01-01",
 #             to   = "2015-12-31") %>%
 #      group_by(symbol) %>%
-#      tq_transmute(ohlc_fun   = Ad,
+#      tq_transmute(select     = adjusted,
 #                   mutate_fun = periodReturn,
 #                   period     = "monthly",
 #                   col_rename = "Ra")
@@ -100,7 +102,7 @@ stock_returns_monthly
 #      tq_get(get  = "stock.prices",
 #             from = "2010-01-01",
 #             to   = "2015-12-31") %>%
-#      tq_transmute(ohlc_fun   = Ad,
+#      tq_transmute(select     = adjusted,
 #                   mutate_fun = periodReturn,
 #                   period     = "monthly",
 #                   col_rename = "Rb")
@@ -150,7 +152,7 @@ RaRb_single_portfolio %>%
 #             from = "2010-01-01",
 #             to   = "2015-12-31") %>%
 #      group_by(symbol) %>%
-#      tq_transmute(ohlc_fun   = Ad,
+#      tq_transmute(select     = adjusted,
 #                   mutate_fun = periodReturn,
 #                   period     = "monthly",
 #                   col_rename = "Ra")
@@ -160,7 +162,7 @@ RaRb_single_portfolio %>%
 #      tq_get(get  = "stock.prices",
 #             from = "2010-01-01",
 #             to   = "2015-12-31") %>%
-#      tq_transmute(ohlc_fun   = Ad,
+#      tq_transmute(select     = adjusted,
 #                   mutate_fun = periodReturn,
 #                   period     = "monthly",
 #                   col_rename = "Rb")

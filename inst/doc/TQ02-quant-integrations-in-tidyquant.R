@@ -35,7 +35,7 @@ FANG
 ## ------------------------------------------------------------------------
 FANG_annual_returns <- FANG %>%
     group_by(symbol) %>%
-    tq_transmute(ohlc_fun   = Ad, 
+    tq_transmute(select     = adjusted, 
                  mutate_fun = periodReturn, 
                  period     = "yearly", 
                  type       = "arithmetic")
@@ -57,7 +57,7 @@ FANG_annual_returns %>%
 ## ------------------------------------------------------------------------
 FANG_daily_log_returns <- FANG %>%
     group_by(symbol) %>%
-    tq_transmute(ohlc_fun   = Ad, 
+    tq_transmute(select     = adjusted, 
                  mutate_fun = periodReturn, 
                  period     = "daily", 
                  type       = "log",
@@ -76,7 +76,9 @@ FANG_daily_log_returns %>%
 ## ------------------------------------------------------------------------
 FANG %>%
     group_by(symbol) %>%
-    tq_transmute(ohlc_fun = OHLCV, mutate_fun = to.period, period = "months")
+    tq_transmute(select     = open:volume, 
+                 mutate_fun = to.period, 
+                 period     = "months")
 
 ## ------------------------------------------------------------------------
 FANG_daily <- FANG %>%
@@ -95,7 +97,9 @@ FANG_daily %>%
 ## ------------------------------------------------------------------------
 FANG_monthly <- FANG %>%
     group_by(symbol) %>%
-    tq_transmute(ohlc_fun = Ad, mutate_fun = to.period, period = "months")
+    tq_transmute(select     = adjusted, 
+                 mutate_fun = to.period, 
+                 period     = "months")
 
 FANG_monthly %>%
     ggplot(aes(x = date, y = adjusted, color = symbol)) +
@@ -111,18 +115,18 @@ FANG_monthly %>%
 # Asset Returns
 FANG_returns_monthly <- FANG %>%
     group_by(symbol) %>%
-    tq_transmute(ohlc_fun   = Ad, 
+    tq_transmute(select     = adjusted, 
                  mutate_fun = periodReturn,
-                 period = "monthly")
+                 period     = "monthly")
 
 # Baseline Returns
 baseline_returns_monthly <- "XLK" %>%
     tq_get(get  = "stock.prices",
            from = "2013-01-01", 
            to   = "2016-12-31") %>%
-    tq_transmute(ohlc_fun   = Ad, 
+    tq_transmute(select     = adjusted, 
                  mutate_fun = periodReturn,
-                 period = "monthly")
+                 period     = "monthly")
 
 ## ------------------------------------------------------------------------
 returns_joined <- left_join(FANG_returns_monthly, 
@@ -132,10 +136,10 @@ returns_joined
 
 ## ------------------------------------------------------------------------
 FANG_rolling_corr <- returns_joined %>%
-    tq_transmute_xy(x = monthly.returns.x, 
-                    y = monthly.returns.y,
+    tq_transmute_xy(x          = monthly.returns.x, 
+                    y          = monthly.returns.y,
                     mutate_fun = runCor,
-                    n = 6,
+                    n          = 6,
                     col_rename = "rolling.corr.6")
 
 ## ------------------------------------------------------------------------
@@ -152,7 +156,7 @@ FANG_rolling_corr %>%
 ## ------------------------------------------------------------------------
 FANG_macd <- FANG %>%
     group_by(symbol) %>%
-    tq_mutate(ohlc_fun   = Cl, 
+    tq_mutate(select     = close, 
               mutate_fun = MACD, 
               nFast      = 12, 
               nSlow      = 26, 
@@ -179,7 +183,7 @@ FANG_macd %>%
 ## ------------------------------------------------------------------------
 FANG_max_by_qtr <- FANG %>%
     group_by(symbol) %>%
-    tq_transmute(ohlc_fun   = Ad, 
+    tq_transmute(select     = adjusted, 
                  mutate_fun = apply.quarterly, 
                  FUN        = max, 
                  col_rename = "max.close") %>%
@@ -190,7 +194,7 @@ FANG_max_by_qtr
 ## ------------------------------------------------------------------------
 FANG_min_by_qtr <- FANG %>%
     group_by(symbol) %>%
-    tq_transmute(ohlc_fun   = Ad, 
+    tq_transmute(select     = adjusted, 
                  mutate_fun = apply.quarterly, 
                  FUN        = min, 
                  col_rename = "min.close") %>%
@@ -217,4 +221,68 @@ FANG_by_qtr %>%
     scale_y_continuous(labels = scales::dollar) +
     theme(axis.text.x = element_text(angle = 90, hjust = 1),
           axis.title.x = element_blank())
+
+## ------------------------------------------------------------------------
+# Get stock pairs
+stock_prices <- c("MA", "V") %>%
+    tq_get(get  = "stock.prices",
+           from = "2015-01-01",
+           to   = "2016-12-31") %>%
+    group_by(symbol) 
+
+stock_pairs <- stock_prices %>%
+    tq_transmute(select     = adjusted,
+                 mutate_fun = periodReturn,
+                 period     = "daily",
+                 type       = "log",
+                 col_rename = "returns") %>%
+    spread(key = symbol, value = returns)
+
+## ------------------------------------------------------------------------
+stock_pairs %>%
+    ggplot(aes(x = V, y = MA)) +
+    geom_point(color = palette_light()[[1]], alpha = 0.5) +
+    geom_smooth(method = "lm") +
+    labs(title = "Visualizing Returns Relationship of Stock Pairs") +
+    theme_tq()
+
+## ------------------------------------------------------------------------
+lm(MA ~ V, data = stock_pairs) %>%
+    summary()
+
+## ------------------------------------------------------------------------
+regr_fun <- function(data) {
+    coef(lm(MA ~ V, data = as_tibble(data)))
+}
+
+## ------------------------------------------------------------------------
+stock_pairs <- stock_pairs %>%
+         tq_mutate(mutate_fun = rollapply,
+                   width      = 90,
+                   FUN        = regr_fun,
+                   by.column  = FALSE,
+                   col_rename = c("coef.0", "coef.1"))
+stock_pairs
+
+## ------------------------------------------------------------------------
+stock_pairs %>%
+    ggplot(aes(x = date, y = coef.1)) +
+    geom_line(size = 1, color = palette_light()[[1]]) +
+    geom_hline(yintercept = 0.8134, size = 1, color = palette_light()[[2]]) +
+    labs(title = "MA ~ V: Visualizing Rolling Regression Coefficient", x = "") +
+    theme_tq()
+
+## ------------------------------------------------------------------------
+stock_prices %>%
+    tq_transmute(adjusted, 
+                 periodReturn, 
+                 period = "daily", 
+                 type = "log", 
+                 col_rename = "returns") %>%
+    mutate(wealth.index = 100 * cumprod(1 + returns)) %>%
+    ggplot(aes(x = date, y = wealth.index, color = symbol)) +
+    geom_line(size = 1) +
+    labs(title = "MA and V: Stock Prices") +
+    theme_tq() + 
+    scale_color_tq()
 

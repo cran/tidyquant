@@ -47,7 +47,7 @@ FANG
 ## ------------------------------------------------------------------------
 FANG_returns_yearly <- FANG %>%
     group_by(symbol) %>%
-    tq_transmute(ohlc_fun   = Ad, 
+    tq_transmute(select     = adjusted, 
                  mutate_fun = periodReturn, 
                  period     = "yearly", 
                  col_rename = "yearly.returns") 
@@ -69,7 +69,7 @@ get_annual_returns <- function(stock.symbol) {
         tq_get(get  = "stock.prices",
                from = "2007-01-01",
                to   = "2016-12-31") %>%
-        tq_transmute(ohlc_fun   = Ad, 
+        tq_transmute(select     = adjusted, 
                      mutate_fun = periodReturn, 
                      type       = "log", 
                      period     = "yearly")

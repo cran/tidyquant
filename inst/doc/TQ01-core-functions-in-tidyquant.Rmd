@@ -45,7 +45,7 @@ library(tidyquant)
 ```
 
 
-# Get a Stock List from a Stock Index or Stock Exchange
+# Retrieve Consolidated Symbol Data
 
 ## Stock Indexes
 
@@ -90,6 +90,12 @@ aapl_prices  <- tq_get("AAPL", get = "stock.prices", from = " 1990-01-01")
 aapl_prices 
 ```
 
+Yahoo Japan stock prices can be retrieved using a similar call, `get = "stock.prices.japan"`.
+
+```{r, eval = F}
+x8411T <- tq_get("8411.T", get = "stock.prices.japan", from = "2016-01-01", to  = "2016-12-31")
+```
+
 
 Dividends are obtained using `get = "dividends"`. 
 
@@ -105,7 +111,7 @@ aapl_splits <- tq_get("AAPL", get = "splits", from = "1990-01-01")
 aapl_splits
 ```
 
-The data source is [Yahoo Finance](https://finance.yahoo.com/).
+The data source is [Yahoo Finance](https://finance.yahoo.com/) and [Yahoo Finance Japan](http://finance.yahoo.co.jp/).
 
 ## Financial Statements
 
@@ -224,7 +230,80 @@ collect_real_time_data("AAPL", interval_sec = 3, n = 5) %>%
 
 The data source is [Yahoo Finance](https://finance.yahoo.com/).
 
-<a class="anchor" id="economic-data"></a>
+## Quandl
+
+[Quandl](https://www.quandl.com/) provides access to a vast number of financial and economic databases. The `Quandl` package has been integrated into `tidyquant` as follows.
+
+### Authentication
+
+To make full use of the integration we recommend you set your api key. To do this create or sign into your Quandl account and go to your account api key page.
+
+```{r, eval = F}
+quandl_api_key("enter-your-api-key-here")
+```
+
+### Search
+
+Searching Quandl from within the R console is possible with `quandl_search()`, a wrapper for `Quandl::Quandl.search()`. An example search is shown below. The only required argument is `query`. You can also visit the [Quandl Search](https://www.quandl.com/search) webpage to search for available database codes. 
+
+```{r, eval = F}
+quandl_search(query = "Oil", database_code = "NSE", per_page = 3)
+```
+
+### Getting Quandl Data
+
+Getting data is integrated into `tq_get()`. Two get options exist to retrieve Quandl data:
+
+1. `get = "quandl"`: Get's Quandl time series data. A wrapper for `Quandl()`.
+2. `get = "quandl.datatable"`: Gets Quandl datatables (larger data sets that may not be time series). A wrapper for `Quandl.datatable()`.
+
+Getting data from Quandl can be achieved in much the same way as the other "get" options. Just pass the "codes" for the data along with desired arguments for the underlying function. 
+
+The following uses `get = "quandl"` and the "WIKI" database to download daily stock prices for FB and AAPL in 2016. The output is a tidy data frame. 
+
+```{r, eval = F}
+c("WIKI/FB", "WIKI/AAPL") %>%
+    tq_get(get  = "quandl",
+           from = "2016-01-01",
+           to   = "2016-12-31")
+```
+
+The following time series options are available to be passed to the underlying `Quandl()` function:
+
+* `order` = "asc", "desc"
+* `start_date` (`from`) = "yyyy-mm-dd" | `end_date` (`to`) = "yyyy-mm-dd"
+* `column_index` = numeric column number (e.g. 1)
+* `rows` = numeric row number indicating first n rows (e.g. 100)
+* `collapse` = "none", "daily", "weekly", "monthly", "quarterly", "annual"
+* `transform` = "none", "diff", "rdiff", "cumul", "normalize"
+
+Here's an example to get period returns of the adj.close (column index 11) using the `column_index`, `collapse` and `transform` arguments. 
+
+```{r, eval = F}
+c("WIKI/FB", "WIKI/AAPL") %>%
+    tq_get(get          = "quandl",
+           from         = "2007-01-01",
+           to           = "2016-12-31",
+           column_index = 11, 
+           collapse     = "annual",      
+           transform    = "rdiff")       
+```
+
+Datatables are larger data sets. These can be downloaded using `get = "quandl.datatable"`. Note that the time series arguments do not work with data tables. 
+
+Here's several examples of [Zacks Fundamentals Collection B](https://www.quandl.com/databases/ZFB/documentation/about)
+
+```{r, eval = F}
+# Zacks Fundamentals Collection B (DOW 30 Available to non subscribers)
+tq_get("ZACKS/FC", get = "quandl.datatable")   # Zacks Fundamentals Condensed
+tq_get("ZACKS/FR", get = "quandl.datatable")   # Zacks Fundamental Ratios
+tq_get("ZACKS/MT", get = "quandl.datatable")   # Zacks Master Table
+tq_get("ZACKS/MKTV", get = "quandl.datatable") # Zacks Market Value Supplement
+tq_get("ZACKS/SHRS", get = "quandl.datatable") # Zacks Shares Out Supplement
+```
+
+
+
 
 ## Economic Data 
 
@@ -262,8 +341,6 @@ plat_price_eur
 
 The data source is [Oanda](https://www.oanda.com/). It may make more sense to get this data from the FRED (See [Economic Data](#economic-data)) since the max period for Oanda is 5-years.
 
-<a class="anchor" id="tq-transmute"></a>
-
 # Mutate Quantitative Data
 
 Mutating functions enable the `xts`/`zoo`, `quantmod` and `TTR` functions to shine. We'll touch on the mutation functions briefly using the `FANG` data set, which consists of daily prices for FB, AMZN, GOOG, and NFLX from the beginning of 2013 to the end of 2016. We'll apply the functions to grouped data sets to get a feel for how each works
@@ -277,55 +354,107 @@ For a detailed walkthrough of the compatible functions, see the next vignette in
 
 ## Transmute Quantitative Data, tq_transmute 
 
-Transmute the results of `tq_get()`. Transmute here holds the same meaning as in `dplyr`, only the newly created columns will be returned. The result is typically a different shape than the input, although this is not a requirement. An example is periodicity aggregation from daily to monthly.
+Transmute the results of `tq_get()`. Transmute here holds almost the same meaning as in `dplyr`, only the newly created columns will be returned, but with `tq_transmute()`, the number of rows returned can be different than the original data frame. This is important for changing periodicity. An example is periodicity aggregation from daily to monthly.
 
 ```{r}
 FANG %>%
     group_by(symbol) %>%
-    tq_transmute(ohlc_fun = Ad, mutate_fun = to.monthly)
+    tq_transmute(select = adjusted, mutate_fun = to.monthly)
 ```
 
-Let's go through what happened. `ohlc_fun` is one of the various quantmod Open, High, Low, Close (OHLC) functions (see `?quantmod::OHLC`). The function returns a column or set of columns from data that are passed to the `mutate_fun`. In example above, `Ad` selects the "adjusted" column from `data`, and sends it to the mutate function, `to.monthly`, which mutates the periodicity from daily to monthly. Additional arguments can be passed to the `mutate_fun` by way of `...`. 
-
-
-## Mutate Quantitative Data, tq_mutate 
-
-Adds a column or set of columns to the tibble with the calculated attributes (hence the original tibble is returned, mutated with the additional columns). An example is getting the `MACD` from `Cl` (close price), which mutates the original input by adding MACD and Signal columns. Note that we can quickly rename the columns using the `col_rename` argument.
-
-```{r}
-FANG %>%
-    group_by(symbol) %>%
-    tq_mutate(ohlc_fun = Cl, mutate_fun = MACD, col_rename = c("MACD", "Signal"))
-```
-
-Note that a mutation can occur if, and only if, the mutation has the same structure of the original tibble. In other words, the calculation must have the same number of rows and row.names (or date fields), otherwise the mutation cannot be performed.
-
-## xy Variants, tq_mutate_xy and tq_transmute_xy
-
-Enables working with:
-
-1. Mutation functions that require two primary inputs (e.g. EVWMA, VWAP, etc) 
-2. Data that is not in OHLC format. 
-
-### Mutate with two primary inputs
-
-EVWMA (exponential volume-weighted moving average) requires two inputs, price and volume, that are not in OHLC code format. To work with these columns, we can switch to the xy variants, `tq_transmute_xy()` and `tq_mutate_xy()`. The only difference is instead of an `ohlc_fun` argument, you use `x` and `y` arguments to pass the columns needed based on the `mutate_fun` documentation.
-
-```{r, message=FALSE, warning=FALSE}
-FANG %>%
-    group_by(symbol) %>%
-    tq_mutate_xy(x = close, y = volume, mutate_fun = EVWMA, col_rename = "EVWMA")
-```
+Let's go through what happened. `select` allows you to easily choose what columns get passed to `mutate_fun`. In example above, `adjusted` selects the "adjusted" column from `data`, and sends it to the mutate function, `to.monthly`, which mutates the periodicity from daily to monthly. Additional arguments can be passed to the `mutate_fun` by way of `...`. 
 
 ### Working with non-OHLC data
 
-Returns from FRED, Oanda, and other sources do not have open, high, low, close (OHLC) format. The following example shows how to mutate WTI Crude daily prices to monthly prices. Since we only have a single column to pass, set the `x = price` and leave the `y = NULL`. This sends the price column to the `to.period` mutate function. 
+Returns from FRED, Oanda, and other sources do not have open, high, low, close (OHLC) format. However, this is not a problem with `select`. The following example shows how to transmute WTI Crude daily prices to monthly prices. Since we only have a single column to pass, we can leave the `select` argument as `NULL` which selects all columns by default. This sends the price column to the `to.period` mutate function. 
 
 ```{r, message=FALSE, warning=FALSE}
 wti_prices <- tq_get("DCOILWTICO", get = "economic.data") 
 wti_prices %>%    
-    tq_transmute_xy(x = price, mutate_fun = to.period,
-                    period = "months", col_rename = "WTI Price")
+    tq_transmute(mutate_fun = to.period,
+                 period = "months", 
+                 col_rename = "WTI Price")
+```
+
+
+## Mutate Quantitative Data, tq_mutate 
+
+Adds a column or set of columns to the tibble with the calculated attributes (hence the original tibble is returned, mutated with the additional columns). An example is getting the `MACD` from `close`, which mutates the original input by adding MACD and Signal columns. Note that we can quickly rename the columns using the `col_rename` argument.
+
+```{r}
+FANG %>%
+    group_by(symbol) %>%
+    tq_mutate(select = close, 
+              mutate_fun = MACD, 
+              col_rename = c("MACD", "Signal"))
+```
+
+Note that a mutation can occur if, and only if, the mutation has the same structure of the original tibble. In other words, the calculation must have the same number of rows and row.names (or date fields), otherwise the mutation cannot be performed.
+
+### Mutate rolling regressions with rollapply
+
+A very powerful example is applying __custom functions__ across a rolling window using `rollapply`. A specific example is using the `rollapply` function to compute a rolling regression. This example is slightly more complicated so it will be broken down into three steps:
+
+1. Get returns
+2. Create a custom function
+3. Apply the custom function accross a rolling window using `tq_mutate(mutate_fun = rollapply)`
+
+_Step 1: Get Returns_
+
+First, get combined returns. The asset and baseline returns should be in wide format, which is needed for the `lm` function in the next step.
+
+```{r}
+fb_returns <- tq_get("FB", get  = "stock.prices", from = "2016-01-01", to   = "2016-12-31") %>%
+    tq_transmute(adjusted, periodReturn, period = "weekly", col_rename = "fb.returns")
+
+xlk_returns <- tq_get("XLK", from = "2016-01-01", to = "2016-12-31") %>%
+    tq_transmute(adjusted, periodReturn, period = "weekly", col_rename = "xlk.returns")
+
+returns_combined <- left_join(fb_returns, xlk_returns, by = "date")
+returns_combined
+```
+
+_Step 2: Create a custom function_
+
+Next, create a custom regression function, which will be used to apply over the rolling window in Step 3. An important point is that the "data" will be passed to the regression function as an `xts` object. The `as_tibble` function takes care of converting to a data frame for the `lm` function to work properly with the columns "fb.returns" and "xlk.returns".
+
+```{r}
+regr_fun <- function(data) {
+    coef(lm(fb.returns ~ xlk.returns, data = as_tibble(data)))
+}
+```
+
+_Step 3: Apply the custom function_
+
+Now we can use `tq_mutate()` to apply the custom regression function over a rolling window using `rollapply` from the `zoo` package. Internally, since we left `select = NULL`, the `returns_combined` data frame is being passed automatically to the `data` argument of the `rollapply` function. All you need to specify is the `mutate_fun = rollapply` and any additional arguments necessary to apply the `rollapply` function. We'll specify a 12 week window via `width = 12`. The `FUN` argument is our custom regression function, `regr_fun`. It's extremely important to specify `by.column = FALSE`, which tells `rollapply` to perform the computation using the data as a whole rather than apply the function to each column independently. The `col_rename` argument is used to rename the added columns.
+
+```{r}
+returns_combined %>%
+    tq_mutate(mutate_fun = rollapply,
+              width      = 12,
+              FUN        = regr_fun,
+              by.column  = FALSE,
+              col_rename = c("coef.0", "coef.1"))
+returns_combined
+```
+
+As shown above, the rolling regression coefficients were added to the data frame.
+
+
+
+## _xy Variants, tq_mutate_xy and tq_transmute_xy
+
+Enables working with mutation functions that require two primary inputs (e.g. EVWMA, VWAP, etc).
+
+### Mutate with two primary inputs
+
+EVWMA (exponential volume-weighted moving average) requires two inputs, price and volume. To work with these columns, we can switch to the xy variants, `tq_transmute_xy()` and `tq_mutate_xy()`. The only difference is instead of the `select` argument, you use `x` and `y` arguments to pass the columns needed based on the `mutate_fun` documentation.
+
+```{r, message=FALSE, warning=FALSE}
+FANG %>%
+    group_by(symbol) %>%
+    tq_mutate_xy(x = close, y = volume, 
+                 mutate_fun = EVWMA, col_rename = "EVWMA")
 ```
 
 

@@ -14,9 +14,10 @@
 \alias{tq_transmute_fun_options}
 \title{Mutates quantitative data}
 \usage{
-tq_mutate(data, ohlc_fun = OHLCV, mutate_fun, col_rename = NULL, ...)
+tq_mutate(data, select = NULL, mutate_fun, col_rename = NULL,
+  ohlc_fun = NULL, ...)
 
-tq_mutate_(data, ohlc_fun = "OHLCV", mutate_fun, col_rename = NULL, ...)
+tq_mutate_(data, select = NULL, mutate_fun, col_rename = NULL, ...)
 
 tq_mutate_xy(data, x, y = NULL, mutate_fun, col_rename = NULL, ...)
 
@@ -24,13 +25,12 @@ tq_mutate_xy_(data, x, y = NULL, mutate_fun, col_rename = NULL, ...)
 
 tq_mutate_fun_options()
 
-tq_transmute(data, ohlc_fun = OHLCV, mutate_fun, col_rename = NULL,
-  transform_fun, ...)
+tq_transmute(data, select = NULL, mutate_fun, col_rename = NULL,
+  ohlc_fun = NULL, ...)
 
-tq_transmute_(data, ohlc_fun = "OHLCV", mutate_fun, col_rename = NULL, ...)
+tq_transmute_(data, select = NULL, mutate_fun, col_rename = NULL, ...)
 
-tq_transmute_xy(data, x, y = NULL, mutate_fun, col_rename = NULL,
-  transform_fun, ...)
+tq_transmute_xy(data, x, y = NULL, mutate_fun, col_rename = NULL, ...)
 
 tq_transmute_xy_(data, x, y = NULL, mutate_fun, col_rename = NULL, ...)
 
@@ -39,10 +39,7 @@ tq_transmute_fun_options()
 \arguments{
 \item{data}{A \code{tibble} (tidy data frame) of data typically from \code{\link[=tq_get]{tq_get()}}.}
 
-\item{ohlc_fun}{The \code{quantmod} function that identifies columns to pass to
-the mutatation function. OHLCV is \code{quantmod} terminology for
-open, high, low, close, and volume. Options include c(Op, Hi, Lo, Cl, Vo, Ad,
-HLC, OHLC, OHLCV).}
+\item{select}{The columns to send to the mutation function.}
 
 \item{mutate_fun}{The mutation function from either the \code{xts},
 \code{quantmod}, or \code{TTR} package. Execute \code{tq_mutate_fun_options()}
@@ -51,13 +48,13 @@ to see the full list of options by package.}
 \item{col_rename}{A string or character vector containing names that can be used
 to quickly rename columns.}
 
+\item{ohlc_fun}{Deprecated. Use \code{select}.}
+
 \item{...}{Additional parameters passed to the appropriate mutatation
 function.}
 
-\item{x, y}{Column names of variables to be passed to the mutatation
-function (instead of OHLC functions).}
-
-\item{transform_fun}{Deprecated. Use \code{mutate_fun}.}
+\item{x, y}{Parameters used with \code{_xy} that consist of column names of variables
+to be passed to the mutatation function (instead of OHLC functions).}
 }
 \value{
 Returns mutated data in the form of a \code{tibble} object.
@@ -77,32 +74,30 @@ except it only returns the newly created columns. This is helpful when
 changing periodicity where the new columns would not have the same number of rows
 as the original tibble.
 
-\code{ohlc_fun} is one of the various \code{quantmod} Open, High, Low, Close (OHLC) functions.
-The function returns a column or set of columns from \code{data} that are passed to the
-\code{mutate_fun}. In Example 1 below, \code{Cl} returns the "close" price and sends
-this to the mutate function, \code{periodReturn}.
+\code{select} specifies the columns that get passed to the mutation function. Select works
+as a more flexible version of the OHLC extractor functions from \code{quantmod} where
+non-OHLC data works as well. When \code{select} is \code{NULL}, all columns are selected.
+In Example 1 below, \code{close} returns the "close" price and sends this to the
+mutate function, \code{periodReturn}.
 
 \code{mutate_fun} is the function that performs the work. In Example 1, this
 is \code{periodReturn}, which calculates the period returns. The \code{...}
-functions are additional arguments passed to the \code{mutate_fun}. Think of
-the whole operation in Example 1 as the close price, obtained by \code{ohlc_fun = Cl},
-is being sent to the \code{periodReturn} function along
+are additional arguments passed to the \code{mutate_fun}. Think of
+the whole operation in Example 1 as the close price, obtained by \code{select = close},
+being sent to the \code{periodReturn} function along
 with additional arguments defining how to perform the period return, which
 includes \code{period = "daily"} and \code{type = "log"}.
+Example 4 shows how to apply a rolling regression.
 
-\code{tq_mutate_xy} and \code{tq_transmute_xy} are designed to enable working with (1) mutatation
-functions that require two primary inputs (e.g. EVWMA, VWAP, etc) and (2) data
-that is not in OHLC format. Example 2 shows the first benefit in action:
-using the EVWMA function that uses volume to defind the moving average period.
-The two variables do not fall into a single OHLC code (i.e. CV does not exist).
-The xy form gets us out of this problem. Example 3 shows the second benefit
-in action: Some functions are useful to non-OHLC data, and defining x = price
-allows us to mutate WTI crude prices from daily to monthly periodicity.
+\code{tq_mutate_xy} and \code{tq_transmute_xy} are designed to enable working with mutatation
+functions that require two primary inputs (e.g. EVWMA, VWAP, etc).
+Example 2 shows this benefit in action: using the EVWMA function that uses
+volume to define the moving average period.
 
 \code{tq_mutate_}, \code{tq_mutate_xy_}, \code{tq_transmute_}, and \code{tq_transmute_xy_}
 are setup for Non-Standard
 Evaluation (NSE). This enables programatically changing column names by modifying
-the text representations. Example 4 shows the difference in implementation.
+the text representations. Example 5 shows the difference in implementation.
 Note that character strings are being passed to the variables instead of
 unquoted variable names. See \code{vignette("nse")} for more information.
 
@@ -116,11 +111,14 @@ library(tidyquant)
 
 ##### Basic Functionality
 
-fb_stock_prices  <- tq_get("FB", get = "stock.prices")
+fb_stock_prices  <- tq_get("FB",
+                           get  = "stock.prices",
+                           from = "2016-01-01",
+                           to   = "2016-12-31")
 
 # Example 1: Return logarithmic daily returns using periodReturn()
 fb_stock_prices \%>\%
-    tq_mutate(ohlc_fun = Cl, mutate_fun = periodReturn,
+    tq_mutate(select = close, mutate_fun = periodReturn,
               period = "daily", type = "log")
 
 # Example 2: Use tq_mutate_xy to use functions with two columns required
@@ -128,11 +126,27 @@ fb_stock_prices \%>\%
     tq_mutate_xy(x = close, y = volume, mutate_fun = EVWMA,
                  col_rename = "EVWMA")
 
-# Example 3: Using tq_mutate_xy to work with non-OHLC data
+# Example 3: Using tq_mutate to work with non-OHLC data
 tq_get("DCOILWTICO", get = "economic.data") \%>\%
-    tq_mutate_xy(x = price, mutate_fun = lag.xts, k = 1, na.pad = TRUE)
+    tq_mutate(select = price, mutate_fun = lag.xts, k = 1, na.pad = TRUE)
 
-# Example 4: Non-standard evaluation:
+# Example 4: Using tq_mutate to apply a rolling regression
+fb_returns <- fb_stock_prices \%>\%
+    tq_transmute(adjusted, periodReturn, period = "monthly", col_rename = "fb.returns")
+xlk_returns <- tq_get("XLK", from = "2016-01-01", to = "2016-12-31") \%>\%
+    tq_transmute(adjusted, periodReturn, period = "monthly", col_rename = "xlk.returns")
+returns_combined <- left_join(fb_returns, xlk_returns, by = "date")
+regr_fun <- function(data) {
+    coef(lm(fb.returns ~ xlk.returns, data = as_data_frame(data)))
+}
+returns_combined \%>\%
+    tq_mutate(mutate_fun = rollapply,
+              width      = 6,
+              FUN        = regr_fun,
+              by.column  = FALSE,
+              col_rename = c("coef.0", "coef.1"))
+
+# Example 5: Non-standard evaluation:
 # Programming with tq_mutate_() and tq_mutate_xy_()
 col_name <- "adjusted"
 mutate <- c("MACD", "SMA")

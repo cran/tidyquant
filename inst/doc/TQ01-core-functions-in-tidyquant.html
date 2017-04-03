@@ -12,7 +12,7 @@
 
 <meta name="author" content="Matt Dancho" />
 
-<meta name="date" content="2017-03-02" />
+<meta name="date" content="2017-03-28" />
 
 <title>Core Functions in tidyquant</title>
 
@@ -70,14 +70,14 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Core Functions in tidyquant</h1>
 <h4 class="author"><em>Matt Dancho</em></h4>
-<h4 class="date"><em>2017-03-02</em></h4>
+<h4 class="date"><em>2017-03-28</em></h4>
 
 
 <div id="TOC">
 <ul>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#prerequisites">Prerequisites</a></li>
-<li><a href="#get-a-stock-list-from-a-stock-index-or-stock-exchange">Get a Stock List from a Stock Index or Stock Exchange</a><ul>
+<li><a href="#retrieve-consolidated-symbol-data">Retrieve Consolidated Symbol Data</a><ul>
 <li><a href="#stock-indexes">Stock Indexes</a></li>
 <li><a href="#stock-exchanges">Stock Exchanges</a></li>
 </ul></li>
@@ -85,6 +85,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#stock-prices-dividends-and-splits">Stock Prices, Dividends and Splits</a></li>
 <li><a href="#financial-statements">Financial Statements</a></li>
 <li><a href="#key-ratios-key-stats">Key Ratios &amp; Key Stats</a></li>
+<li><a href="#quandl">Quandl</a></li>
 <li><a href="#economic-data">Economic Data</a></li>
 <li><a href="#exchange-rates">Exchange Rates</a></li>
 <li><a href="#metal-prices">Metal Prices</a></li>
@@ -92,7 +93,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#mutate-quantitative-data">Mutate Quantitative Data</a><ul>
 <li><a href="#transmute-quantitative-data-tq_transmute">Transmute Quantitative Data, tq_transmute</a></li>
 <li><a href="#mutate-quantitative-data-tq_mutate">Mutate Quantitative Data, tq_mutate</a></li>
-<li><a href="#xy-variants-tq_mutate_xy-and-tq_transmute_xy">xy Variants, tq_mutate_xy and tq_transmute_xy</a></li>
+<li><a href="#xy-variants-tq_mutate_xy-and-tq_transmute_xy">_xy Variants, tq_mutate_xy and tq_transmute_xy</a></li>
 </ul></li>
 <li><a href="#coercing-time-series-objects-to-and-from-tibble">Coercing Time Series Objects To and From Tibble</a><ul>
 <li><a href="#coerce-from-time-series-to-tibble-as_tibble">Coerce from time-series to tibble, as_tibble</a></li>
@@ -121,8 +122,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Loads tidyquant, tidyverse, lubridate, xts, quantmod, TTR </span>
 <span class="kw">library</span>(tidyquant)</code></pre></div>
 </div>
-<div id="get-a-stock-list-from-a-stock-index-or-stock-exchange" class="section level1">
-<h1>Get a Stock List from a Stock Index or Stock Exchange</h1>
+<div id="retrieve-consolidated-symbol-data" class="section level1">
+<h1>Retrieve Consolidated Symbol Data</h1>
 <div id="stock-indexes" class="section level2">
 <h2>Stock Indexes</h2>
 <p>A wide range of stock index / exchange lists can be retrieved using <code>tq_index()</code>. To get a full list of the options, use <code>tq_index_options()</code>.</p>
@@ -153,20 +154,20 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2>Stock Exchanges</h2>
 <p>Stock lists for three stock exchanges are available: NASDAQ, NYSE, and AMEX. If you forget, just use <code>tq_exchange_options()</code>. We can easily get the full list of stocks on the NASDAQ exchange.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tq_exchange</span>(<span class="st">&quot;NASDAQ&quot;</span>)</code></pre></div>
-<pre><code>## # A tibble: 3,170 × 7
+<pre><code>## # A tibble: 3,191 × 7
 ##    symbol                                company last.sale.price
 ##     &lt;chr&gt;                                  &lt;chr&gt;           &lt;dbl&gt;
-## 1     PIH 1347 Property Insurance Holdings, Inc.            7.20
-## 2    FLWS                1-800 FLOWERS.COM, Inc.           10.20
-## 3    FCCY          1st Constitution Bancorp (NJ)           18.95
-## 4    SRCE                 1st Source Corporation           47.63
-## 5    VNET                   21Vianet Group, Inc.            7.25
-## 6    TWOU                               2U, Inc.           37.40
-## 7    JOBS                            51job, Inc.           34.96
-## 8    CAFD             8point3 Energy Partners LP           12.76
-## 9    EGHT                                8x8 Inc           15.00
-## 10   AVHI                        A V Homes, Inc.           16.90
-## # ... with 3,160 more rows, and 4 more variables: market.cap &lt;chr&gt;,
+## 1     PIH 1347 Property Insurance Holdings, Inc.            7.70
+## 2    FLWS                1-800 FLOWERS.COM, Inc.           10.10
+## 3    FCCY          1st Constitution Bancorp (NJ)           18.40
+## 4    SRCE                 1st Source Corporation           44.89
+## 5    VNET                   21Vianet Group, Inc.            5.65
+## 6    TWOU                               2U, Inc.           37.39
+## 7    JOBS                            51job, Inc.           37.11
+## 8    CAFD             8point3 Energy Partners LP           13.34
+## 9    EGHT                                8x8 Inc           14.85
+## 10   AVHI                        A V Homes, Inc.           16.45
+## # ... with 3,181 more rows, and 4 more variables: market.cap &lt;chr&gt;,
 ## #   ipo.year &lt;dbl&gt;, sector &lt;chr&gt;, industry &lt;chr&gt;</code></pre>
 <p>The data source is the <a href="http://www.nasdaq.com/">NASDAQ</a>.</p>
 </div>
@@ -175,15 +176,16 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h1>Get Quantitative Data</h1>
 <p>The <code>tq_get()</code> function is used to collect data by changing the <code>get</code> argument. The options include stock prices, key statistics, dividends and splits from Yahoo Finance, key ratios from Morningstar, financial statements from Google Finance, metal prices and exchange rates from Oanda, and economic data from the FRED database. Use <code>tq_get_options()</code> to see the full list.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tq_get_options</span>()</code></pre></div>
-<pre><code>## [1] &quot;stock.prices&quot;   &quot;financials&quot;     &quot;key.stats&quot;      &quot;key.ratios&quot;    
-## [5] &quot;dividends&quot;      &quot;splits&quot;         &quot;economic.data&quot;  &quot;exchange.rates&quot;
-## [9] &quot;metal.prices&quot;</code></pre>
+<pre><code>##  [1] &quot;stock.prices&quot;       &quot;stock.prices.japan&quot; &quot;financials&quot;        
+##  [4] &quot;key.stats&quot;          &quot;key.ratios&quot;         &quot;dividends&quot;         
+##  [7] &quot;splits&quot;             &quot;economic.data&quot;      &quot;exchange.rates&quot;    
+## [10] &quot;metal.prices&quot;       &quot;quandl&quot;             &quot;quandl.datatable&quot;</code></pre>
 <div id="stock-prices-dividends-and-splits" class="section level2">
 <h2>Stock Prices, Dividends and Splits</h2>
 <p>The stock prices can be retrieved succinctly using <code>get = &quot;stock.prices&quot;</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aapl_prices  &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>, <span class="dt">from =</span> <span class="st">&quot; 1990-01-01&quot;</span>)
 aapl_prices </code></pre></div>
-<pre><code>## # A tibble: 6,845 × 7
+<pre><code>## # A tibble: 6,863 × 7
 ##          date   open   high   low  close   volume adjusted
 ##        &lt;date&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
 ## 1  1990-01-02 35.250 37.500 35.00 37.250 45799600 1.127188
@@ -196,7 +198,9 @@ aapl_prices </code></pre></div>
 ## 8  1990-01-11 36.250 36.250 34.50 34.500 52763200 1.043972
 ## 9  1990-01-12 34.250 34.750 33.75 34.500 42974400 1.043972
 ## 10 1990-01-15 34.500 35.750 34.25 34.250 40434800 1.036407
-## # ... with 6,835 more rows</code></pre>
+## # ... with 6,853 more rows</code></pre>
+<p>Yahoo Japan stock prices can be retrieved using a similar call, <code>get = &quot;stock.prices.japan&quot;</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x8411T &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;8411.T&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;stock.prices.japan&quot;</span>, <span class="dt">from =</span> <span class="st">&quot;2016-01-01&quot;</span>, <span class="dt">to  =</span> <span class="st">&quot;2016-12-31&quot;</span>)</code></pre></div>
 <p>Dividends are obtained using <code>get = &quot;dividends&quot;</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aapl_divs &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;dividends&quot;</span>, <span class="dt">from =</span> <span class="st">&quot;1990-01-01&quot;</span>)
 aapl_divs</code></pre></div>
@@ -223,7 +227,7 @@ aapl_splits</code></pre></div>
 ## 1 2000-06-21 0.5000000
 ## 2 2005-02-28 0.5000000
 ## 3 2014-06-09 0.1428571</code></pre>
-<p>The data source is <a href="https://finance.yahoo.com/">Yahoo Finance</a>.</p>
+<p>The data source is <a href="https://finance.yahoo.com/">Yahoo Finance</a> and <a href="http://finance.yahoo.co.jp/">Yahoo Finance Japan</a>.</p>
 </div>
 <div id="financial-statements" class="section level2">
 <h2>Financial Statements</h2>
@@ -351,9 +355,9 @@ aapl_key_stats %&gt;%
 <pre><code>## # A tibble: 3 × 8
 ##   symbol    Ask Ask.Size    Bid Bid.Size Change Days.High Days.Low
 ##    &lt;chr&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1   AAPL 139.51     1100 139.50      200 -0.290    140.28   139.23
-## 2     FB 136.48      700 136.47      200 -0.945    137.82   136.31
-## 3   GOOG 830.34      100 829.88      100 -4.600    834.51   829.75</code></pre>
+## 1   AAPL 143.72     1400 143.70      400   2.92    144.04   140.62
+## 2     FB 141.70      100 141.66      100   1.44    141.95   140.01
+## 3   GOOG 821.99      100 819.67      100   1.41    825.99   814.03</code></pre>
 <p>Finally, because the statistics are real-time, we can setup real-time monitoring by calling <code>tq_get</code> at periodic intervals. The function below is not evaluated for time considerations, but if called during active trading sessions will collect five samples at three second intervals.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Not evaluated; When run during active trading, will return real-time values</span>
 collect_real_time_data &lt;-<span class="st"> </span>function(x, interval_sec, n) {
@@ -368,7 +372,59 @@ collect_real_time_data &lt;-<span class="st"> </span>function(x, interval_sec, n
 <span class="kw">collect_real_time_data</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="dt">interval_sec =</span> <span class="dv">3</span>, <span class="dt">n =</span> <span class="dv">5</span>) %&gt;%
 <span class="st">    </span><span class="kw">select</span>(Ask, Ask.Size, Bid, Bid.Size, Open, Change)</code></pre></div>
 <p>The data source is <a href="https://finance.yahoo.com/">Yahoo Finance</a>.</p>
-<p><a class="anchor" id="economic-data"></a></p>
+</div>
+</div>
+<div id="quandl" class="section level2">
+<h2>Quandl</h2>
+<p><a href="https://www.quandl.com/">Quandl</a> provides access to a vast number of financial and economic databases. The <code>Quandl</code> package has been integrated into <code>tidyquant</code> as follows.</p>
+<div id="authentication" class="section level3">
+<h3>Authentication</h3>
+<p>To make full use of the integration we recommend you set your api key. To do this create or sign into your Quandl account and go to your account api key page.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">quandl_api_key</span>(<span class="st">&quot;enter-your-api-key-here&quot;</span>)</code></pre></div>
+</div>
+<div id="search" class="section level3">
+<h3>Search</h3>
+<p>Searching Quandl from within the R console is possible with <code>quandl_search()</code>, a wrapper for <code>Quandl::Quandl.search()</code>. An example search is shown below. The only required argument is <code>query</code>. You can also visit the <a href="https://www.quandl.com/search">Quandl Search</a> webpage to search for available database codes.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">quandl_search</span>(<span class="dt">query =</span> <span class="st">&quot;Oil&quot;</span>, <span class="dt">database_code =</span> <span class="st">&quot;NSE&quot;</span>, <span class="dt">per_page =</span> <span class="dv">3</span>)</code></pre></div>
+</div>
+<div id="getting-quandl-data" class="section level3">
+<h3>Getting Quandl Data</h3>
+<p>Getting data is integrated into <code>tq_get()</code>. Two get options exist to retrieve Quandl data:</p>
+<ol style="list-style-type: decimal">
+<li><code>get = &quot;quandl&quot;</code>: Get’s Quandl time series data. A wrapper for <code>Quandl()</code>.</li>
+<li><code>get = &quot;quandl.datatable&quot;</code>: Gets Quandl datatables (larger data sets that may not be time series). A wrapper for <code>Quandl.datatable()</code>.</li>
+</ol>
+<p>Getting data from Quandl can be achieved in much the same way as the other “get” options. Just pass the “codes” for the data along with desired arguments for the underlying function.</p>
+<p>The following uses <code>get = &quot;quandl&quot;</code> and the “WIKI” database to download daily stock prices for FB and AAPL in 2016. The output is a tidy data frame.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">c</span>(<span class="st">&quot;WIKI/FB&quot;</span>, <span class="st">&quot;WIKI/AAPL&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get  =</span> <span class="st">&quot;quandl&quot;</span>,
+           <span class="dt">from =</span> <span class="st">&quot;2016-01-01&quot;</span>,
+           <span class="dt">to   =</span> <span class="st">&quot;2016-12-31&quot;</span>)</code></pre></div>
+<p>The following time series options are available to be passed to the underlying <code>Quandl()</code> function:</p>
+<ul>
+<li><code>order</code> = “asc”, “desc”</li>
+<li><code>start_date</code> (<code>from</code>) = “yyyy-mm-dd” | <code>end_date</code> (<code>to</code>) = “yyyy-mm-dd”</li>
+<li><code>column_index</code> = numeric column number (e.g. 1)</li>
+<li><code>rows</code> = numeric row number indicating first n rows (e.g. 100)</li>
+<li><code>collapse</code> = “none”, “daily”, “weekly”, “monthly”, “quarterly”, “annual”</li>
+<li><code>transform</code> = “none”, “diff”, “rdiff”, “cumul”, “normalize”</li>
+</ul>
+<p>Here’s an example to get period returns of the adj.close (column index 11) using the <code>column_index</code>, <code>collapse</code> and <code>transform</code> arguments.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">c</span>(<span class="st">&quot;WIKI/FB&quot;</span>, <span class="st">&quot;WIKI/AAPL&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get          =</span> <span class="st">&quot;quandl&quot;</span>,
+           <span class="dt">from         =</span> <span class="st">&quot;2007-01-01&quot;</span>,
+           <span class="dt">to           =</span> <span class="st">&quot;2016-12-31&quot;</span>,
+           <span class="dt">column_index =</span> <span class="dv">11</span>, 
+           <span class="dt">collapse     =</span> <span class="st">&quot;annual&quot;</span>,      
+           <span class="dt">transform    =</span> <span class="st">&quot;rdiff&quot;</span>)       </code></pre></div>
+<p>Datatables are larger data sets. These can be downloaded using <code>get = &quot;quandl.datatable&quot;</code>. Note that the time series arguments do not work with data tables.</p>
+<p>Here’s several examples of <a href="https://www.quandl.com/databases/ZFB/documentation/about">Zacks Fundamentals Collection B</a></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Zacks Fundamentals Collection B (DOW 30 Available to non subscribers)</span>
+<span class="kw">tq_get</span>(<span class="st">&quot;ZACKS/FC&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;quandl.datatable&quot;</span>)   <span class="co"># Zacks Fundamentals Condensed</span>
+<span class="kw">tq_get</span>(<span class="st">&quot;ZACKS/FR&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;quandl.datatable&quot;</span>)   <span class="co"># Zacks Fundamental Ratios</span>
+<span class="kw">tq_get</span>(<span class="st">&quot;ZACKS/MT&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;quandl.datatable&quot;</span>)   <span class="co"># Zacks Master Table</span>
+<span class="kw">tq_get</span>(<span class="st">&quot;ZACKS/MKTV&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;quandl.datatable&quot;</span>) <span class="co"># Zacks Market Value Supplement</span>
+<span class="kw">tq_get</span>(<span class="st">&quot;ZACKS/SHRS&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;quandl.datatable&quot;</span>) <span class="co"># Zacks Shares Out Supplement</span></code></pre></div>
 </div>
 </div>
 <div id="economic-data" class="section level2">
@@ -376,7 +432,7 @@ collect_real_time_data &lt;-<span class="st"> </span>function(x, interval_sec, n
 <p>A wealth of economic data can be extracted from the Federal Reserve Economic Data (FRED) database. The <a href="https://fred.stlouisfed.org/series/DCOILWTICO">WTI Crude Oil Prices</a> are shown below.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wti_price_usd &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;DCOILWTICO&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;economic.data&quot;</span>)
 wti_price_usd </code></pre></div>
-<pre><code>## # A tibble: 2,651 × 2
+<pre><code>## # A tibble: 2,666 × 2
 ##          date price
 ##        &lt;date&gt; &lt;dbl&gt;
 ## 1  2007-01-01    NA
@@ -389,7 +445,7 @@ wti_price_usd </code></pre></div>
 ## 8  2007-01-10 53.95
 ## 9  2007-01-11 51.91
 ## 10 2007-01-12 52.96
-## # ... with 2,641 more rows</code></pre>
+## # ... with 2,656 more rows</code></pre>
 <p>The FRED contains literally over 10K data sets that are free to use. See the <a href="https://fred.stlouisfed.org/categories">FRED categories</a> to narrow down the data base and to get data codes.</p>
 </div>
 <div id="exchange-rates" class="section level2">
@@ -400,16 +456,16 @@ eur_usd </code></pre></div>
 <pre><code>## # A tibble: 1,826 × 2
 ##          date exchange.rate
 ##        &lt;date&gt;         &lt;dbl&gt;
-## 1  2012-03-02       1.32617
-## 2  2012-03-03       1.31984
-## 3  2012-03-04       1.31968
-## 4  2012-03-05       1.32040
-## 5  2012-03-06       1.31705
-## 6  2012-03-07       1.31343
-## 7  2012-03-08       1.32017
-## 8  2012-03-09       1.32075
-## 9  2012-03-10       1.31235
-## 10 2012-03-11       1.31222
+## 1  2012-03-28       1.33258
+## 2  2012-03-29       1.33015
+## 3  2012-03-30       1.33386
+## 4  2012-03-31       1.33424
+## 5  2012-04-01       1.33443
+## 6  2012-04-02       1.33377
+## 7  2012-04-03       1.33214
+## 8  2012-04-04       1.31749
+## 9  2012-04-05       1.31056
+## 10 2012-04-06       1.30756
 ## # ... with 1,816 more rows</code></pre>
 <p>The data source is <a href="https://www.oanda.com/">Oanda</a>, and list of currencies to compare can be found on <a href="https://www.oanda.com/currency/converter/">Oanda’s currency converter</a>. It may make more sense to get this data from the FRED (See <a href="#economic-data">Economic Data</a>) since the max period for Oanda is 5-years.</p>
 </div>
@@ -422,19 +478,18 @@ plat_price_eur </code></pre></div>
 <pre><code>## # A tibble: 1,826 × 2
 ##          date   price
 ##        &lt;date&gt;   &lt;dbl&gt;
-## 1  2012-03-02 1281.13
-## 2  2012-03-03 1287.28
-## 3  2012-03-04 1286.67
-## 4  2012-03-05 1261.74
-## 5  2012-03-06 1228.51
-## 6  2012-03-07 1243.68
-## 7  2012-03-08 1259.68
-## 8  2012-03-09 1275.03
-## 9  2012-03-10 1283.19
-## 10 2012-03-11 1283.32
+## 1  2012-03-28 1228.44
+## 2  2012-03-29 1227.30
+## 3  2012-03-30 1228.38
+## 4  2012-03-31 1228.04
+## 5  2012-04-01 1233.12
+## 6  2012-04-02 1239.35
+## 7  2012-04-03 1233.35
+## 8  2012-04-04 1215.19
+## 9  2012-04-05 1225.43
+## 10 2012-04-06 1228.63
 ## # ... with 1,816 more rows</code></pre>
 <p>The data source is <a href="https://www.oanda.com/">Oanda</a>. It may make more sense to get this data from the FRED (See <a href="#economic-data">Economic Data</a>) since the max period for Oanda is 5-years.</p>
-<p><a class="anchor" id="tq-transmute"></a></p>
 </div>
 </div>
 <div id="mutate-quantitative-data" class="section level1">
@@ -459,10 +514,10 @@ FANG</code></pre></div>
 <p>For a detailed walkthrough of the compatible functions, see the next vignette in the series, <a href="TQ02-quant-integrations-in-tidyquant.html">R Quantitative Analysis Package Integrations in tidyquant</a>.</p>
 <div id="transmute-quantitative-data-tq_transmute" class="section level2">
 <h2>Transmute Quantitative Data, tq_transmute</h2>
-<p>Transmute the results of <code>tq_get()</code>. Transmute here holds the same meaning as in <code>dplyr</code>, only the newly created columns will be returned. The result is typically a different shape than the input, although this is not a requirement. An example is periodicity aggregation from daily to monthly.</p>
+<p>Transmute the results of <code>tq_get()</code>. Transmute here holds almost the same meaning as in <code>dplyr</code>, only the newly created columns will be returned, but with <code>tq_transmute()</code>, the number of rows returned can be different than the original data frame. This is important for changing periodicity. An example is periodicity aggregation from daily to monthly.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">FANG %&gt;%
 <span class="st">    </span><span class="kw">group_by</span>(symbol) %&gt;%
-<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">ohlc_fun =</span> Ad, <span class="dt">mutate_fun =</span> to.monthly)</code></pre></div>
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">select =</span> adjusted, <span class="dt">mutate_fun =</span> to.monthly)</code></pre></div>
 <pre><code>## Source: local data frame [192 x 3]
 ## Groups: symbol [4]
 ## 
@@ -479,14 +534,39 @@ FANG</code></pre></div>
 ## 9      FB Sep 2013    50.23
 ## 10     FB Oct 2013    50.21
 ## # ... with 182 more rows</code></pre>
-<p>Let’s go through what happened. <code>ohlc_fun</code> is one of the various quantmod Open, High, Low, Close (OHLC) functions (see <code>?quantmod::OHLC</code>). The function returns a column or set of columns from data that are passed to the <code>mutate_fun</code>. In example above, <code>Ad</code> selects the “adjusted” column from <code>data</code>, and sends it to the mutate function, <code>to.monthly</code>, which mutates the periodicity from daily to monthly. Additional arguments can be passed to the <code>mutate_fun</code> by way of <code>...</code>.</p>
+<p>Let’s go through what happened. <code>select</code> allows you to easily choose what columns get passed to <code>mutate_fun</code>. In example above, <code>adjusted</code> selects the “adjusted” column from <code>data</code>, and sends it to the mutate function, <code>to.monthly</code>, which mutates the periodicity from daily to monthly. Additional arguments can be passed to the <code>mutate_fun</code> by way of <code>...</code>.</p>
+<div id="working-with-non-ohlc-data" class="section level3">
+<h3>Working with non-OHLC data</h3>
+<p>Returns from FRED, Oanda, and other sources do not have open, high, low, close (OHLC) format. However, this is not a problem with <code>select</code>. The following example shows how to transmute WTI Crude daily prices to monthly prices. Since we only have a single column to pass, we can leave the <code>select</code> argument as <code>NULL</code> which selects all columns by default. This sends the price column to the <code>to.period</code> mutate function.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wti_prices &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;DCOILWTICO&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;economic.data&quot;</span>) 
+wti_prices %&gt;%<span class="st">    </span>
+<span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">mutate_fun =</span> to.period,
+                 <span class="dt">period =</span> <span class="st">&quot;months&quot;</span>, 
+                 <span class="dt">col_rename =</span> <span class="st">&quot;WTI Price&quot;</span>)</code></pre></div>
+<pre><code>## # A tibble: 123 × 2
+##          date `WTI Price`
+##        &lt;date&gt;       &lt;dbl&gt;
+## 1  2007-01-31       58.17
+## 2  2007-02-28       61.78
+## 3  2007-03-30       65.94
+## 4  2007-04-30       65.78
+## 5  2007-05-31       64.02
+## 6  2007-06-29       70.47
+## 7  2007-07-31       78.20
+## 8  2007-08-31       73.98
+## 9  2007-09-28       81.64
+## 10 2007-10-31       94.16
+## # ... with 113 more rows</code></pre>
+</div>
 </div>
 <div id="mutate-quantitative-data-tq_mutate" class="section level2">
 <h2>Mutate Quantitative Data, tq_mutate</h2>
-<p>Adds a column or set of columns to the tibble with the calculated attributes (hence the original tibble is returned, mutated with the additional columns). An example is getting the <code>MACD</code> from <code>Cl</code> (close price), which mutates the original input by adding MACD and Signal columns. Note that we can quickly rename the columns using the <code>col_rename</code> argument.</p>
+<p>Adds a column or set of columns to the tibble with the calculated attributes (hence the original tibble is returned, mutated with the additional columns). An example is getting the <code>MACD</code> from <code>close</code>, which mutates the original input by adding MACD and Signal columns. Note that we can quickly rename the columns using the <code>col_rename</code> argument.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">FANG %&gt;%
 <span class="st">    </span><span class="kw">group_by</span>(symbol) %&gt;%
-<span class="st">    </span><span class="kw">tq_mutate</span>(<span class="dt">ohlc_fun =</span> Cl, <span class="dt">mutate_fun =</span> MACD, <span class="dt">col_rename =</span> <span class="kw">c</span>(<span class="st">&quot;MACD&quot;</span>, <span class="st">&quot;Signal&quot;</span>))</code></pre></div>
+<span class="st">    </span><span class="kw">tq_mutate</span>(<span class="dt">select =</span> close, 
+              <span class="dt">mutate_fun =</span> MACD, 
+              <span class="dt">col_rename =</span> <span class="kw">c</span>(<span class="st">&quot;MACD&quot;</span>, <span class="st">&quot;Signal&quot;</span>))</code></pre></div>
 <pre><code>## Source: local data frame [4,032 x 10]
 ## Groups: symbol [4]
 ## 
@@ -504,20 +584,93 @@ FANG</code></pre></div>
 ## 10     FB 2013-01-15 30.64 31.71 29.88 30.10 173242600    30.10    NA
 ## # ... with 4,022 more rows, and 1 more variables: Signal &lt;dbl&gt;</code></pre>
 <p>Note that a mutation can occur if, and only if, the mutation has the same structure of the original tibble. In other words, the calculation must have the same number of rows and row.names (or date fields), otherwise the mutation cannot be performed.</p>
+<div id="mutate-rolling-regressions-with-rollapply" class="section level3">
+<h3>Mutate rolling regressions with rollapply</h3>
+<p>A very powerful example is applying <strong>custom functions</strong> across a rolling window using <code>rollapply</code>. A specific example is using the <code>rollapply</code> function to compute a rolling regression. This example is slightly more complicated so it will be broken down into three steps:</p>
+<ol style="list-style-type: decimal">
+<li>Get returns</li>
+<li>Create a custom function</li>
+<li>Apply the custom function accross a rolling window using <code>tq_mutate(mutate_fun = rollapply)</code></li>
+</ol>
+<p><em>Step 1: Get Returns</em></p>
+<p>First, get combined returns. The asset and baseline returns should be in wide format, which is needed for the <code>lm</code> function in the next step.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fb_returns &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;FB&quot;</span>, <span class="dt">get  =</span> <span class="st">&quot;stock.prices&quot;</span>, <span class="dt">from =</span> <span class="st">&quot;2016-01-01&quot;</span>, <span class="dt">to   =</span> <span class="st">&quot;2016-12-31&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_transmute</span>(adjusted, periodReturn, <span class="dt">period =</span> <span class="st">&quot;weekly&quot;</span>, <span class="dt">col_rename =</span> <span class="st">&quot;fb.returns&quot;</span>)
+
+xlk_returns &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;XLK&quot;</span>, <span class="dt">from =</span> <span class="st">&quot;2016-01-01&quot;</span>, <span class="dt">to =</span> <span class="st">&quot;2016-12-31&quot;</span>) %&gt;%
+<span class="st">    </span><span class="kw">tq_transmute</span>(adjusted, periodReturn, <span class="dt">period =</span> <span class="st">&quot;weekly&quot;</span>, <span class="dt">col_rename =</span> <span class="st">&quot;xlk.returns&quot;</span>)
+
+returns_combined &lt;-<span class="st"> </span><span class="kw">left_join</span>(fb_returns, xlk_returns, <span class="dt">by =</span> <span class="st">&quot;date&quot;</span>)
+returns_combined</code></pre></div>
+<pre><code>## # A tibble: 52 × 3
+##          date   fb.returns  xlk.returns
+##        &lt;date&gt;        &lt;dbl&gt;        &lt;dbl&gt;
+## 1  2016-01-08 -0.047837986 -0.051573246
+## 2  2016-01-15 -0.024247416 -0.018707891
+## 3  2016-01-22  0.031273044  0.026436214
+## 4  2016-01-29  0.145701416  0.021297685
+## 5  2016-02-05 -0.072542546 -0.042192085
+## 6  2016-02-12 -0.019794350 -0.005822773
+## 7  2016-02-19  0.025095559  0.035395966
+## 8  2016-02-26  0.032035938  0.014756470
+## 9  2016-03-04  0.004355087  0.028114399
+## 10 2016-03-11  0.009410508  0.010608224
+## # ... with 42 more rows</code></pre>
+<p><em>Step 2: Create a custom function</em></p>
+<p>Next, create a custom regression function, which will be used to apply over the rolling window in Step 3. An important point is that the “data” will be passed to the regression function as an <code>xts</code> object. The <code>as_tibble</code> function takes care of converting to a data frame for the <code>lm</code> function to work properly with the columns “fb.returns” and “xlk.returns”.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">regr_fun &lt;-<span class="st"> </span>function(data) {
+    <span class="kw">coef</span>(<span class="kw">lm</span>(fb.returns ~<span class="st"> </span>xlk.returns, <span class="dt">data =</span> <span class="kw">as_tibble</span>(data)))
+}</code></pre></div>
+<p><em>Step 3: Apply the custom function</em></p>
+<p>Now we can use <code>tq_mutate()</code> to apply the custom regression function over a rolling window using <code>rollapply</code> from the <code>zoo</code> package. Internally, since we left <code>select = NULL</code>, the <code>returns_combined</code> data frame is being passed automatically to the <code>data</code> argument of the <code>rollapply</code> function. All you need to specify is the <code>mutate_fun = rollapply</code> and any additional arguments necessary to apply the <code>rollapply</code> function. We’ll specify a 12 week window via <code>width = 12</code>. The <code>FUN</code> argument is our custom regression function, <code>regr_fun</code>. It’s extremely important to specify <code>by.column = FALSE</code>, which tells <code>rollapply</code> to perform the computation using the data as a whole rather than apply the function to each column independently. The <code>col_rename</code> argument is used to rename the added columns.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">returns_combined %&gt;%
+<span class="st">    </span><span class="kw">tq_mutate</span>(<span class="dt">mutate_fun =</span> rollapply,
+              <span class="dt">width      =</span> <span class="dv">12</span>,
+              <span class="dt">FUN        =</span> regr_fun,
+              <span class="dt">by.column  =</span> <span class="ot">FALSE</span>,
+              <span class="dt">col_rename =</span> <span class="kw">c</span>(<span class="st">&quot;coef.0&quot;</span>, <span class="st">&quot;coef.1&quot;</span>))</code></pre></div>
+<pre><code>## # A tibble: 52 × 5
+##          date   fb.returns  xlk.returns coef.0 coef.1
+##        &lt;date&gt;        &lt;dbl&gt;        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1  2016-01-08 -0.047837986 -0.051573246     NA     NA
+## 2  2016-01-15 -0.024247416 -0.018707891     NA     NA
+## 3  2016-01-22  0.031273044  0.026436214     NA     NA
+## 4  2016-01-29  0.145701416  0.021297685     NA     NA
+## 5  2016-02-05 -0.072542546 -0.042192085     NA     NA
+## 6  2016-02-12 -0.019794350 -0.005822773     NA     NA
+## 7  2016-02-19  0.025095559  0.035395966     NA     NA
+## 8  2016-02-26  0.032035938  0.014756470     NA     NA
+## 9  2016-03-04  0.004355087  0.028114399     NA     NA
+## 10 2016-03-11  0.009410508  0.010608224     NA     NA
+## # ... with 42 more rows</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">returns_combined</code></pre></div>
+<pre><code>## # A tibble: 52 × 3
+##          date   fb.returns  xlk.returns
+##        &lt;date&gt;        &lt;dbl&gt;        &lt;dbl&gt;
+## 1  2016-01-08 -0.047837986 -0.051573246
+## 2  2016-01-15 -0.024247416 -0.018707891
+## 3  2016-01-22  0.031273044  0.026436214
+## 4  2016-01-29  0.145701416  0.021297685
+## 5  2016-02-05 -0.072542546 -0.042192085
+## 6  2016-02-12 -0.019794350 -0.005822773
+## 7  2016-02-19  0.025095559  0.035395966
+## 8  2016-02-26  0.032035938  0.014756470
+## 9  2016-03-04  0.004355087  0.028114399
+## 10 2016-03-11  0.009410508  0.010608224
+## # ... with 42 more rows</code></pre>
+<p>As shown above, the rolling regression coefficients were added to the data frame.</p>
+</div>
 </div>
 <div id="xy-variants-tq_mutate_xy-and-tq_transmute_xy" class="section level2">
-<h2>xy Variants, tq_mutate_xy and tq_transmute_xy</h2>
-<p>Enables working with:</p>
-<ol style="list-style-type: decimal">
-<li>Mutation functions that require two primary inputs (e.g. EVWMA, VWAP, etc)</li>
-<li>Data that is not in OHLC format.</li>
-</ol>
+<h2>_xy Variants, tq_mutate_xy and tq_transmute_xy</h2>
+<p>Enables working with mutation functions that require two primary inputs (e.g. EVWMA, VWAP, etc).</p>
 <div id="mutate-with-two-primary-inputs" class="section level3">
 <h3>Mutate with two primary inputs</h3>
-<p>EVWMA (exponential volume-weighted moving average) requires two inputs, price and volume, that are not in OHLC code format. To work with these columns, we can switch to the xy variants, <code>tq_transmute_xy()</code> and <code>tq_mutate_xy()</code>. The only difference is instead of an <code>ohlc_fun</code> argument, you use <code>x</code> and <code>y</code> arguments to pass the columns needed based on the <code>mutate_fun</code> documentation.</p>
+<p>EVWMA (exponential volume-weighted moving average) requires two inputs, price and volume. To work with these columns, we can switch to the xy variants, <code>tq_transmute_xy()</code> and <code>tq_mutate_xy()</code>. The only difference is instead of the <code>select</code> argument, you use <code>x</code> and <code>y</code> arguments to pass the columns needed based on the <code>mutate_fun</code> documentation.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">FANG %&gt;%
 <span class="st">    </span><span class="kw">group_by</span>(symbol) %&gt;%
-<span class="st">    </span><span class="kw">tq_mutate_xy</span>(<span class="dt">x =</span> close, <span class="dt">y =</span> volume, <span class="dt">mutate_fun =</span> EVWMA, <span class="dt">col_rename =</span> <span class="st">&quot;EVWMA&quot;</span>)</code></pre></div>
+<span class="st">    </span><span class="kw">tq_mutate_xy</span>(<span class="dt">x =</span> close, <span class="dt">y =</span> volume, 
+                 <span class="dt">mutate_fun =</span> EVWMA, <span class="dt">col_rename =</span> <span class="st">&quot;EVWMA&quot;</span>)</code></pre></div>
 <pre><code>## Source: local data frame [4,032 x 9]
 ## Groups: symbol [4]
 ## 
@@ -534,28 +687,6 @@ FANG</code></pre></div>
 ## 9      FB 2013-01-14 32.08 32.21 30.62 30.95  98892800    30.95    NA
 ## 10     FB 2013-01-15 30.64 31.71 29.88 30.10 173242600    30.10  30.1
 ## # ... with 4,022 more rows</code></pre>
-</div>
-<div id="working-with-non-ohlc-data" class="section level3">
-<h3>Working with non-OHLC data</h3>
-<p>Returns from FRED, Oanda, and other sources do not have open, high, low, close (OHLC) format. The following example shows how to mutate WTI Crude daily prices to monthly prices. Since we only have a single column to pass, set the <code>x = price</code> and leave the <code>y = NULL</code>. This sends the price column to the <code>to.period</code> mutate function.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wti_prices &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;DCOILWTICO&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;economic.data&quot;</span>) 
-wti_prices %&gt;%<span class="st">    </span>
-<span class="st">    </span><span class="kw">tq_transmute_xy</span>(<span class="dt">x =</span> price, <span class="dt">mutate_fun =</span> to.period,
-                    <span class="dt">period =</span> <span class="st">&quot;months&quot;</span>, <span class="dt">col_rename =</span> <span class="st">&quot;WTI Price&quot;</span>)</code></pre></div>
-<pre><code>## # A tibble: 122 × 2
-##          date `WTI Price`
-##        &lt;date&gt;       &lt;dbl&gt;
-## 1  2007-01-31       58.17
-## 2  2007-02-28       61.78
-## 3  2007-03-30       65.94
-## 4  2007-04-30       65.78
-## 5  2007-05-31       64.02
-## 6  2007-06-29       70.47
-## 7  2007-07-31       78.20
-## 8  2007-08-31       73.98
-## 9  2007-09-28       81.64
-## 10 2007-10-31       94.16
-## # ... with 112 more rows</code></pre>
 </div>
 </div>
 </div>
@@ -585,7 +716,7 @@ AAPL_xts %&gt;%<span class="st"> </span><span class="kw">head</span>()</code></p
 <p>We can easily coerce to <code>tibble</code> by setting <code>preserve_row_names = TRUE</code>. Note the return column is <code>row.names</code> with class of <code>character</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">AAPL_tbl &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(AAPL_xts, <span class="dt">preserve_row_names =</span> <span class="ot">TRUE</span>)
 AAPL_tbl</code></pre></div>
-<pre><code>## # A tibble: 2,558 × 7
+<pre><code>## # A tibble: 2,576 × 7
 ##     row.names AAPL.Open AAPL.High AAPL.Low AAPL.Close AAPL.Volume
 ##         &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;
 ## 1  2007-01-03     86.29     86.58    81.90      83.80   309579900
@@ -598,12 +729,12 @@ AAPL_tbl</code></pre></div>
 ## 8  2007-01-12     94.59     95.06    93.23      94.62   328172600
 ## 9  2007-01-16     95.68     97.25    95.45      97.10   311019100
 ## 10 2007-01-17     97.56     97.60    94.82      94.95   411565000
-## # ... with 2,548 more rows, and 1 more variables: AAPL.Adjusted &lt;dbl&gt;</code></pre>
+## # ... with 2,566 more rows, and 1 more variables: AAPL.Adjusted &lt;dbl&gt;</code></pre>
 <p>Converting to date is one extra step with <code>lubridate</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">AAPL_tbl &lt;-<span class="st"> </span>AAPL_tbl %&gt;%
 <span class="st">    </span><span class="kw">mutate</span>(<span class="dt">row.names =</span> lubridate::<span class="kw">ymd</span>(row.names))
 AAPL_tbl</code></pre></div>
-<pre><code>## # A tibble: 2,558 × 7
+<pre><code>## # A tibble: 2,576 × 7
 ##     row.names AAPL.Open AAPL.High AAPL.Low AAPL.Close AAPL.Volume
 ##        &lt;date&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;
 ## 1  2007-01-03     86.29     86.58    81.90      83.80   309579900
@@ -616,7 +747,7 @@ AAPL_tbl</code></pre></div>
 ## 8  2007-01-12     94.59     95.06    93.23      94.62   328172600
 ## 9  2007-01-16     95.68     97.25    95.45      97.10   311019100
 ## 10 2007-01-17     97.56     97.60    94.82      94.95   411565000
-## # ... with 2,548 more rows, and 1 more variables: AAPL.Adjusted &lt;dbl&gt;</code></pre>
+## # ... with 2,566 more rows, and 1 more variables: AAPL.Adjusted &lt;dbl&gt;</code></pre>
 </div>
 <div id="coerce-from-tibble-to-xts-as_xts" class="section level2">
 <h2>Coerce from tibble to xts, as_xts</h2>

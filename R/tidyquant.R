@@ -19,6 +19,8 @@
 #'   \item \strong{Manipulating Data:} [tq_transmute()] and [tq_mutate()]
 #'   \item \strong{Coercing Data To and From xts and tibble:} [as_tibble()]
 #'   and [as_xts()]
+#'   \item \strong{Performance Analysis and Portfolio Aggregation:}
+#'   [tq_performance()] and [tq_portfolio()]
 #' }
 #'
 #' To learn more about tidyquant, start with the vignettes:
@@ -38,5 +40,6 @@
 #' @importFrom utils "data" "download.file" "read.csv"
 #' @importFrom TTR "SMA"
 #' @importFrom xts "to.period"
+#' @importFrom Quandl "Quandl" "Quandl.datatable" "Quandl.api_key" "Quandl.search"
 
 NULL

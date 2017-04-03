@@ -7,40 +7,52 @@
 #' \itemize{
 #'   \item `"stock.prices"`: Get the open, high, low, close, volume and adjusted
 #'   stock prices for a stock symbol from
-#'   \href{https://finance.yahoo.com/}{Yahoo Finance}.
+#'   \href{https://finance.yahoo.com/}{Yahoo Finance}. Wrapper for `quantmod::getSymbols()`.
+#'   \item `"stock.prices.japan"`: Get the open, high, low, close, volume and adjusted
+#'   stock prices for a stock symbol from
+#'   \href{http://finance.yahoo.co.jp/}{Yahoo Finance Japan}. Wrapper for `quantmod::getSymbols.yahooj()`.
 #'   \item `"financials"`: Get the income, balance sheet, and cash flow
 #'   financial statements for a stock symbol from
-#'   \href{https://www.google.com/finance}{Google Finance}.
-#'   \item `"key.ratios"`: These are key historical ratios. Get \strong{89 historical growth, profitablity, financial health,
-#'   efficiency, and valuation ratios that span 10-years} from
+#'   \href{https://www.google.com/finance}{Google Finance}. Wrapper for `quantmod::getFinancials()`.
+#'   \item `"key.ratios"`: Get 89 historical growth, profitablity, financial health,
+#'   efficiency, and valuation ratios that span 10-years from
 #'   \href{https://www.morningstar.com}{Morningstar}.
-#'   \item `"key.stats"`: These are key current statistics. Get \strong{55 current key statistics} such as
+#'   \item `"key.stats"`: Get 55 real-time key statistics such as
 #'   Ask, Bid, Day's High, Day's Low, Last Trade Price, current P/E Ratio, EPS,
 #'   Market Cap, EPS Projected Current Year, EPS Projected Next Year and many more from
 #'   \href{https://finance.yahoo.com/}{Yahoo Finance}.
 #'   \item `"dividends"`: Get the dividends for a stock symbol
-#'   from \href{https://finance.yahoo.com/}{Yahoo Finance}.
+#'   from \href{https://finance.yahoo.com/}{Yahoo Finance}. Wrapper for `quantmod::getDividends()`.
 #'   \item `"splits"`: Get the splits for a stock symbol
-#'   from \href{https://finance.yahoo.com/}{Yahoo Finance}.
+#'   from \href{https://finance.yahoo.com/}{Yahoo Finance}. Wrapper for `quantmod::getSplits()`.
 #'   \item `"economic.data"`: Get economic data from
-#'   \href{https://fred.stlouisfed.org/}{FRED}.
+#'   \href{https://fred.stlouisfed.org/}{FRED}. rapper for `quantmod::getSymbols.FRED()`.
 #'   \item `"metal.prices"`: Get the metal prices from
-#'   \href{https://www.oanda.com/}{Oanda}.
+#'   \href{https://www.oanda.com/}{Oanda}. Wrapper for `quantmod::getMetals()`.
 #'   \item `"exchange.rates"`: Get exchange rates from
-#'   \href{https://www.oanda.com/currency/converter/}{Oanda}.
+#'   \href{https://www.oanda.com/currency/converter/}{Oanda}. Wrapper for `quantmod::getFX()`.
+#'   \item `"quandl"`: Get data sets from
+#'   \href{https://www.quandl.com/}{Quandl}. Wrapper for `Quandl()`.
+#'   See also [quandl_api_key()].
+#'   \item `"quandl.datatable"`: Get data tables from
+#'   \href{https://www.quandl.com/}{Quandl}. Wrapper for `Quandl.datatable()`.
+#'   See also [quandl_api_key()].
 #' }
 #' @param complete_cases Removes symbols that return an NA value due to an error with the get
 #' call such as sending an incorrect symbol "XYZ" to get = "stock.prices". This is useful in
 #' scaling so user does not need to
 #' add an extra step to remove these rows. `TRUE` by default, and a warning
 #' message is generated for any rows removed.
-#' @param ... Additional parameters passed to the appropriate `quantmod`
-#' function. Common optional parameters include:
+#' @param ... Additional parameters passed to the "wrapped"
+#' function. Investigate underlying functions to see full list of arguments.
+#' Common optional parameters include:
 #' \itemize{
-#'   \item `from`: Optional. A character string representing a start date in
+#'   \item `from`: Optional for various time series functions in quantmod / quandl packages.
+#'   A character string representing a start date in
 #'   YYYY-MM-DD format. No effect on
 #'   `"financials"`, `"key.ratios"`, or `"key.stats"`.
-#'   \item `to`: A character string representing a end date in
+#'   \item `to`: Optional for various time series functions in quantmod / quandl packages.
+#'   A character string representing a end date in
 #'   YYYY-MM-DD format. No effect on
 #'   `get = "financials"`,  `"key.ratios"`, or `"key.stats"`.
 #' }
@@ -51,7 +63,9 @@
 #' @details
 #' `tq_get()` is a consolidated function that gets data from various
 #' web sources. The function is a wrapper for several `quantmod`
-#' functions. The results are always returned as a `tibble`. The advantages
+#' functions, `Quandl` functions, and also gets data from websources unavailable
+#' in other packages.
+#' The results are always returned as a `tibble`. The advantages
 #' are (1) only one function is needed for all data sources and (2) the function
 #' can be seemlessly used with the tidyverse: `purrr`, `tidyr`, and
 #' `dplyr` verbs.
@@ -62,7 +76,14 @@
 #' `tq_get_stock_index_options()` Is deprecated and will be removed in the
 #' next version. Please use `tq_index_options()` instead.
 #'
-#' @seealso [tq_index()] to get a ful list of stocks in an index.
+#' @seealso
+#' \itemize{
+#'   \item [tq_index()] to get a ful list of stocks in an index.
+#'   \item [tq_exchange()] to get a ful list of stocks in an exchange.
+#'   \item [quandl_api_key()] to set the api key for collecting data via the `"quandl"`
+#'   get option.
+#' }
+#'
 #'
 #' @rdname tq_get
 #'
@@ -105,11 +126,17 @@ tq_get <- function(x, get = "stock.prices", complete_cases = TRUE, ...) {
     # Validate compound gets
     if (length(get) > 1) validate_compound_gets(get)
 
+    # Validate quandl api key
+    if("quandl" %in% get) {
+        if (is.null(quandl_api_key())) warning("No Quandl API key detected. Limited to 50 anonymous calls per day. Set key with 'quandl_api_key()'.",
+                                               call. = FALSE)
+    }
+
     # Distribute operations based on x
     if (is.character(x) && length(x) == 1 && length(get) == 1) {
 
-        # Expedite get and return
-        return(tq_get_base(x, get, complete_cases = complete_cases, map = FALSE, ...))
+        # Expedite get
+        ret <- tq_get_base(x, get, complete_cases = complete_cases, map = FALSE, ...)
 
     } else if (is.character(x)) {
 
@@ -149,7 +176,7 @@ tq_get <- function(x, get = "stock.prices", complete_cases = TRUE, ...) {
     }
 
     # Unnest if only 1 get option
-    if (length(get) == 1) {
+    if (length(get) == 1 && (length(x) > 1 || is.data.frame(x))) {
 
         ret <- tryCatch({
             ret %>%
@@ -160,6 +187,8 @@ tq_get <- function(x, get = "stock.prices", complete_cases = TRUE, ...) {
         })
 
     }
+
+
 
     return(ret)
 
@@ -217,16 +246,19 @@ tq_get_base <- function(x, get, ...) {
 
     # Setup switches based on get
     ret <- switch(get,
-                  stockprice   = tq_get_util_1(x, get, ...),
-                  dividend     = tq_get_util_1(x, get, ...),
-                  split        = tq_get_util_1(x, get, ...),
-                  financial    = tq_get_util_1(x, get, ...),
-                  keystat      = tq_get_util_3(x, get, ...),
-                  keyratio     = tq_get_util_2(x, get, ...),
-                  metalprice   = tq_get_util_1(x, get, ...),
-                  exchangerate = tq_get_util_1(x, get, ...),
-                  economicdata = tq_get_util_1(x, get, ...),
-                  stockindex   = tq_index(x) # Deprecated, remove next version
+                  stockprice       = tq_get_util_1(x, get, ...),
+                  stockpricesjapan = tq_get_util_1(x, get, ...),
+                  dividend         = tq_get_util_1(x, get, ...),
+                  split            = tq_get_util_1(x, get, ...),
+                  financial        = tq_get_util_1(x, get, ...),
+                  keystat          = tq_get_util_3(x, get, ...),
+                  keyratio         = tq_get_util_2(x, get, ...),
+                  metalprice       = tq_get_util_1(x, get, ...),
+                  exchangerate     = tq_get_util_1(x, get, ...),
+                  economicdata     = tq_get_util_1(x, get, ...),
+                  stockindex       = tq_index(x), # Deprecated, remove next version
+                  quandl           = tq_get_util_4(x, get, ...),
+                  quandldatatable  = tq_get_util_5(x, get, ...)
                   )
 
     ret
@@ -237,6 +269,7 @@ tq_get_base <- function(x, get, ...) {
 #' @export
 tq_get_options <- function() {
     c("stock.prices",
+      "stock.prices.japan",
       "financials",
       "key.stats",
       "key.ratios",
@@ -244,7 +277,9 @@ tq_get_options <- function() {
       "splits",
       "economic.data",
       "exchange.rates",
-      "metal.prices"
+      "metal.prices",
+      "quandl",
+      "quandl.datatable"
       )
 }
 
@@ -276,40 +311,45 @@ tq_get_util_1 <-
 
     # Setup switches based on get
     vars <- switch(get,
-                   stockprice   = list(chr_get    = "stock.prices",
-                                       fun        = quantmod::getSymbols,
-                                       chr_fun    = "quantmod::getSymbols",
-                                       list_names = c("open", "high", "low", "close", "volume", "adjusted"),
-                                       source     = "yahoo"),
-                   dividend     = list(chr_get    = "dividends",
-                                       fun        = quantmod::getDividends,
-                                       chr_fun    = "quantmod::getDividends",
-                                       list_names = "dividends",
-                                       source     = "yahoo"),
-                   split        = list(chr_get    = "splits",
-                                       fun        = quantmod::getSplits,
-                                       chr_fun    = "quantmod::getSplits",
-                                       list_names = "splits",
-                                       source     = "yahoo"),
-                   financial    = list(chr_get    = "financials",
-                                       fun        = quantmod::getFinancials,
-                                       chr_fun    = "quantmod::getFinancials",
-                                       source     = "google"),
-                   metalprice   = list(chr_get    = "metal.prices",
-                                       fun        = quantmod::getMetals,
-                                       chr_fun    = "quantmod::getMetals",
-                                       list_names = "price",
+                   stockprice            = list(chr_get    = "stock.prices",
+                                                fun        = quantmod::getSymbols,
+                                                chr_fun    = "quantmod::getSymbols",
+                                                list_names = c("open", "high", "low", "close", "volume", "adjusted"),
+                                                source     = "yahoo"),
+                   stockpricesjapan      = list(chr_get    = "stock.prices",
+                                                fun        = quantmod::getSymbols,
+                                                chr_fun    = "quantmod::getSymbols.yahooj",
+                                                list_names = c("open", "high", "low", "close", "volume", "adjusted"),
+                                                source     = "yahooj"),
+                   dividend              = list(chr_get    = "dividends",
+                                                fun        = quantmod::getDividends,
+                                                chr_fun    = "quantmod::getDividends",
+                                                list_names = "dividends",
+                                                source     = "yahoo"),
+                   split                 = list(chr_get    = "splits",
+                                                fun        = quantmod::getSplits,
+                                                chr_fun    = "quantmod::getSplits",
+                                                list_names = "splits",
+                                                source     = "yahoo"),
+                   financial             = list(chr_get    = "financials",
+                                                fun        = quantmod::getFinancials,
+                                                chr_fun    = "quantmod::getFinancials",
+                                                source     = "google"),
+                   metalprice            = list(chr_get    = "metal.prices",
+                                                fun        = quantmod::getMetals,
+                                                chr_fun    = "quantmod::getMetals",
+                                                list_names = "price",
                                        source     = "oanda"),
-                   exchangerate = list(chr_get    = "exchange.rates",
-                                       fun        = quantmod::getFX,
-                                       chr_fun    = "quantmod::getFX",
-                                       list_names = "exchange.rate",
+                   exchangerate          = list(chr_get    = "exchange.rates",
+                                                fun        = quantmod::getFX,
+                                                chr_fun    = "quantmod::getFX",
+                                                list_names = "exchange.rate",
                                        source     = "oanda"),
-                   economicdata = list(chr_get    = "economic.data",
-                                       fun        = quantmod::getSymbols,
-                                       chr_fun    = "quantmod::getSymbols.FRED",
-                                       list_names = "price",
-                                       source     = "FRED")
+                   economicdata          = list(chr_get    = "economic.data",
+                                                fun        = quantmod::getSymbols,
+                                                chr_fun    = "quantmod::getSymbols.FRED",
+                                                list_names = "price",
+                                                source     = "FRED")
     )
 
     # Get data; Handle errors
@@ -323,9 +363,9 @@ tq_get_util_1 <-
 
     }, error = function(e) {
 
-        warn <- paste0("Error at ", x, " during call to get = '", vars$chr_get, "'.")
+        warn <- paste0("x = '", x, "', get = '", vars$chr_get, "': ", e)
         if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
-        warning(warn)
+        warning(warn, call. = FALSE)
         return(NA) # Return NA on error
 
     })
@@ -575,14 +615,14 @@ tq_get_util_2 <- function(x, get, complete_cases, map, ...) {
 
         warn <- w
         if (map == TRUE) warn <- paste0(x, ": ", w)
-        warning(warn)
+        warning(warn, call. = FALSE)
         return(key_ratios)
 
     }, error = function(e) {
 
-        warn <- paste0("Error at ", x, " during call to get = 'key.ratios'.")
+        warn <- paste0("x = '", x, "', get = 'key.ratios", "': ", e)
         if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
-        warning(warn)
+        warning(warn, call. = FALSE)
         return(NA) # Return NA on error
 
     })
@@ -700,12 +740,95 @@ tq_get_util_3 <- function(x, get, complete_cases, map, ...) {
 
     }, error = function(e) {
 
-        warn <- paste0("Error at ", x, " during call to get = 'key.stats'.")
+        warn <- paste0("x = '", x, "', get = 'key.stats", "': ", e)
         if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
-        warning(warn)
+        warning(warn, call. = FALSE)
         return(NA) # Return NA on error
 
     })
+
+}
+
+# Util 4: Quandl -----
+tq_get_util_4 <- function(x, get, type = "raw",  meta = FALSE, complete_cases, map, ...) {
+
+    # Check x
+    if (!is.character(x)) {
+        stop("x must be a character string in the form of a valid symbol.")
+    }
+
+    # Convert x to uppercase
+    x <- stringr::str_to_upper(x) %>%
+        stringr::str_trim(side = "both")
+
+    # Check type
+    if (type != "raw") type = "raw"
+
+    # Check meta
+    if (meta == TRUE) meta = FALSE
+
+    # Repurpose from and to as start_date and end_date
+    args <- list(code = x,
+                 type = type,
+                 meta = meta)
+    args <- append(args, list(...))
+    if (!is.null(args$from)) args$start_date <- args$from
+    if (!is.null(args$to)) args$end_date <- args$to
+
+    ret <- tryCatch({
+
+        do.call("Quandl", args) %>%
+            as_tibble()
+
+
+    }, error = function(e) {
+
+        warn <- paste0("x = '", x, "', get = 'quandl", "': ", e)
+        if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
+        warning(warn, call. = FALSE)
+        return(NA) # Return NA on error
+
+    })
+
+    # Clean quandl column names to make easier
+    if (!is.null(colnames(ret))) {
+        colnames(ret) <- make.names(colnames(ret)) %>%
+            stringr::str_replace_all(pattern = "\\.+", ".") %>%
+            stringr::str_to_lower()
+    }
+
+    return(ret)
+
+}
+
+# Util 5: Quandl.datatable -----
+tq_get_util_5 <- function(x, get, paginate = FALSE, complete_cases, map, ...) {
+
+    # Check x
+    if (!is.character(x)) {
+        stop("x must be a character string in the form of a valid symbol.")
+    }
+
+    # Convert x to uppercase
+    x <- stringr::str_to_upper(x) %>%
+        stringr::str_trim(side = "both")
+
+    ret <- tryCatch({
+
+        Quandl.datatable(code = x, paginate = paginate, ...) %>%
+            as_tibble()
+
+
+    }, error = function(e) {
+
+        warn <- paste0("x = '", x, "', get = 'quandl.datatable", "': ", e)
+        if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
+        warning(warn, call. = FALSE)
+        return(NA) # Return NA on error
+
+    })
+
+    return(ret)
 
 }
 
@@ -739,7 +862,9 @@ validate_compound_gets <- function(get) {
         stringr::str_replace_all("[[:punct:]]", "") %>%
         stringr::str_replace_all("s$", "")
 
-    compound_get_options <- tq_get_options()[1:6] %>%
+    # Only allowed to use first six options for compound gets because these use traditional stock symbols
+    # Update for "stock.prices.japan". Now subset is c(1, 3:7)
+    compound_get_options <- tq_get_options()[c(1, 3:7)] %>%
         stringr::str_replace_all("[[:punct:]]", "") %>%
         stringr::str_replace_all("s$", "")
 

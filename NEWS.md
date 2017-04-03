@@ -1,3 +1,23 @@
+# tidyquant 0.5.0
+
+* New Data:
+    * Quandl Integration: 
+        * `tq_get(get = "quandl")` is a wrapper for `Quandl::Quandl()` that pulls multiple Quandl Codes in a "tidy" fashion. 
+        * `tq_get(get = "quandl.datatable")` is a wrapper for `Quandl::Quandl.datable()` that pulls Quandl datatables. 
+        * `quandl_api_key()` is a wrapper for `Quandl::Quandl.api_key()`. 
+        * `quandl_search` is a wrapper for `Quandl::Quandl.search()`.
+    * Yahoo Japan Integration: `tq_get(get = "stock.prices.japan")` is a wrapper for `quantmod::getSymbols(src = "yahooj")` that enables getting stocks from Yahoo Finance Japan.
+    
+* Improvements and Fixes:
+    * `tq_mutate()` and `tq_transmute()` now accept non-OHLC data through the `select` argument. They also now work with `rollapply`.
+    * `tq_mutate()` and `tq_transmute()` now accept `PerformanceAnalytics` functions that work to clean and transform asset returns.
+    * Deprecated the `ohlc_fun` argument to instead use `select` in `tq_mutate()` and `tq_transmute`
+    * `.Deprecated` -> `.Defunct` for `tq_transform()` and `tq_transform_xy()`. Use `tq_transmute()` and `tq_transmute_xy()`. Move the sign post functions to deprecated.R
+    * Remove the previously deprecated argument, `transform_fun` from `tq_transmute()`. Use `mutate_fun` instead.
+    * Fix issue with `tq_mutate` returning rows incorrectly sorted
+    * Fix issue with `tq_get` returning data frames as nested
+    * Fix `tq_get` error to return full error when issues are present. 
+
 
 # tidyquant 0.4.0
 

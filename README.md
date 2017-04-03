@@ -3,10 +3,9 @@
 tidyquant
 =========
 
-[![Travis-CI Build Status](https://travis-ci.org/mdancho84/tidyquant.svg?branch=master)](https://travis-ci.org/mdancho84/tidyquant) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/tidyquant)](https://cran.r-project.org/package=tidyquant) ![](http://cranlogs.r-pkg.org/badges/tidyquant?color=brightgreen) ![](http://cranlogs.r-pkg.org/badges/grand-total/tidyquant?color=brightgreen)
+[![Travis-CI Build Status](https://travis-ci.org/business-science/tidyquant.svg?branch=master)](https://travis-ci.org/business-science/tidyquant.svg?branch=master) [![codecov](https://codecov.io/gh/business-science/tidyquant/branch/master/graph/badge.svg)](https://codecov.io/gh/business-science/tidyquant) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/tidyquant)](https://cran.r-project.org/package=tidyquant) ![](http://cranlogs.r-pkg.org/badges/tidyquant?color=brightgreen) ![](http://cranlogs.r-pkg.org/badges/grand-total/tidyquant?color=brightgreen)
 
-<img src="img/tidyquant-logo.png" width="147" height="170" align="right" />
-
+<!-- <img src="logo.png" width="147" height="170" align="right" /> -->
 > Bringing financial analysis to the tidyverse
 
 `tidyquant` integrates the best resources for collecting and analyzing financial data, `zoo`, `xts`, `quantmod`, `TTR`, and `PerformanceAnalytics`, with the tidy data infrastructure of the `tidyverse` allowing for seamless interaction between each. You can now perform complete financial analyses in the `tidyverse`.
@@ -25,18 +24,26 @@ One-Stop Shop for Serious Financial Analysis
 
 With `tidyquant` all the benefits add up to one thing: *a one-stop shop for serious financial analysis!*
 
+### Core Functions
+
+-   **Getting Financial Data from the web: `tq_get()`**. This is a one-stop shop for getting web-based financial data in a "tidy" data frame format. Get data for daily stock prices (historical), key statistics (real-time), key ratios (historical), financial statements, dividends, splits, economic data from the FRED, FOREX rates from Oanda.
+
+-   **Manipulating Financial Data: `tq_transmute()` and `tq_mutate()`**. Integration for many financial functions from `xts`, `zoo`, `quantmod`,`TTR` and `PerformanceAnalytics` packages. `tq_mutate()` is used to add a column to the data frame, and `tq_transmute()` is used to return a new data frame which is necessary for periodicity changes.
+
+-   **Coercing Data To and From xts and tibble: `as_tibble()`and `as_xts()`**. There are a ton of [Stack Overflow articles](http://stackoverflow.com/search?q=xts+data+frame) on converting data frames to and from xts. These two functions can be used to answer 99% of these questions.
+
+-   **Performance Analysis and Portfolio Analysis: `tq_performance()` and `tq_portfolio()`**. The newest additions to the `tidyquant` family integrate `PerformanceAnalytics` functions. `tq_performance()` converts investment returns into performance metrics. `tq_portfolio()` aggregates a group (or multiple groups) of asset returns into one or more portfolios.
+
 ### Comparing Stock Prices
 
 Visualizing the stock price volatility of four stocks side-by-side is quick and easy...
 
-![Volatility of Multiple Stocks](img/sample_img_1_volatility.png)
-
+<!-- ![Volatility of Multiple Stocks](img/sample_img_1_volatility.png) -->
 ### Evaluating Stock Performance
 
 What about stock performance? Quickly visualize how a $10,000 investment in various stocks would perform.
 
-![Investment Performance of Multiple Stocks](img/sample_img_2_stock_returns.png)
-
+<!-- ![Investment Performance of Multiple Stocks](img/sample_img_2_stock_returns.png) -->
 ### Evaluating Portfolio Performance
 
 Ok, stocks are too easy. What about portfolios? With the `PerformanceAnalytics` integration, visualizing blended portfolios are easy too!
@@ -46,8 +53,7 @@ Ok, stocks are too easy. What about portfolios? With the `PerformanceAnalytics` 
 -   Portfolio 3: 25% FB, 0% AMZN, 50% NFLX, 25% GOOG
 -   Portfolio 4: 25% FB, 25% AMZN, 0% NFLX, 50% GOOG
 
-![Investment Performance of Multiple Portfolios](img/sample_img_3_portfolio_returns.png)
-
+<!-- ![Investment Performance of Multiple Portfolios](img/sample_img_3_portfolio_returns.png) -->
 This just scratches the surface of `tidyquant`. Here's how to install to get started.
 
 Installation
@@ -57,7 +63,7 @@ Development Version with Latest Features:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("mdancho84/tidyquant", build_vignettes = TRUE)
+devtools::install_github("business-science/tidyquant")
 ```
 
 CRAN Approved Version:
