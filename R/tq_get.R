@@ -309,6 +309,20 @@ tq_get_util_1 <-
         stop("x must be a character string in the form of a valid symbol.")
     }
 
+    # Handle 180 day Oanda limit
+    if(get %in% c("exchangerate", "metalprice")) {  # If pulling Oanda
+        if(from < Sys.Date() - lubridate::days(180)) {     # And some dates are past limit
+
+            warning(paste0("Oanda only provides historical data for the past 180 days. Symbol: ", x),
+                    call. = FALSE)
+
+            # If completely outside range, stop. Otherwise there is some data to pull so continue
+            if(to < Sys.Date() - lubridate::days(180)) {
+                return(NA)
+            }
+        }
+    }
+
     # Setup switches based on get
     vars <- switch(get,
                    stockprice            = list(chr_get    = "stock.prices",
@@ -404,7 +418,7 @@ tq_get_util_1 <-
 
     # Coerce any xts to tibble
     if (xts::is.xts(ret)) {
-        names(ret) <- vars$list_names
+        dimnames(ret)[[2]] <- vars$list_names
         ret <- ret %>%
             tidyquant::as_tibble(preserve_row_names = TRUE) %>%
             dplyr::rename(date = row.names) %>%
@@ -736,6 +750,14 @@ tq_get_util_3 <- function(x, get, complete_cases, map, ...) {
         # Sort by column name
         key_stats_sorted <- key_stats[, order(names(key_stats))]
 
+        # Handling for all NAs
+        if (all(is.na(key_stats_sorted))) {
+            warn <- paste0("x = '", x, "', get = 'key.stats", "': Value is not available.")
+            if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
+            warning(warn, call. = FALSE)
+            return(NA) # Return NA on error
+        }
+
         return(key_stats_sorted)
 
     }, error = function(e) {
@@ -750,7 +772,7 @@ tq_get_util_3 <- function(x, get, complete_cases, map, ...) {
 }
 
 # Util 4: Quandl -----
-tq_get_util_4 <- function(x, get, type = "raw",  meta = FALSE, complete_cases, map, ...) {
+tq_get_util_4 <- function(x, get, type = "raw",  meta = FALSE, order = "asc", complete_cases, map, ...) {
 
     # Check x
     if (!is.character(x)) {
@@ -762,15 +784,28 @@ tq_get_util_4 <- function(x, get, type = "raw",  meta = FALSE, complete_cases, m
         stringr::str_trim(side = "both")
 
     # Check type
-    if (type != "raw") type = "raw"
+    if (type != "raw") {
+        type = "raw"
+        warning("tidyquant only supports the 'raw' return type. Returning 'raw' data.", call. = FALSE)
+    }
 
     # Check meta
-    if (meta == TRUE) meta = FALSE
+    if (meta == TRUE) {
+        meta = FALSE
+        warning("tidyquant does not support Quandl meta data. Setting `meta == FALSE`.", call. = FALSE)
+    }
+
+    # Check order
+    if (order == "desc") {
+        order = "asc"
+        warning("For consistency, tidyquant does not return descending data. Returning ascending.", call. = FALSE)
+    }
 
     # Repurpose from and to as start_date and end_date
-    args <- list(code = x,
-                 type = type,
-                 meta = meta)
+    args <- list(code  = x,
+                 type  = type,
+                 meta  = meta,
+                 order = order)
     args <- append(args, list(...))
     if (!is.null(args$from)) args$start_date <- args$from
     if (!is.null(args$to)) args$end_date <- args$to

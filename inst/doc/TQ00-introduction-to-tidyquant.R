@@ -1,11 +1,15 @@
 ## ---- echo = FALSE, message = FALSE, warning = FALSE---------------------
 knitr::opts_chunk$set(message = FALSE,
                       warning = FALSE,
-                      fig.width = 6)
+                      fig.width = 8, 
+                      fig.height = 4.5,
+                      fig.align = 'center',
+                      out.width='95%', 
+                      dpi = 200)
 library(tidyquant)
 # devtools::load_all() # Travis CI fails on load_all()
 
-## ---- echo = F, fig.height = 4.5-----------------------------------------
+## ---- echo = F-----------------------------------------------------------
 library(tidyquant)
 data("FANG")
 end <- as_date("2017-01-01")

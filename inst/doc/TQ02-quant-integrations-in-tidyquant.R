@@ -1,8 +1,10 @@
 ## ---- echo = FALSE, message = FALSE, warning = FALSE---------------------
 knitr::opts_chunk$set(message = FALSE,
                       warning = FALSE,
-                      fig.width  = 6,
-                      fig.height = 4.5)
+                      fig.width = 8, 
+                      fig.height = 4.5,
+                      fig.align = 'center',
+                      out.width='95%')
 # devtools::load_all() # Travis CI fails on load_all()
 
 ## ------------------------------------------------------------------------
@@ -27,6 +29,10 @@ tq_transmute_fun_options()$quantmod
 ## ------------------------------------------------------------------------
 # Get TTR functions that work with tq_transmute and tq_mutate
 tq_transmute_fun_options()$TTR
+
+## ------------------------------------------------------------------------
+# Get PerformanceAnalytics functions that work with tq_transmute and tq_mutate
+tq_transmute_fun_options()$PerformanceAnalytics
 
 ## ------------------------------------------------------------------------
 data(FANG)
@@ -285,4 +291,11 @@ stock_prices %>%
     labs(title = "MA and V: Stock Prices") +
     theme_tq() + 
     scale_color_tq()
+
+## ------------------------------------------------------------------------
+FANG %>%
+    group_by(symbol) %>%
+    tq_transmute(adjusted, periodReturn, period = "daily") %>%
+    tq_transmute(daily.returns, Return.clean, alpha = 0.05) %>%
+    tq_transmute(daily.returns, Return.excess, Rf = 0.03 / 252)
 
