@@ -21,7 +21,7 @@ grouped_df <- tibble(symbol = c("FB", "AMZN")) %>%
 test1.2a  <- mutate(grouped_df, V1 = runSD(adjusted)) %>%
     select(-(open:adjusted))
 
-test1.2b <- tq_transmute(grouped_df, adjusted, runSD)
+test1.2b <- tq_transmute(grouped_df, adjusted, runSD, col_rename = "V1")
 
 
 # Test 2: tq_transmute_xy test
@@ -127,7 +127,7 @@ test_that("Test error on invalid data inputs.", {
     # No date columns
     expect_error(
         tibble(a = seq(1:100)) %>%
-            tq_mutate(select = NULL, mutate_fun = to.monthly),
+            tq_transmute(select = NULL, mutate_fun = to.monthly),
         "No date or POSIXct column found in `data`."
     )
     expect_error(

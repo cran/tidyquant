@@ -258,7 +258,7 @@ lm(MA ~ V, data = stock_pairs) %>%
 
 ## ------------------------------------------------------------------------
 regr_fun <- function(data) {
-    coef(lm(MA ~ V, data = as_tibble(data)))
+    coef(lm(MA ~ V, data = timetk::tk_tbl(data, silent = TRUE)))
 }
 
 ## ------------------------------------------------------------------------

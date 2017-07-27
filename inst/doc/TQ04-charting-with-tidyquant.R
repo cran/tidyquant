@@ -90,19 +90,6 @@ AAPL %>%
                  ylim = c(100, 120)) + 
     theme_tq()
 
-## ------------------------------------------------------------------------
-AAPL %>%
-    ggplot(aes(x = date, y = close)) +
-    geom_candlestick(aes(open = open, high = high, low = low, close = close)) +
-    geom_line(color = "steelblue", size = 1) +
-    geom_point(color = "steelblue", size = 3) +
-    labs(title = "AAPL Candlestick Chart", 
-         subtitle = "Combining Chart Geoms",
-         y = "Closing Price", x = "") + 
-    coord_x_date(xlim = c(end - weeks(6), end),
-                 ylim = c(100, 120)) + 
-    theme_tq()
-
 ## ---- fig.height=5-------------------------------------------------------
 start <- end - weeks(6)
 FANG %>%
@@ -250,17 +237,6 @@ AMZN %>%
 
 ## ------------------------------------------------------------------------
 AMZN %>%
-    ggplot(aes(x = date, y = adjusted)) +
-    geom_line(color = palette_light()[[1]]) + 
-    scale_y_log10() +
-    geom_smooth(method = "loess") +
-    labs(title = "AMZN Line Chart", 
-         subtitle = "Log Scale, Applying Loess Trendline", 
-         y = "Adjusted Closing Price", x = "") + 
-    theme_tq()
-
-## ------------------------------------------------------------------------
-AMZN %>%
     ggplot(aes(x = date, y = volume)) +
     geom_segment(aes(xend = date, yend = 0, color = volume)) + 
     geom_smooth(method = "loess", se = FALSE) +
@@ -293,43 +269,11 @@ FANG %>%
     geom_line(size = 1) +
     geom_ma(n = 15, color = "darkblue", size = 1) + 
     geom_ma(n = n_mavg, color = "red", size = 1) +
-    labs(title = "Light Theme",
-         x = "", y = "Closing Price") +
-    coord_x_date(xlim = c(start, end)) +
-    facet_wrap(~ symbol, scales = "free_y") +
-    theme_tq() +
-    scale_color_tq() +
-    scale_y_continuous(labels = scales::dollar)
-
-## ---- fig.height = 6-----------------------------------------------------
-n_mavg <- 50 # Number of periods (days) for moving average
-FANG %>%
-    filter(date >= start - days(2 * n_mavg)) %>%
-    ggplot(aes(x = date, y = close, color = symbol)) +
-    geom_line(size = 1) +
-    geom_ma(n = 15, color = "darkblue", size = 1) + 
-    geom_ma(n = n_mavg, color = "red", size = 1) +
     labs(title = "Dark Theme",
          x = "", y = "Closing Price") +
     coord_x_date(xlim = c(start, end)) +
     facet_wrap(~ symbol, scales = "free_y") +
     theme_tq_dark() +
     scale_color_tq(theme = "dark") +
-    scale_y_continuous(labels = scales::dollar)
-
-## ---- fig.height = 6-----------------------------------------------------
-n_mavg <- 50 # Number of periods (days) for moving average
-FANG %>%
-    filter(date >= start - days(2 * n_mavg)) %>%
-    ggplot(aes(x = date, y = close, color = symbol)) +
-    geom_line(size = 1) +
-    geom_ma(n = 15, color = "darkblue", size = 1) + 
-    geom_ma(n = n_mavg, color = "red", size = 1) +
-    labs(title = "Green Theme",
-         x = "", y = "Closing Price") +
-    coord_x_date(xlim = c(start, end)) +
-    facet_wrap(~ symbol, scales = "free_y") +
-    theme_tq_green() +
-    scale_color_tq(theme = "green") +
     scale_y_continuous(labels = scales::dollar)
 

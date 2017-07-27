@@ -152,7 +152,7 @@ FANG
 ## ------------------------------------------------------------------------
 FANG %>%
     group_by(symbol) %>%
-    tq_transmute(select = adjusted, mutate_fun = to.monthly)
+    tq_transmute(select = adjusted, mutate_fun = to.monthly, indexAt = "lastof")
 
 ## ---- message=FALSE, warning=FALSE---------------------------------------
 wti_prices <- tq_get("DCOILWTICO", get = "economic.data") 
@@ -164,7 +164,7 @@ wti_prices %>%
 ## ------------------------------------------------------------------------
 FANG %>%
     group_by(symbol) %>%
-    tq_mutate(select = close, 
+    tq_mutate(select     = close, 
               mutate_fun = MACD, 
               col_rename = c("MACD", "Signal"))
 
@@ -180,7 +180,7 @@ returns_combined
 
 ## ------------------------------------------------------------------------
 regr_fun <- function(data) {
-    coef(lm(fb.returns ~ xlk.returns, data = as_tibble(data)))
+    coef(lm(fb.returns ~ xlk.returns, data = timetk::tk_tbl(data, silent = TRUE)))
 }
 
 ## ------------------------------------------------------------------------
@@ -197,22 +197,4 @@ FANG %>%
     group_by(symbol) %>%
     tq_mutate_xy(x = close, y = volume, 
                  mutate_fun = EVWMA, col_rename = "EVWMA")
-
-## ------------------------------------------------------------------------
-AAPL_xts <- quantmod::getSymbols("AAPL", auto.assign = FALSE) 
-AAPL_xts %>% head()
-
-## ------------------------------------------------------------------------
-AAPL_tbl <- as_tibble(AAPL_xts, preserve_row_names = TRUE)
-AAPL_tbl
-
-## ------------------------------------------------------------------------
-AAPL_tbl <- AAPL_tbl %>%
-    mutate(row.names = lubridate::ymd(row.names))
-AAPL_tbl
-
-## ------------------------------------------------------------------------
-AAPL_xts_2 <- AAPL_tbl %>%
-    as_xts(date_col = row.names)
-AAPL_xts_2 %>% head()
 

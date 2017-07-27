@@ -30,18 +30,22 @@ With `tidyquant` all the benefits add up to one thing: *a one-stop shop for seri
 
 -   **Manipulating Financial Data: `tq_transmute()` and `tq_mutate()`**. Integration for many financial functions from `xts`, `zoo`, `quantmod`,`TTR` and `PerformanceAnalytics` packages. `tq_mutate()` is used to add a column to the data frame, and `tq_transmute()` is used to return a new data frame which is necessary for periodicity changes.
 
--   **Coercing Data To and From xts and tibble: `as_tibble()`and `as_xts()`**. There are a ton of [Stack Overflow articles](http://stackoverflow.com/search?q=xts+data+frame) on converting data frames to and from xts. These two functions can be used to answer 99% of these questions.
-
 -   **Performance Analysis and Portfolio Analysis: `tq_performance()` and `tq_portfolio()`**. The newest additions to the `tidyquant` family integrate `PerformanceAnalytics` functions. `tq_performance()` converts investment returns into performance metrics. `tq_portfolio()` aggregates a group (or multiple groups) of asset returns into one or more portfolios.
 
 ### Comparing Stock Prices
 
 Visualizing the stock price volatility of four stocks side-by-side is quick and easy...
 
+<!-- ```{r echo=FALSE, out.width='100%'} -->
+<!-- knitr::include_graphics("tools/sample_img_1_volatility.png") -->
+<!-- ``` -->
 ### Evaluating Stock Performance
 
 What about stock performance? Quickly visualize how a $10,000 investment in various stocks would perform.
 
+<!-- ```{r echo=FALSE, out.width='100%'} -->
+<!-- knitr::include_graphics("tools/sample_img_2_stock_returns.png") -->
+<!-- ``` -->
 ### Evaluating Portfolio Performance
 
 Ok, stocks are too easy. What about portfolios? With the `PerformanceAnalytics` integration, visualizing blended portfolios are easy too!
@@ -51,6 +55,9 @@ Ok, stocks are too easy. What about portfolios? With the `PerformanceAnalytics` 
 -   Portfolio 3: 25% FB, 0% AMZN, 50% NFLX, 25% GOOG
 -   Portfolio 4: 25% FB, 25% AMZN, 0% NFLX, 50% GOOG
 
+<!-- ```{r echo=FALSE, out.width='100%'} -->
+<!-- knitr::include_graphics("tools/sample_img_3_portfolio_returns.png") -->
+<!-- ``` -->
 This just scratches the surface of `tidyquant`. Here's how to install to get started.
 
 Installation
