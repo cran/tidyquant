@@ -12,7 +12,7 @@
 
 <meta name="author" content="Matt Dancho" />
 
-<meta name="date" content="2017-07-27" />
+<meta name="date" content="2017-08-03" />
 
 <title>R Quantitative Analysis Package Integrations in tidyquant</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">R Quantitative Analysis Package Integrations in tidyquant</h1>
 <h4 class="author"><em>Matt Dancho</em></h4>
-<h4 class="date"><em>2017-07-27</em></h4>
+<h4 class="date"><em>2017-08-03</em></h4>
 
 
 <div id="TOC">
@@ -122,7 +122,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 ##  $ zoo                 : chr [1:14] &quot;rollapply&quot; &quot;rollapplyr&quot; &quot;rollmax&quot; &quot;rollmax.default&quot; ...
 ##  $ xts                 : chr [1:27] &quot;apply.daily&quot; &quot;apply.monthly&quot; &quot;apply.quarterly&quot; &quot;apply.weekly&quot; ...
 ##  $ quantmod            : chr [1:25] &quot;ClCl&quot; &quot;Delt&quot; &quot;HiCl&quot; &quot;Lag&quot; ...
-##  $ TTR                 : chr [1:61] &quot;ADX&quot; &quot;ALMA&quot; &quot;ATR&quot; &quot;BBands&quot; ...
+##  $ TTR                 : chr [1:62] &quot;ADX&quot; &quot;ALMA&quot; &quot;ATR&quot; &quot;BBands&quot; ...
 ##  $ PerformanceAnalytics: chr [1:7] &quot;Return.Geltner&quot; &quot;Return.annualized&quot; &quot;Return.annualized.excess&quot; &quot;Return.clean&quot; ...</code></pre>
 <div id="zoo-functionality" class="section level2">
 <h2>zoo Functionality</h2>
@@ -222,18 +222,18 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 ## [19] &quot;MACD&quot;               &quot;MFI&quot;                &quot;OBV&quot;               
 ## [22] &quot;PBands&quot;             &quot;ROC&quot;                &quot;RSI&quot;               
 ## [25] &quot;SAR&quot;                &quot;SMA&quot;                &quot;SMI&quot;               
-## [28] &quot;TDI&quot;                &quot;TRIX&quot;               &quot;VHF&quot;               
-## [31] &quot;VMA&quot;                &quot;VWAP&quot;               &quot;VWMA&quot;              
-## [34] &quot;WMA&quot;                &quot;WPR&quot;                &quot;ZLEMA&quot;             
-## [37] &quot;ZigZag&quot;             &quot;adjRatios&quot;          &quot;aroon&quot;             
-## [40] &quot;chaikinAD&quot;          &quot;chaikinVolatility&quot;  &quot;growth&quot;            
-## [43] &quot;lags&quot;               &quot;momentum&quot;           &quot;rollSFM&quot;           
-## [46] &quot;runCor&quot;             &quot;runCov&quot;             &quot;runMAD&quot;            
-## [49] &quot;runMax&quot;             &quot;runMean&quot;            &quot;runMedian&quot;         
-## [52] &quot;runMin&quot;             &quot;runPercentRank&quot;     &quot;runSD&quot;             
-## [55] &quot;runSum&quot;             &quot;runVar&quot;             &quot;stoch&quot;             
-## [58] &quot;ultimateOscillator&quot; &quot;volatility&quot;         &quot;wilderSum&quot;         
-## [61] &quot;williamsAD&quot;</code></pre>
+## [28] &quot;SNR&quot;                &quot;TDI&quot;                &quot;TRIX&quot;              
+## [31] &quot;VHF&quot;                &quot;VMA&quot;                &quot;VWAP&quot;              
+## [34] &quot;VWMA&quot;               &quot;WMA&quot;                &quot;WPR&quot;               
+## [37] &quot;ZLEMA&quot;              &quot;ZigZag&quot;             &quot;adjRatios&quot;         
+## [40] &quot;aroon&quot;              &quot;chaikinAD&quot;          &quot;chaikinVolatility&quot; 
+## [43] &quot;growth&quot;             &quot;lags&quot;               &quot;momentum&quot;          
+## [46] &quot;rollSFM&quot;            &quot;runCor&quot;             &quot;runCov&quot;            
+## [49] &quot;runMAD&quot;             &quot;runMax&quot;             &quot;runMean&quot;           
+## [52] &quot;runMedian&quot;          &quot;runMin&quot;             &quot;runPercentRank&quot;    
+## [55] &quot;runSD&quot;              &quot;runSum&quot;             &quot;runVar&quot;            
+## [58] &quot;stoch&quot;              &quot;ultimateOscillator&quot; &quot;volatility&quot;        
+## [61] &quot;wilderSum&quot;          &quot;williamsAD&quot;</code></pre>
 <p>Here’ a brief description of the most popular functions from <code>TTR</code>:</p>
 <ul>
 <li>Welles Wilder’s Directional Movement Index:

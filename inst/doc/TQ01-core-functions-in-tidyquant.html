@@ -12,7 +12,7 @@
 
 <meta name="author" content="Matt Dancho" />
 
-<meta name="date" content="2017-07-27" />
+<meta name="date" content="2017-08-03" />
 
 <title>Core Functions in tidyquant</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Core Functions in tidyquant</h1>
 <h4 class="author"><em>Matt Dancho</em></h4>
-<h4 class="date"><em>2017-07-27</em></h4>
+<h4 class="date"><em>2017-08-03</em></h4>
 
 
 <div id="TOC">
@@ -127,20 +127,20 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 ## [6] &quot;SP400&quot;       &quot;SP500&quot;       &quot;SP600&quot;       &quot;SP1000&quot;</code></pre>
 <p>Set <code>x</code> as one of the options in the list of options above to get the desired stock index / exchange.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tq_index</span>(<span class="st">&quot;SP500&quot;</span>)</code></pre></div>
-<pre><code>## # A tibble: 506 x 5
+<pre><code>## # A tibble: 505 x 5
 ##    symbol                         company     weight
 ##     &lt;chr&gt;                           &lt;chr&gt;      &lt;dbl&gt;
-##  1   AAPL                      Apple Inc. 0.03771517
-##  2   MSFT           Microsoft Corporation 0.02694754
-##  3   AMZN                 Amazon.com Inc. 0.01968665
-##  4     FB           Facebook Inc. Class A 0.01845113
-##  5    JNJ               Johnson &amp; Johnson 0.01662800
-##  6    XOM         Exxon Mobil Corporation 0.01604995
-##  7  BRK.B Berkshire Hathaway Inc. Class B 0.01549088
-##  8    JPM            JPMorgan Chase &amp; Co. 0.01539529
-##  9  GOOGL           Alphabet Inc. Class A 0.01354167
-## 10   GOOG           Alphabet Inc. Class C 0.01333000
-## # ... with 496 more rows, and 2 more variables: sector &lt;chr&gt;,
+##  1   AAPL                      Apple Inc. 0.03862634
+##  2   MSFT           Microsoft Corporation 0.02630071
+##  3     FB           Facebook Inc. Class A 0.01886553
+##  4   AMZN                 Amazon.com Inc. 0.01862570
+##  5    JNJ               Johnson &amp; Johnson 0.01678458
+##  6    XOM         Exxon Mobil Corporation 0.01609867
+##  7  BRK.B Berkshire Hathaway Inc. Class B 0.01592609
+##  8    JPM            JPMorgan Chase &amp; Co. 0.01559563
+##  9  GOOGL           Alphabet Inc. Class A 0.01329620
+## 10   GOOG           Alphabet Inc. Class C 0.01308732
+## # ... with 495 more rows, and 2 more variables: sector &lt;chr&gt;,
 ## #   shares_held &lt;dbl&gt;</code></pre>
 <p>The data source is <a href="http://www.marketvolume.com/indexes_exchanges/">www.marketvolume.com</a>.</p>
 </div>
@@ -148,20 +148,20 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2>Stock Exchanges</h2>
 <p>Stock lists for three stock exchanges are available: NASDAQ, NYSE, and AMEX. If you forget, just use <code>tq_exchange_options()</code>. We can easily get the full list of stocks on the NASDAQ exchange.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tq_exchange</span>(<span class="st">&quot;NASDAQ&quot;</span>)</code></pre></div>
-<pre><code>## # A tibble: 3,220 x 7
+<pre><code>## # A tibble: 3,241 x 7
 ##    symbol                                company last.sale.price
 ##     &lt;chr&gt;                                  &lt;chr&gt;           &lt;dbl&gt;
-##  1    PIH 1347 Property Insurance Holdings, Inc.            7.55
-##  2   TURN               180 Degree Capital Corp.            1.57
-##  3   FLWS                1-800 FLOWERS.COM, Inc.            9.75
+##  1    PIH 1347 Property Insurance Holdings, Inc.            7.50
+##  2   TURN               180 Degree Capital Corp.            1.65
+##  3   FLWS                1-800 FLOWERS.COM, Inc.            9.45
 ##  4   FCCY          1st Constitution Bancorp (NJ)           17.15
-##  5   SRCE                 1st Source Corporation           48.50
-##  6   VNET                   21Vianet Group, Inc.            4.69
-##  7   TWOU                               2U, Inc.           51.31
-##  8   JOBS                            51job, Inc.           48.04
-##  9   CAFD             8point3 Energy Partners LP           14.27
-## 10   EGHT                                8x8 Inc           14.35
-## # ... with 3,210 more rows, and 4 more variables: market.cap &lt;chr&gt;,
+##  5   SRCE                 1st Source Corporation           49.42
+##  6   VNET                   21Vianet Group, Inc.            4.18
+##  7   TWOU                               2U, Inc.           49.84
+##  8   JOBS                            51job, Inc.           49.67
+##  9   CAFD             8point3 Energy Partners LP           14.56
+## 10   EGHT                                8x8 Inc           13.15
+## # ... with 3,231 more rows, and 4 more variables: market.cap &lt;chr&gt;,
 ## #   ipo.year &lt;dbl&gt;, sector &lt;chr&gt;, industry &lt;chr&gt;</code></pre>
 <p>The data source is the <a href="http://www.nasdaq.com/">NASDAQ</a>.</p>
 </div>
@@ -179,7 +179,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>The stock prices can be retrieved succinctly using <code>get = &quot;stock.prices&quot;</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aapl_prices  &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>, <span class="dt">from =</span> <span class="st">&quot; 1990-01-01&quot;</span>)
 aapl_prices </code></pre></div>
-<pre><code>## # A tibble: 6,947 x 7
+<pre><code>## # A tibble: 6,952 x 7
 ##          date  open  high   low    close   volume adjusted
 ##        &lt;date&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
 ##  1 1990-01-02 1.492 1.587 1.481 1.330357 45799600 1.122554
@@ -192,7 +192,7 @@ aapl_prices </code></pre></div>
 ##  8 1990-01-11 1.534 1.534 1.460 1.232143 52763200 1.039681
 ##  9 1990-01-12 1.450 1.471 1.428 1.232143 42974400 1.039681
 ## 10 1990-01-15 1.460 1.513 1.450 1.223214 40434800 1.032147
-## # ... with 6,937 more rows</code></pre>
+## # ... with 6,942 more rows</code></pre>
 <p>Yahoo Japan stock prices can be retrieved using a similar call, <code>get = &quot;stock.prices.japan&quot;</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x8411T &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;8411.T&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;stock.prices.japan&quot;</span>, <span class="dt">from =</span> <span class="st">&quot;2016-01-01&quot;</span>, <span class="dt">to  =</span> <span class="st">&quot;2016-12-31&quot;</span>)</code></pre></div>
 <p>Dividends are obtained using <code>get = &quot;dividends&quot;</code>.</p>
@@ -258,20 +258,20 @@ aapl_financials</code></pre></div>
 <span class="st">    </span><span class="kw">unnest</span>(quarter) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">    </span><span class="kw">spread</span>(<span class="dt">key =</span> date, <span class="dt">value =</span> value)</code></pre></div>
 <pre><code>## # A tibble: 110 x 8
-##     type group                         category `2016-03-26` `2016-06-25`
+##     type group                         category `2016-06-25` `2016-09-24`
 ##  * &lt;chr&gt; &lt;int&gt;                            &lt;chr&gt;        &lt;dbl&gt;        &lt;dbl&gt;
 ##  1    BS     1               Cash &amp; Equivalents           NA           NA
-##  2    BS     2           Short Term Investments        45084        52638
-##  3    BS     3  Cash and Short Term Investments        55283        61756
-##  4    BS     4 Accounts Receivable - Trade, Net        12229        11714
+##  2    BS     2           Short Term Investments        52638        58554
+##  3    BS     3  Cash and Short Term Investments        61756        67155
+##  4    BS     4 Accounts Receivable - Trade, Net        11714        15754
 ##  5    BS     5              Receivables - Other           NA           NA
-##  6    BS     6           Total Receivables, Net        19824        19042
-##  7    BS     7                  Total Inventory         2281         1831
+##  6    BS     6           Total Receivables, Net        19042        29299
+##  7    BS     7                  Total Inventory         1831         2132
 ##  8    BS     8                 Prepaid Expenses           NA           NA
-##  9    BS     9      Other Current Assets, Total        10204        11132
-## 10    BS    10             Total Current Assets        87592        93761
-## # ... with 100 more rows, and 3 more variables: `2016-09-24` &lt;dbl&gt;,
-## #   `2016-12-31` &lt;dbl&gt;, `2017-04-01` &lt;dbl&gt;</code></pre>
+##  9    BS     9      Other Current Assets, Total        11132         8283
+## 10    BS    10             Total Current Assets        93761       106869
+## # ... with 100 more rows, and 3 more variables: `2016-12-31` &lt;dbl&gt;,
+## #   `2017-04-01` &lt;dbl&gt;, `2017-07-01` &lt;dbl&gt;</code></pre>
 <p>The data source is <a href="https://www.google.com/finance">Google Finance</a>.</p>
 </div>
 <div id="key-ratios-key-stats" class="section level2">
@@ -349,9 +349,9 @@ aapl_key_stats <span class="op">%&gt;%</span>
 <pre><code>## # A tibble: 3 x 8
 ##   symbol    Ask Ask.Size    Bid Bid.Size Change Days.High Days.Low
 ##    &lt;chr&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1   AAPL 154.23      100 154.20    19900     NA    153.93   153.06
-## 2     FB 176.88      100 176.75     1000     NA    166.01   164.10
-## 3   GOOG 950.75      100 949.50      100     NA    955.00   942.28</code></pre>
+## 1   AAPL 155.72      100 155.64      100  -1.57    157.21   155.02
+## 2     FB 168.66      500 168.60      200  -0.71    169.70   168.25
+## 3   GOOG 925.00      100 923.65      500  -6.74    932.24   922.24</code></pre>
 <p>Finally, because the statistics are real-time, we can setup real-time monitoring by calling <code>tq_get</code> at periodic intervals. The function below is not evaluated for time considerations, but if called during active trading sessions will collect five samples at three second intervals.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Not evaluated; When run during active trading, will return real-time values</span>
 collect_real_time_data &lt;-<span class="st"> </span><span class="cf">function</span>(x, interval_sec, n) {
@@ -425,7 +425,7 @@ collect_real_time_data &lt;-<span class="st"> </span><span class="cf">function</
 <p>A wealth of economic data can be extracted from the Federal Reserve Economic Data (FRED) database. The <a href="https://fred.stlouisfed.org/series/DCOILWTICO">WTI Crude Oil Prices</a> are shown below.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wti_price_usd &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;DCOILWTICO&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;economic.data&quot;</span>)
 wti_price_usd </code></pre></div>
-<pre><code>## # A tibble: 2,756 x 2
+<pre><code>## # A tibble: 2,761 x 2
 ##          date price
 ##        &lt;date&gt; &lt;dbl&gt;
 ##  1 2007-01-01    NA
@@ -438,7 +438,7 @@ wti_price_usd </code></pre></div>
 ##  8 2007-01-10 53.95
 ##  9 2007-01-11 51.91
 ## 10 2007-01-12 52.96
-## # ... with 2,746 more rows</code></pre>
+## # ... with 2,751 more rows</code></pre>
 <p>The FRED contains literally over 10K data sets that are free to use. See the <a href="https://fred.stlouisfed.org/categories">FRED categories</a> to narrow down the data base and to get data codes.</p>
 </div>
 <div id="exchange-rates" class="section level2">
@@ -451,16 +451,16 @@ eur_usd </code></pre></div>
 <pre><code>## # A tibble: 10 x 2
 ##          date exchange.rate
 ##        &lt;date&gt;         &lt;dbl&gt;
-##  1 2017-07-17      1.146670
-##  2 2017-07-18      1.154471
-##  3 2017-07-19      1.152848
-##  4 2017-07-20      1.156196
-##  5 2017-07-21      1.164950
-##  6 2017-07-22      1.166547
-##  7 2017-07-23      1.167110
-##  8 2017-07-24      1.165104
-##  9 2017-07-25      1.165612
-## 10 2017-07-26      1.165977</code></pre>
+##  1 2017-07-24      1.165104
+##  2 2017-07-25      1.165612
+##  3 2017-07-26      1.165977
+##  4 2017-07-27      1.170522
+##  5 2017-07-28      1.172088
+##  6 2017-07-29      1.174980
+##  7 2017-07-30      1.175286
+##  8 2017-07-31      1.176936
+##  9 2017-08-01      1.181516
+## 10 2017-08-02      1.183946</code></pre>
 <p>The data source is <a href="https://www.oanda.com/">Oanda</a>, and list of currencies to compare can be found on <a href="https://www.oanda.com/currency/converter/">Oanda’s currency converter</a>. It may make more sense to get this data from the FRED (See <a href="#economic-data">Economic Data</a>) since the max period for Oanda is 180 days.</p>
 </div>
 <div id="metal-prices" class="section level2">
@@ -473,16 +473,16 @@ plat_price_eur </code></pre></div>
 <pre><code>## # A tibble: 10 x 2
 ##          date    price
 ##        &lt;date&gt;    &lt;dbl&gt;
-##  1 2017-07-17 807.4848
-##  2 2017-07-18 802.3516
-##  3 2017-07-19 801.1580
-##  4 2017-07-20 797.6542
-##  5 2017-07-21 800.0998
-##  6 2017-07-22 801.5152
-##  7 2017-07-23 801.1448
-##  8 2017-07-24 801.5048
-##  9 2017-07-25 797.7167
-## 10 2017-07-26 793.8248</code></pre>
+##  1 2017-07-24 801.5048
+##  2 2017-07-25 797.7167
+##  3 2017-07-26 793.8248
+##  4 2017-07-27 794.3785
+##  5 2017-07-28 793.5137
+##  6 2017-07-29 791.5608
+##  7 2017-07-30 796.3460
+##  8 2017-07-31 797.3128
+##  9 2017-08-01 798.3132
+## 10 2017-08-02 799.0965</code></pre>
 <p>The data source is <a href="https://www.oanda.com/">Oanda</a>. It may make more sense to get this data from the FRED (See <a href="#economic-data">Economic Data</a>) since the max period for Oanda is 180 days.</p>
 </div>
 </div>

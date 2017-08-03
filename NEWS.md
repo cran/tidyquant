@@ -1,3 +1,8 @@
+## tidyquant 0.5.3
+
+* Fixes for compatibility with `purrr` v0.2.3. 
+
+
 ## tidyquant 0.5.2
 
 * Incorporated more robust `timetk` coercion functions. Deprecated `tidyquant::as_xts()` and `tidyquant::as_tibble()`. Use `timetk::tk_xts()` and `timetk::tk_tbl()` instead.

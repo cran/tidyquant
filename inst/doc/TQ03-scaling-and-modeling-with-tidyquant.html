@@ -12,7 +12,7 @@
 
 <meta name="author" content="Matt Dancho" />
 
-<meta name="date" content="2017-07-27" />
+<meta name="date" content="2017-08-03" />
 
 <title>Scaling and Modeling with tidyquant</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Scaling and Modeling with tidyquant</h1>
 <h4 class="author"><em>Matt Dancho</em></h4>
-<h4 class="date"><em>2017-07-27</em></h4>
+<h4 class="date"><em>2017-08-03</em></h4>
 
 
 <div id="TOC">
@@ -178,16 +178,16 @@ stock_list</code></pre></div>
 <pre><code>## # A tibble: 30 x 5
 ##    symbol                                     company     weight
 ##     &lt;chr&gt;                                       &lt;chr&gt;      &lt;dbl&gt;
-##  1     BA                              Boeing Company 0.07363724
-##  2     GS                    Goldman Sachs Group Inc. 0.07010443
-##  3    MMM                                  3M Company 0.06278015
-##  4    UNH             UnitedHealth Group Incorporated 0.06016839
-##  5    MCD                      McDonald's Corporation 0.04936804
-##  6   AAPL                                  Apple Inc. 0.04840596
-##  7     HD                             Home Depot Inc. 0.04627052
-##  8    IBM International Business Machines Corporation 0.04585098
-##  9    JNJ                           Johnson &amp; Johnson 0.04130563
-## 10    TRV                    Travelers Companies Inc. 0.03974424
+##  1     BA                              Boeing Company 0.07401611
+##  2     GS                    Goldman Sachs Group Inc. 0.07038297
+##  3    MMM                                  3M Company 0.06389433
+##  4    UNH             UnitedHealth Group Incorporated 0.06003411
+##  5   AAPL                                  Apple Inc. 0.04887957
+##  6    MCD                      McDonald's Corporation 0.04870850
+##  7     HD                             Home Depot Inc. 0.04681416
+##  8    IBM International Business Machines Corporation 0.04493225
+##  9    JNJ                           Johnson &amp; Johnson 0.04110935
+## 10    TRV                    Travelers Companies Inc. 0.04004242
 ## # ... with 20 more rows, and 2 more variables: sector &lt;chr&gt;,
 ## #   shares_held &lt;dbl&gt;</code></pre>
 <p>…or, get an exchange.</p>
@@ -195,36 +195,36 @@ stock_list</code></pre></div>
 <pre><code>## # A tibble: 3,143 x 7
 ##    symbol                company last.sale.price market.cap ipo.year
 ##     &lt;chr&gt;                  &lt;chr&gt;           &lt;dbl&gt;      &lt;chr&gt;    &lt;dbl&gt;
-##  1    DDD 3D Systems Corporation           17.09     $1.95B       NA
-##  2    MMM             3M Company          199.03   $118.77B       NA
-##  3   WBAI        500.com Limited           12.00   $490.07M     2013
-##  4   WUBA            58.com Inc.           50.63     $7.36B     2013
-##  5    AHC  A.H. Belo Corporation            5.30   $115.18M       NA
-##  6   ATEN     A10 Networks, Inc.            6.37   $441.68M     2014
-##  7    AAC     AAC Holdings, Inc.            6.46    $155.5M     2014
-##  8    AIR              AAR Corp.           36.70     $1.26B       NA
-##  9    AAN     Aaron&amp;#39;s,  Inc.           39.74     $2.88B       NA
-## 10    ABB                ABB Ltd           23.39    $49.91B       NA
+##  1    DDD 3D Systems Corporation           17.01     $1.94B       NA
+##  2    MMM             3M Company          205.41   $122.58B       NA
+##  3   WBAI        500.com Limited           11.12   $453.34M     2013
+##  4   WUBA            58.com Inc.           50.40     $7.32B     2013
+##  5    AHC  A.H. Belo Corporation            5.20      $113M       NA
+##  6   ATEN     A10 Networks, Inc.            7.06   $489.52M     2014
+##  7    AAC     AAC Holdings, Inc.            6.06   $145.88M     2014
+##  8    AIR              AAR Corp.           36.85     $1.27B       NA
+##  9    AAN     Aaron&amp;#39;s,  Inc.           45.93     $3.33B       NA
+## 10    ABB                ABB Ltd           23.61    $50.38B       NA
 ## # ... with 3,133 more rows, and 2 more variables: sector &lt;chr&gt;,
 ## #   industry &lt;chr&gt;</code></pre>
 <p>Send the index or exchange to <code>tq_get</code>. <em>Important Note: This can take several minutes depending on the size of the index or exchange, which is why only the first three stocks are evaluated in the vignette.</em></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tq_index</span>(<span class="st">&quot;DOW&quot;</span>) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">slice</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>)</code></pre></div>
-<pre><code>## # A tibble: 7,980 x 12
+<pre><code>## # A tibble: 7,995 x 12
 ##    symbol        company     weight      sector shares_held       date
 ##     &lt;chr&gt;          &lt;chr&gt;      &lt;dbl&gt;       &lt;chr&gt;       &lt;dbl&gt;     &lt;date&gt;
-##  1     BA Boeing Company 0.07363724 Industrials     5192872 2007-01-03
-##  2     BA Boeing Company 0.07363724 Industrials     5192872 2007-01-04
-##  3     BA Boeing Company 0.07363724 Industrials     5192872 2007-01-05
-##  4     BA Boeing Company 0.07363724 Industrials     5192872 2007-01-08
-##  5     BA Boeing Company 0.07363724 Industrials     5192872 2007-01-09
-##  6     BA Boeing Company 0.07363724 Industrials     5192872 2007-01-10
-##  7     BA Boeing Company 0.07363724 Industrials     5192872 2007-01-11
-##  8     BA Boeing Company 0.07363724 Industrials     5192872 2007-01-12
-##  9     BA Boeing Company 0.07363724 Industrials     5192872 2007-01-16
-## 10     BA Boeing Company 0.07363724 Industrials     5192872 2007-01-17
-## # ... with 7,970 more rows, and 6 more variables: open &lt;dbl&gt;, high &lt;dbl&gt;,
+##  1     BA Boeing Company 0.07401611 Industrials     5244157 2007-01-03
+##  2     BA Boeing Company 0.07401611 Industrials     5244157 2007-01-04
+##  3     BA Boeing Company 0.07401611 Industrials     5244157 2007-01-05
+##  4     BA Boeing Company 0.07401611 Industrials     5244157 2007-01-08
+##  5     BA Boeing Company 0.07401611 Industrials     5244157 2007-01-09
+##  6     BA Boeing Company 0.07401611 Industrials     5244157 2007-01-10
+##  7     BA Boeing Company 0.07401611 Industrials     5244157 2007-01-11
+##  8     BA Boeing Company 0.07401611 Industrials     5244157 2007-01-12
+##  9     BA Boeing Company 0.07401611 Industrials     5244157 2007-01-16
+## 10     BA Boeing Company 0.07401611 Industrials     5244157 2007-01-17
+## # ... with 7,985 more rows, and 6 more variables: open &lt;dbl&gt;, high &lt;dbl&gt;,
 ## #   low &lt;dbl&gt;, close &lt;dbl&gt;, volume &lt;dbl&gt;, adjusted &lt;dbl&gt;</code></pre>
 <p>You can use any applicable “getter” to get data for <strong>every stock in an index or an exchange</strong>! This includes: “stock.prices”, “key.ratios”, “key.stats”, “financials”, and more.</p>
 </div>
@@ -237,10 +237,10 @@ stock_list</code></pre></div>
 <pre><code>## # A tibble: 4 x 2
 ##   symbol         stock.prices
 ##    &lt;chr&gt;               &lt;list&gt;
-## 1   AAPL &lt;tibble [2,660 x 7]&gt;
-## 2   GOOG &lt;tibble [2,660 x 7]&gt;
-## 3   AMZN &lt;tibble [2,660 x 7]&gt;
-## 4     FB &lt;tibble [1,305 x 7]&gt;</code></pre>
+## 1   AAPL &lt;tibble [2,665 x 7]&gt;
+## 2   GOOG &lt;tibble [2,665 x 7]&gt;
+## 3   AMZN &lt;tibble [2,665 x 7]&gt;
+## 4     FB &lt;tibble [1,310 x 7]&gt;</code></pre>
 </div>
 <div id="method-4-compound-getters" class="section level2">
 <h2>Method 4: Compound Getters</h2>
@@ -250,8 +250,8 @@ stock_list</code></pre></div>
 <pre><code>## # A tibble: 2 x 3
 ##   symbol         stock.prices       financials
 ##    &lt;chr&gt;               &lt;list&gt;           &lt;list&gt;
-## 1   AAPL &lt;tibble [2,660 x 7]&gt; &lt;tibble [3 x 3]&gt;
-## 2   GOOG &lt;tibble [2,660 x 7]&gt; &lt;tibble [3 x 3]&gt;</code></pre>
+## 1   AAPL &lt;tibble [2,665 x 7]&gt; &lt;tibble [3 x 3]&gt;
+## 2   GOOG &lt;tibble [2,665 x 7]&gt; &lt;tibble [3 x 3]&gt;</code></pre>
 <p>This returns the stock prices and financials for each stock as one nested data frame! Any of the <code>get</code> options that accept stock symbols can be used in this manner: <code>&quot;stock.prices&quot;</code>, <code>&quot;financials&quot;</code>, <code>&quot;key.ratios&quot;</code>, <code>&quot;key.stats&quot;</code>, <code>&quot;dividends&quot;</code>, and <code>&quot;splits&quot;</code>.</p>
 </div>
 </div>
@@ -388,13 +388,14 @@ stocks &lt;-<span class="st"> </span><span class="kw">tq_index</span>(<span clas
 <span class="st">    </span><span class="kw">sample_n</span>(<span class="dv">5</span>)
 stocks</code></pre></div>
 <pre><code>## # A tibble: 5 x 5
-##   symbol                      company       weight      sector shares_held
-##    &lt;chr&gt;                        &lt;chr&gt;        &lt;dbl&gt;       &lt;chr&gt;       &lt;dbl&gt;
-## 1   CERN           Cerner Corporation 0.0008923749 Health Care     3336145
-## 2    HUM                  Humana Inc. 0.0015886887 Health Care     1643667
-## 3    XEL             Xcel Energy Inc. 0.0011313098   Utilities     5781764
-## 4   HOLX                 Hologic Inc. 0.0005957608 Health Care     3188389
-## 5    HON Honeywell International Inc. 0.0049762916 Industrials     8680615</code></pre>
+##   symbol                           company       weight
+##    &lt;chr&gt;                             &lt;chr&gt;        &lt;dbl&gt;
+## 1     DG        Dollar General Corporation 0.0008937877
+## 2    STZ Constellation Brands Inc. Class A 0.0015736162
+## 3    ZBH       Zimmer Biomet Holdings Inc. 0.0011148646
+## 4    HLT     Hilton Worldwide Holdings Inc 0.0005953980
+## 5   CELG               Celgene Corporation 0.0049637888
+## # ... with 2 more variables: sector &lt;chr&gt;, shares_held &lt;dbl&gt;</code></pre>
 <p>We can now apply our analysis function to the stocks using <code>dplyr::mutate</code> and <code>purrr::map</code>. The <code>mutate()</code> function adds a column to our tibble, and the <code>map()</code> function maps our custom <code>get_model</code> function to our tibble of stocks using the <code>symbol</code> column. The <code>tidyr::unnest</code> function unrolls the nested data frame so all of the model statistics are accessable in the top data frame level. The <code>filter</code>, <code>arrange</code> and <code>select</code> steps just manipulate the data frame to isolate and arrange the data for our viewing.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stocks_model_stats &lt;-<span class="st"> </span>stocks <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">mutate</span>(<span class="dt">model =</span> <span class="kw">map</span>(symbol, get_model)) <span class="op">%&gt;%</span>
@@ -404,15 +405,15 @@ stocks</code></pre></div>
 <span class="st">    </span><span class="kw">select</span>(<span class="op">-</span>term)
 stocks_model_stats</code></pre></div>
 <pre><code>## # A tibble: 5 x 9
-##   symbol                      company       weight      sector shares_held
-##    &lt;chr&gt;                        &lt;chr&gt;        &lt;dbl&gt;       &lt;chr&gt;       &lt;dbl&gt;
-## 1   HOLX                 Hologic Inc. 0.0005957608 Health Care     3188389
-## 2    HUM                  Humana Inc. 0.0015886887 Health Care     1643667
-## 3    XEL             Xcel Energy Inc. 0.0011313098   Utilities     5781764
-## 4    HON Honeywell International Inc. 0.0049762916 Industrials     8680615
-## 5   CERN           Cerner Corporation 0.0008923749 Health Care     3336145
-## # ... with 4 more variables: estimate &lt;dbl&gt;, std.error &lt;dbl&gt;,
-## #   statistic &lt;dbl&gt;, p.value &lt;dbl&gt;</code></pre>
+##   symbol                           company       weight
+##    &lt;chr&gt;                             &lt;chr&gt;        &lt;dbl&gt;
+## 1    STZ Constellation Brands Inc. Class A 0.0015736162
+## 2    ZBH       Zimmer Biomet Holdings Inc. 0.0011148646
+## 3    HLT     Hilton Worldwide Holdings Inc 0.0005953980
+## 4   CELG               Celgene Corporation 0.0049637888
+## 5     DG        Dollar General Corporation 0.0008937877
+## # ... with 6 more variables: sector &lt;chr&gt;, shares_held &lt;dbl&gt;,
+## #   estimate &lt;dbl&gt;, std.error &lt;dbl&gt;, statistic &lt;dbl&gt;, p.value &lt;dbl&gt;</code></pre>
 <p>We’re done! We now have the coefficient of the linear regression that tracks the direction of the trend line. We can easily extend this type of analysis to larger lists or stock indexes. For example, the entire S&amp;P500 could be analyzed removing the <code>sample_n()</code> following the call to <code>tq_index(&quot;SP500&quot;)</code>.</p>
 </div>
 </div>
@@ -445,7 +446,7 @@ stocks_model_stats</code></pre></div>
 <pre><code>## Warning: x = 'BAD APPLE', get = 'stock.prices': Error: BAD APPLE download failed after two attempts. Error message:
 ## HTTP error 400.
 ##  Removing BAD APPLE.</code></pre>
-<pre><code>## # A tibble: 5,320 x 8
+<pre><code>## # A tibble: 5,330 x 8
 ##    symbol       date   open   high    low    close    volume adjusted
 ##     &lt;chr&gt;     &lt;date&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
 ##  1   AAPL 2007-01-03 13.648 13.694 12.954 11.97143 309579900 10.81246
@@ -458,7 +459,7 @@ stocks_model_stats</code></pre></div>
 ##  8   AAPL 2007-01-12 14.961 15.036 14.746 13.51714 328172600 12.20853
 ##  9   AAPL 2007-01-16 15.134 15.382 15.097 13.87143 311019100 12.52852
 ## 10   AAPL 2007-01-17 15.431 15.437 14.998 13.56428 411565000 12.25111
-## # ... with 5,310 more rows</code></pre>
+## # ... with 5,320 more rows</code></pre>
 <p>Now switching <code>complete_cases = FALSE</code> will retain any errors as <code>NA</code> values in a nested data frame. Notice that the error message and output change. The error message now states that the <code>NA</code> values exist in the output and the return is a “nested” data structure.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">c</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="st">&quot;GOOG&quot;</span>, <span class="st">&quot;BAD APPLE&quot;</span>) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>, <span class="dt">complete_cases =</span> <span class="ot">FALSE</span>)</code></pre></div>
@@ -468,8 +469,8 @@ stocks_model_stats</code></pre></div>
 <pre><code>## # A tibble: 3 x 2
 ##      symbol         stock.prices
 ##       &lt;chr&gt;               &lt;list&gt;
-## 1      AAPL &lt;tibble [2,660 x 7]&gt;
-## 2      GOOG &lt;tibble [2,660 x 7]&gt;
+## 1      AAPL &lt;tibble [2,665 x 7]&gt;
+## 2      GOOG &lt;tibble [2,665 x 7]&gt;
 ## 3 BAD APPLE            &lt;lgl [1]&gt;</code></pre>
 <p>In both cases, the prudent user will review the warnings to determine what happened and whether or not this is acceptable. In the <code>complete_cases = FALSE</code> example, if the user attempts to perform downstream computations at scale, the computations will likely fail grinding the analysis to a hault. But, the advantage is that the user will more easily be able to filter to the problem childs to determine what happened and decide whether this is acceptable or not.</p>
 </div>

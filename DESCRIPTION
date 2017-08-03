@@ -1,8 +1,8 @@
 Package: tidyquant
 Type: Package
 Title: Tidy Quantitative Financial Analysis
-Version: 0.5.2
-Date: 2017-07-26
+Version: 0.5.3
+Date: 2017-08-03
 Authors@R: c(
     person("Matt", "Dancho", email = "mdancho@business-science.io", role = c("aut", "cre")),
     person("Davis", "Vaughan", email = "dvaughan@business-science.io", role = c("aut"))
@@ -23,8 +23,8 @@ LazyData: true
 Depends: R (>= 3.3.0), lubridate (>= 1.6.0), PerformanceAnalytics (>=
         1.4.3541), quantmod (>= 0.4-9), tidyverse (>= 1.1.0)
 Imports: broom (>= 0.4.2), curl (>= 2.3), devtools (>= 1.12.0), dplyr
-        (>= 0.7.0), ggplot2 (>= 2.2.1), httr (>= 1.2.1), lazyeval (>=
-        0.2.0), magrittr (>= 1.5), purrr (>= 0.2.2), Quandl (>= 2.8.0),
+        (>= 0.7.2), ggplot2 (>= 2.2.1), httr (>= 1.2.1), lazyeval (>=
+        0.2.0), magrittr (>= 1.5), purrr (>= 0.2.3), Quandl (>= 2.8.0),
         readr (>= 1.0.0), rvest (>= 0.3.2), scales (>= 0.4.1), stats
         (>= 3.3.0), stringr (>= 1.1.0), tibble (>= 1.2), tidyr (>=
         0.6.1), timetk (>= 0.1.0), timeSeries (>= 3022.101.2), tseries
@@ -34,8 +34,8 @@ Suggests: knitr, rmarkdown, testthat, forcats
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2017-07-27 13:11:35 UTC; mdancho
+Packaged: 2017-08-03 20:41:27 UTC; mdancho
 Author: Matt Dancho [aut, cre],
   Davis Vaughan [aut]
 Repository: CRAN
-Date/Publication: 2017-07-27 21:24:14 UTC
+Date/Publication: 2017-08-03 22:47:19 UTC
