@@ -5,7 +5,7 @@ tidyquant
 
 [![Travis-CI Build Status](https://travis-ci.org/business-science/tidyquant.svg?branch=master)](https://travis-ci.org/business-science/tidyquant.svg?branch=master) [![codecov](https://codecov.io/gh/business-science/tidyquant/branch/master/graph/badge.svg)](https://codecov.io/gh/business-science/tidyquant) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/tidyquant)](https://cran.r-project.org/package=tidyquant) ![](http://cranlogs.r-pkg.org/badges/tidyquant?color=brightgreen) ![](http://cranlogs.r-pkg.org/badges/grand-total/tidyquant?color=brightgreen)
 
-<!-- <img src="tools/logo.png" width="147" height="170" align="right" /> -->
+<!--- <img src="tools/logo.png" width="147" height="170" align="right" /> -->
 > Bringing financial analysis to the tidyverse
 
 `tidyquant` integrates the best resources for collecting and analyzing financial data, `zoo`, `xts`, `quantmod`, `TTR`, and `PerformanceAnalytics`, with the tidy data infrastructure of the `tidyverse` allowing for seamless interaction between each. You can now perform complete financial analyses in the `tidyverse`.
@@ -36,16 +36,10 @@ With `tidyquant` all the benefits add up to one thing: *a one-stop shop for seri
 
 Visualizing the stock price volatility of four stocks side-by-side is quick and easy...
 
-<!-- ```{r echo=FALSE, out.width='100%'} -->
-<!-- knitr::include_graphics("tools/sample_img_1_volatility.png") -->
-<!-- ``` -->
 ### Evaluating Stock Performance
 
 What about stock performance? Quickly visualize how a $10,000 investment in various stocks would perform.
 
-<!-- ```{r echo=FALSE, out.width='100%'} -->
-<!-- knitr::include_graphics("tools/sample_img_2_stock_returns.png") -->
-<!-- ``` -->
 ### Evaluating Portfolio Performance
 
 Ok, stocks are too easy. What about portfolios? With the `PerformanceAnalytics` integration, visualizing blended portfolios are easy too!
@@ -55,9 +49,6 @@ Ok, stocks are too easy. What about portfolios? With the `PerformanceAnalytics` 
 -   Portfolio 3: 25% FB, 0% AMZN, 50% NFLX, 25% GOOG
 -   Portfolio 4: 25% FB, 25% AMZN, 0% NFLX, 50% GOOG
 
-<!-- ```{r echo=FALSE, out.width='100%'} -->
-<!-- knitr::include_graphics("tools/sample_img_3_portfolio_returns.png") -->
-<!-- ``` -->
 This just scratches the surface of `tidyquant`. Here's how to install to get started.
 
 Installation

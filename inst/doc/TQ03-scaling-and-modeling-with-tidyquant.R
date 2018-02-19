@@ -26,13 +26,13 @@ stock_list %>%
     tq_get(get = "stock.prices", from = "2016-01-01", to = "2017-01-01")
 
 ## ------------------------------------------------------------------------
-tq_index("DOW")
+tq_index("DOW", use_fallback = TRUE)
 
 ## ------------------------------------------------------------------------
 tq_exchange("NYSE")
 
 ## ------------------------------------------------------------------------
-tq_index("DOW") %>%
+tq_index("DOW", use_fallback = TRUE) %>%
     slice(1:3) %>%
     tq_get(get = "stock.prices")
 
@@ -114,7 +114,7 @@ get_model("AAPL")
 
 ## ------------------------------------------------------------------------
 set.seed(10)
-stocks <- tq_index("SP500") %>%
+stocks <- tq_index("SP500", use_fallback = TRUE) %>%
     sample_n(5)
 stocks
 

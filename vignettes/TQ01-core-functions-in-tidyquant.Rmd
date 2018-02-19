@@ -60,7 +60,7 @@ tq_index_options()
 
 Set `x` as one of the options in the list of options above to get the desired stock index / exchange.
 
-```{r}
+```{r, eval = FALSE}
 tq_index("SP500")
 ```
 
@@ -86,11 +86,18 @@ tq_get_options()
 
 ## Stock Prices, Dividends and Splits
 
-The stock prices can be retrieved succinctly using `get = "stock.prices"`.  
+The stock prices can be retrieved succinctly using `get = "stock.prices"`. This returns stock price data from Yahoo Finance. 
 
 ```{r}
 aapl_prices  <- tq_get("AAPL", get = "stock.prices", from = " 1990-01-01")
 aapl_prices 
+```
+
+An alternative source is from Google Finance, which can be retrieved using `get = "stock.prices.google"`.  
+
+```{r}
+aapl_prices_google  <- tq_get("AAPL", get = "stock.prices.google", from = " 1990-01-01")
+aapl_prices_google
 ```
 
 Yahoo Japan stock prices can be retrieved using a similar call, `get = "stock.prices.japan"`.
@@ -196,42 +203,7 @@ The data source is [Morningstar](http://www.morningstar.com/).
 
 ### Key Stats
 
-For any given stock, the current key statistics are available in real time. It's quite a bit of information, with 55 real-time stats available, so we'll just take a look at the column names. 
-
-```{r}
-aapl_key_stats <- tq_get("AAPL", get = "key.stats")
-aapl_key_stats %>%
-    colnames() %>%
-    cat() # Print in condensed format
-```
-
-The data is returned in wide format (as opposed to long format) because we can easily get the key stats for multiple stocks and pare down the list for comparisons. Here I use `select` to select several columns to compare.
-
-```{r}
-c("AAPL", "FB", "GOOG") %>%
-    tq_get(get = "key.stats") %>%
-    select(symbol, Ask, Ask.Size, Bid, Bid.Size, Change, Days.High, Days.Low)
-```
-
-Finally, because the statistics are real-time, we can setup real-time monitoring by calling `tq_get` at periodic intervals. The function below is not evaluated for time considerations, but if called during active trading sessions will collect five samples at three second intervals. 
-
-```{r, eval = FALSE}
-# Not evaluated; When run during active trading, will return real-time values
-collect_real_time_data <- function(x, interval_sec, n) {
-    data <- tibble()
-    while (n > 0) {
-        data <- bind_rows(data, tq_get(x, get = "key.stats"))
-        Sys.sleep(interval_sec)
-        n <- n - 1
-    }
-    return(data)
-}
-collect_real_time_data("AAPL", interval_sec = 3, n = 5) %>%
-    select(Ask, Ask.Size, Bid, Bid.Size, Open, Change)
-```
-
-
-The data source is [Yahoo Finance](https://finance.yahoo.com/).
+The Key Statistics have been discontinued by [Yahoo Finance](https://finance.yahoo.com/). We are looking for an alternative solution for real-time finanical data.
 
 ## Quandl
 
@@ -304,6 +276,60 @@ tq_get("ZACKS/MKTV", get = "quandl.datatable") # Zacks Market Value Supplement
 tq_get("ZACKS/SHRS", get = "quandl.datatable") # Zacks Shares Out Supplement
 ```
 
+## Alpha Vantage
+
+[Alpha Vantage](https://www.alphavantage.co/) provides access to a real-time and historical financial data. The `alphavantager` package, a lightweight R interface, has been integrated into `tidyquant` as follows. The benefit of the integration is the __scalability since we can now get multiple symbols returned in a tidy format__. 
+
+### Authentication
+
+To make full use of the integration you need to get an API key and then set your api key. If you don't have one already, go to [Alpha Vantage](https://www.alphavantage.co/) account and get your FREE API key. You can then set it as follows:
+
+```{r, eval = F}
+av_api_key("enter-your-api-key-here")
+```
+
+### Getting Alpha Vantage Data
+
+Getting data is simple as the structure follows the [Alpha Vantage API documentation](https://www.alphavantage.co/documentation/). For example, if you wish to retrieve intraday data at 5 minute intervals for FB and MSFT, you can build the parameters `x = c("FB", "MSFT"), get = "alphavantager", av_fun = "TIME_SERIES_INTRADAY", interval = "5min"`. The familiar `x` and `get` are the same as you always use. The `av_fun` argument comes from `alphavantager::av_get()` and the Alpha Vantage documentation. The `interval` argument comes from the docs as well.
+
+```{r, eval = F}
+# Scaling is as simple as supplying multiple symbols
+my_intraday_data <- c("FB", "MSFT") %>%
+    tq_get(get = "alphavantager", av_fun = "TIME_SERIES_INTRADAY", interval = "5min")
+```
+
+## Bloomberg
+
+[Bloomberg](https://www.bloomberg.com/professional/solution/bloomberg-terminal/) provides access to arguably the most comprehensive financial data and is actively used by most major financial instutions that work with financial data. The `Rblpapi` package, an R interface to Bloomberg, has been integrated into `tidyquant` as follows. The benefit of the integration is the __scalability since we can now get multiple symbols returned in a tidy format__. 
+
+### Authentication
+
+To make full use of the integration you need to have a Bloomberg Terminal account (Note this is not a free service). If you have Bloomberg Terminal running on your machine, you can connect as follows:
+
+```{r, eval = F}
+blpConnect()
+```
+
+### Getting Bloomberg Data
+
+Getting data is simple as the structure follows the [Rblpapi API documentation](https://CRAN.R-project.org/package=Rblpapi). For example, if you wish to retrieve monthly data for SPX Index and AGTHX Equity, you can build the `tq_get` parameters as follows:
+
+- `x = c('SPX Index','ODMAX Equity')`
+- `get = "rblpapi"`
+- `rblpapi_fun = "bdh"` Note that "bdh" is the default, and options include "bdh" (Bloomberg Data History), "bds" (Bloomberg Data Set), and "bdp" (Bloomberg Data Point)
+- `from / to` These get passed to `start.date` and `end.date` and can be provided in "YYYY-MM-DD" character format. Note that `start.date` and `end.date` from `Rblpapi` can be used but must be converted to date or datetime. 
+- Other arguments: These are options that depend on the `rblpapi_fun`. See `Rblpapi` documentation. 
+
+```{r, eval = F}
+# Get Bloomberg data in a tidy data frame
+my_bloomberg_data <- c('SPX Index','ODMAX Equity') %>%
+    tq_get(get         = "Rblpapi",
+           rblpapi_fun = "bdh",
+           fields      = c("PX_LAST"),
+           options     = c("periodicitySelection" = "WEEKLY"),
+           from        = "2016-01-01",
+           to          = "2016-12-31")
+```
 
 
 

@@ -10,6 +10,8 @@
 #' \itemize{
 #'   \item `tq_transform()` - use [tq_transmute()]
 #'   \item `tq_transform_xy()` - use [tq_transmute_xy()]
+#'   \item `as_xts()` - use [timetk::tk_xts()]
+#'   \item `as_tibble()` - use [timetk::tk_tbl()]
 #' }
 #'
 NULL

@@ -22,6 +22,9 @@ for \code{x}. Options include:
 \item \code{"stock.prices"}: Get the open, high, low, close, volume and adjusted
 stock prices for a stock symbol from
 \href{https://finance.yahoo.com/}{Yahoo Finance}. Wrapper for \code{quantmod::getSymbols()}.
+\item \code{"stock.prices.google"}: Get the open, high, low, close, and volume
+stock prices for a stock symbol from
+\href{https://finance.google.com/finance}{Google Finance}. Wrapper for \code{quantmod::getSymbols.google()}.
 \item \code{"stock.prices.japan"}: Get the open, high, low, close, volume and adjusted
 stock prices for a stock symbol from
 \href{http://finance.yahoo.co.jp/}{Yahoo Finance Japan}. Wrapper for \code{quantmod::getSymbols.yahooj()}.
@@ -31,10 +34,7 @@ financial statements for a stock symbol from
 \item \code{"key.ratios"}: Get 89 historical growth, profitablity, financial health,
 efficiency, and valuation ratios that span 10-years from
 \href{https://www.morningstar.com}{Morningstar}.
-\item \code{"key.stats"}: Get 55 real-time key statistics such as
-Ask, Bid, Day's High, Day's Low, Last Trade Price, current P/E Ratio, EPS,
-Market Cap, EPS Projected Current Year, EPS Projected Next Year and many more from
-\href{https://finance.yahoo.com/}{Yahoo Finance}.
+\item \code{"key.stats"}: DISCONTINUED.
 \item \code{"dividends"}: Get the dividends for a stock symbol
 from \href{https://finance.yahoo.com/}{Yahoo Finance}. Wrapper for \code{quantmod::getDividends()}.
 \item \code{"splits"}: Get the splits for a stock symbol
@@ -46,11 +46,18 @@ from \href{https://finance.yahoo.com/}{Yahoo Finance}. Wrapper for \code{quantmo
 \item \code{"exchange.rates"}: Get exchange rates from
 \href{https://www.oanda.com/currency/converter/}{Oanda}. Wrapper for \code{quantmod::getFX()}.
 \item \code{"quandl"}: Get data sets from
-\href{https://www.quandl.com/}{Quandl}. Wrapper for \code{Quandl()}.
+\href{https://www.quandl.com/}{Quandl}. Wrapper for \code{Quandl::Quandl()}.
 See also \code{\link[=quandl_api_key]{quandl_api_key()}}.
 \item \code{"quandl.datatable"}: Get data tables from
-\href{https://www.quandl.com/}{Quandl}. Wrapper for \code{Quandl.datatable()}.
+\href{https://www.quandl.com/}{Quandl}. Wrapper for \code{Quandl::Quandl.datatable()}.
 See also \code{\link[=quandl_api_key]{quandl_api_key()}}.
+\item \code{"alphavantager"}: Get data sets from
+\href{https://www.alphavantage.co/}{Alpha Vantage}. Wrapper for \code{alphavantager::av_get()}.
+See also \code{\link[=av_api_key]{av_api_key()}}.
+\item \code{"rblpapi"}: Get data sets from
+\href{https://www.bloomberg.com/professional/solution/bloomberg-terminal}{Bloomberg}. Wrapper for \code{Rblpapi}.
+See also \code{\link[Rblpapi:blpConnect]{Rblpapi::blpConnect()}} to connect to Bloomberg terminal (required).
+Use the argument \code{rblpapi_fun} to set the function such as "bdh" (default), "bds", or "bdp".
 }}
 
 \item{complete_cases}{Removes symbols that return an NA value due to an error with the get
@@ -122,6 +129,8 @@ mult_gets <- tq_get("AAPL",
 \item \code{\link[=tq_index]{tq_index()}} to get a ful list of stocks in an index.
 \item \code{\link[=tq_exchange]{tq_exchange()}} to get a ful list of stocks in an exchange.
 \item \code{\link[=quandl_api_key]{quandl_api_key()}} to set the api key for collecting data via the \code{"quandl"}
+get option.
+\item \code{\link[=av_api_key]{av_api_key()}} to set the api key for collecting data via the \code{"alphavantage"}
 get option.
 }
 }

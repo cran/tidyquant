@@ -15,8 +15,8 @@ library(tidyquant)
 ## ------------------------------------------------------------------------
 tq_index_options()
 
-## ------------------------------------------------------------------------
-tq_index("SP500")
+## ---- eval = FALSE-------------------------------------------------------
+#  tq_index("SP500")
 
 ## ------------------------------------------------------------------------
 tq_exchange("NASDAQ")
@@ -27,6 +27,10 @@ tq_get_options()
 ## ------------------------------------------------------------------------
 aapl_prices  <- tq_get("AAPL", get = "stock.prices", from = " 1990-01-01")
 aapl_prices 
+
+## ------------------------------------------------------------------------
+aapl_prices_google  <- tq_get("AAPL", get = "stock.prices.google", from = " 1990-01-01")
+aapl_prices_google
 
 ## ---- eval = F-----------------------------------------------------------
 #  x8411T <- tq_get("8411.T", get = "stock.prices.japan", from = "2016-01-01", to  = "2016-12-31")
@@ -75,31 +79,6 @@ aapl_key_ratios %>%
     theme_tq() +
     scale_color_tq()
 
-## ------------------------------------------------------------------------
-aapl_key_stats <- tq_get("AAPL", get = "key.stats")
-aapl_key_stats %>%
-    colnames() %>%
-    cat() # Print in condensed format
-
-## ------------------------------------------------------------------------
-c("AAPL", "FB", "GOOG") %>%
-    tq_get(get = "key.stats") %>%
-    select(symbol, Ask, Ask.Size, Bid, Bid.Size, Change, Days.High, Days.Low)
-
-## ---- eval = FALSE-------------------------------------------------------
-#  # Not evaluated; When run during active trading, will return real-time values
-#  collect_real_time_data <- function(x, interval_sec, n) {
-#      data <- tibble()
-#      while (n > 0) {
-#          data <- bind_rows(data, tq_get(x, get = "key.stats"))
-#          Sys.sleep(interval_sec)
-#          n <- n - 1
-#      }
-#      return(data)
-#  }
-#  collect_real_time_data("AAPL", interval_sec = 3, n = 5) %>%
-#      select(Ask, Ask.Size, Bid, Bid.Size, Open, Change)
-
 ## ---- eval = F-----------------------------------------------------------
 #  quandl_api_key("enter-your-api-key-here")
 
@@ -128,6 +107,27 @@ c("AAPL", "FB", "GOOG") %>%
 #  tq_get("ZACKS/MT", get = "quandl.datatable")   # Zacks Master Table
 #  tq_get("ZACKS/MKTV", get = "quandl.datatable") # Zacks Market Value Supplement
 #  tq_get("ZACKS/SHRS", get = "quandl.datatable") # Zacks Shares Out Supplement
+
+## ---- eval = F-----------------------------------------------------------
+#  av_api_key("enter-your-api-key-here")
+
+## ---- eval = F-----------------------------------------------------------
+#  # Scaling is as simple as supplying multiple symbols
+#  my_intraday_data <- c("FB", "MSFT") %>%
+#      tq_get(get = "alphavantager", av_fun = "TIME_SERIES_INTRADAY", interval = "5min")
+
+## ---- eval = F-----------------------------------------------------------
+#  blpConnect()
+
+## ---- eval = F-----------------------------------------------------------
+#  # Get Bloomberg data in a tidy data frame
+#  my_bloomberg_data <- c('SPX Index','ODMAX Equity') %>%
+#      tq_get(get         = "Rblpapi",
+#             rblpapi_fun = "bdh",
+#             fields      = c("PX_LAST"),
+#             options     = c("periodicitySelection" = "WEEKLY"),
+#             from        = "2016-01-01",
+#             to          = "2016-12-31")
 
 ## ------------------------------------------------------------------------
 wti_price_usd <- tq_get("DCOILWTICO", get = "economic.data")

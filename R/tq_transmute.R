@@ -134,6 +134,14 @@ tq_transmute_.grouped_df <- function(data, select = NULL, mutate_fun, col_rename
         dplyr::group_by_(.dots = group_names)
 }
 
+#' @export
+tq_transmute_.tbl_time <- function(data, select = NULL, mutate_fun, col_rename = NULL, ...) {
+    if(!requireNamespace("tibbletime", quietly = TRUE)) {
+        stop("tibbletime must be installed to use a tidyquant function on a tbl_time object.", call. = FALSE)
+    }
+    tibbletime::reconstruct(NextMethod(), data)
+}
+
 # tq_transmute_xy ------------------------------------------------------------------------------------------------
 
 #' @rdname tq_mutate

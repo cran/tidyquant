@@ -38,5 +38,7 @@ A record of functions that have been deprecated.
 \itemize{
 \item \code{tq_transform()} - use \code{\link[=tq_transmute]{tq_transmute()}}
 \item \code{tq_transform_xy()} - use \code{\link[=tq_transmute_xy]{tq_transmute_xy()}}
+\item \code{as_xts()} - use \code{\link[timetk:tk_xts]{timetk::tk_xts()}}
+\item \code{as_tibble()} - use \code{\link[timetk:tk_tbl]{timetk::tk_tbl()}}
 }
 }

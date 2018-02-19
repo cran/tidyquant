@@ -8,6 +8,9 @@
 #'   \item `"stock.prices"`: Get the open, high, low, close, volume and adjusted
 #'   stock prices for a stock symbol from
 #'   \href{https://finance.yahoo.com/}{Yahoo Finance}. Wrapper for `quantmod::getSymbols()`.
+#'   \item `"stock.prices.google"`: Get the open, high, low, close, and volume
+#'   stock prices for a stock symbol from
+#'   \href{https://finance.google.com/finance}{Google Finance}. Wrapper for `quantmod::getSymbols.google()`.
 #'   \item `"stock.prices.japan"`: Get the open, high, low, close, volume and adjusted
 #'   stock prices for a stock symbol from
 #'   \href{http://finance.yahoo.co.jp/}{Yahoo Finance Japan}. Wrapper for `quantmod::getSymbols.yahooj()`.
@@ -17,10 +20,7 @@
 #'   \item `"key.ratios"`: Get 89 historical growth, profitablity, financial health,
 #'   efficiency, and valuation ratios that span 10-years from
 #'   \href{https://www.morningstar.com}{Morningstar}.
-#'   \item `"key.stats"`: Get 55 real-time key statistics such as
-#'   Ask, Bid, Day's High, Day's Low, Last Trade Price, current P/E Ratio, EPS,
-#'   Market Cap, EPS Projected Current Year, EPS Projected Next Year and many more from
-#'   \href{https://finance.yahoo.com/}{Yahoo Finance}.
+#'   \item `"key.stats"`: DISCONTINUED.
 #'   \item `"dividends"`: Get the dividends for a stock symbol
 #'   from \href{https://finance.yahoo.com/}{Yahoo Finance}. Wrapper for `quantmod::getDividends()`.
 #'   \item `"splits"`: Get the splits for a stock symbol
@@ -32,11 +32,18 @@
 #'   \item `"exchange.rates"`: Get exchange rates from
 #'   \href{https://www.oanda.com/currency/converter/}{Oanda}. Wrapper for `quantmod::getFX()`.
 #'   \item `"quandl"`: Get data sets from
-#'   \href{https://www.quandl.com/}{Quandl}. Wrapper for `Quandl()`.
+#'   \href{https://www.quandl.com/}{Quandl}. Wrapper for `Quandl::Quandl()`.
 #'   See also [quandl_api_key()].
 #'   \item `"quandl.datatable"`: Get data tables from
-#'   \href{https://www.quandl.com/}{Quandl}. Wrapper for `Quandl.datatable()`.
+#'   \href{https://www.quandl.com/}{Quandl}. Wrapper for `Quandl::Quandl.datatable()`.
 #'   See also [quandl_api_key()].
+#'   \item `"alphavantager"`: Get data sets from
+#'   \href{https://www.alphavantage.co/}{Alpha Vantage}. Wrapper for `alphavantager::av_get()`.
+#'   See also [av_api_key()].
+#'   \item `"rblpapi"`: Get data sets from
+#'   \href{https://www.bloomberg.com/professional/solution/bloomberg-terminal}{Bloomberg}. Wrapper for `Rblpapi`.
+#'   See also [Rblpapi::blpConnect()] to connect to Bloomberg terminal (required).
+#'   Use the argument `rblpapi_fun` to set the function such as "bdh" (default), "bds", or "bdp".
 #' }
 #' @param complete_cases Removes symbols that return an NA value due to an error with the get
 #' call such as sending an incorrect symbol "XYZ" to get = "stock.prices". This is useful in
@@ -81,6 +88,8 @@
 #'   \item [tq_index()] to get a ful list of stocks in an index.
 #'   \item [tq_exchange()] to get a ful list of stocks in an exchange.
 #'   \item [quandl_api_key()] to set the api key for collecting data via the `"quandl"`
+#'   get option.
+#'   \item [av_api_key()] to set the api key for collecting data via the `"alphavantage"`
 #'   get option.
 #' }
 #'
@@ -131,6 +140,23 @@ tq_get <- function(x, get = "stock.prices", complete_cases = TRUE, ...) {
         if (is.null(quandl_api_key())) warning("No Quandl API key detected. Limited to 50 anonymous calls per day. Set key with 'quandl_api_key()'.",
                                                call. = FALSE)
     }
+
+    # Validate Alpha Vantage api key
+    if("alphavantager" %in% get) {
+        if (is.null(tidyquant::av_api_key())) stop("No Alpha Vantager API key detected. Set key with 'av_api_key()'.",
+                                               call. = FALSE)
+    }
+
+    # Setup Rblpapi
+    if("Rblpapi" %in% get) {
+        if(!requireNamespace("Rblpapi", quietly = TRUE)) {
+            stop("Rblpapi must be installed to get data from Bloomberg.", call. = FALSE)
+        }
+        Rblpapi::blpConnect() #must have a valid blp session running
+    }
+
+    # Discontinue key.stats
+    if("key.stats" %in% get) stop("Yahoo Key Statistics has been discontinued.", call. = FALSE)
 
     # Distribute operations based on x
     if (is.character(x) && length(x) == 1 && length(get) == 1) {
@@ -254,19 +280,21 @@ tq_get_base <- function(x, get, ...) {
 
     # Setup switches based on get
     ret <- switch(get,
-                  stockprice       = tq_get_util_1(x, get, ...),
-                  stockpricesjapan = tq_get_util_1(x, get, ...),
-                  dividend         = tq_get_util_1(x, get, ...),
-                  split            = tq_get_util_1(x, get, ...),
-                  financial        = tq_get_util_1(x, get, ...),
-                  keystat          = tq_get_util_3(x, get, ...),
-                  keyratio         = tq_get_util_2(x, get, ...),
-                  metalprice       = tq_get_util_1(x, get, ...),
-                  exchangerate     = tq_get_util_1(x, get, ...),
-                  economicdata     = tq_get_util_1(x, get, ...),
-                  stockindex       = tq_index(x), # Deprecated, remove next version
-                  quandl           = tq_get_util_4(x, get, ...),
-                  quandldatatable  = tq_get_util_5(x, get, ...)
+                  stockprice        = tq_get_util_1(x, get, ...),
+                  stockpricesgoogle = tq_get_util_1(x, get, ...),
+                  stockpricesjapan  = tq_get_util_1(x, get, ...),
+                  dividend          = tq_get_util_1(x, get, ...),
+                  split             = tq_get_util_1(x, get, ...),
+                  financial         = tq_get_util_1(x, get, ...),
+                  keyratio          = tq_get_util_2(x, get, ...),
+                  metalprice        = tq_get_util_1(x, get, ...),
+                  exchangerate      = tq_get_util_1(x, get, ...),
+                  economicdata      = tq_get_util_1(x, get, ...),
+                  stockindex        = tq_index(x), # Deprecated, remove next version
+                  quandl            = tq_get_util_4(x, get, ...),
+                  quandldatatable   = tq_get_util_5(x, get, ...),
+                  alphavantager     = tq_get_util_6(x, get, ...),
+                  rblpapi           = tq_get_rblpapi(x, get, ...)
                   )
 
     ret
@@ -277,9 +305,9 @@ tq_get_base <- function(x, get, ...) {
 #' @export
 tq_get_options <- function() {
     c("stock.prices",
+      "stock.prices.google",
       "stock.prices.japan",
       "financials",
-      "key.stats",
       "key.ratios",
       "dividends",
       "splits",
@@ -287,7 +315,9 @@ tq_get_options <- function() {
       "exchange.rates",
       "metal.prices",
       "quandl",
-      "quandl.datatable"
+      "quandl.datatable",
+      "alphavantager",
+      "rblpapi"
       )
 }
 
@@ -338,6 +368,11 @@ tq_get_util_1 <-
                                                 chr_fun    = "quantmod::getSymbols",
                                                 list_names = c("open", "high", "low", "close", "volume", "adjusted"),
                                                 source     = "yahoo"),
+                   stockpricesgoogle     = list(chr_get    = "stock.prices",
+                                                fun        = quantmod::getSymbols,
+                                                chr_fun    = "quantmod::getSymbols.google",
+                                                list_names = c("open", "high", "low", "close", "volume"),
+                                                source     = "google"),
                    stockpricesjapan      = list(chr_get    = "stock.prices",
                                                 fun        = quantmod::getSymbols,
                                                 chr_fun    = "quantmod::getSymbols.yahooj",
@@ -652,133 +687,134 @@ tq_get_util_2 <- function(x, get, complete_cases, map, ...) {
 
 }
 
+# YAHOO FINANCE NO LONGER SUPPORTS
 # Util 3: key.stats -----
-tq_get_util_3 <- function(x, get, complete_cases, map, ...) {
-
-    # Check x
-    if (!is.character(x)) {
-        stop("x must be a character string in the form of a valid symbol.")
-    }
-
-    # Convert x to uppercase
-    x <- stringr::str_to_upper(x) %>%
-        stringr::str_trim(side = "both") %>%
-        stringr::str_replace_all("[[:punct:]]", "")
-
-    tryCatch({
-
-        # Download file
-        tmp <- tempfile()
-        url_base_1 <- 'http://download.finance.yahoo.com/d/quotes.csv?s='
-        url_base_2 <- '&f='
-        url_base_3 <- '&e=.csv'
-        yahoo_tag_list <- stringr::str_c(yahoo_tags$yahoo.tag, collapse = "")
-        url <- paste0(url_base_1, x, url_base_2, yahoo_tag_list, url_base_3)
-
-        # Try various stock exchanges
-        download.file(url, destfile = tmp, quiet = TRUE)
-
-        # Read data
-        key_stats_raw <- suppressMessages(
-            suppressWarnings(
-                readr::read_csv(tmp, col_names = FALSE, na = c("", "NA", "N/A", "<NA>"))
-            )
-        )
-
-        # Unlink tmp
-        unlink(tmp)
-
-        # Format tidy data frame ----
-
-        # Names
-        key_stat_names <- yahoo_tags$yahoo.tag.desc %>%
-            make.names()
-        names(key_stats_raw) <- key_stat_names
-
-        # Main formatting script
-        suppressWarnings(
-            key_stats <- key_stats_raw %>%
-                dplyr::mutate(Ask = as.numeric(Ask),
-                              Ask.Size = as.numeric(Ask.Size),
-                              Average.Daily.Volume = as.numeric(Average.Daily.Volume),
-                              Bid = as.numeric(Bid),
-                              Bid.Size = as.numeric(Bid.Size),
-                              Book.Value = as.numeric(Book.Value),
-                              Change = as.numeric(Change),
-                              Change.From.200.day.Moving.Average = as.numeric(Change.From.200.day.Moving.Average),
-                              Change.From.50.day.Moving.Average = as.numeric(Change.From.50.day.Moving.Average),
-                              Change.From.52.week.High = as.numeric(Change.From.52.week.High),
-                              Change.From.52.week.Low = as.numeric(Change.From.52.week.Low),
-                              Change.in.Percent = convert_to_percent(Change.in.Percent),
-                              Currency = as.character(Currency),
-                              Days.High = as.numeric(Days.High),
-                              Days.Low = as.numeric(Days.Low),
-                              Days.Range = as.character(Days.Range),
-                              Dividend.Pay.Date = lubridate::mdy(Dividend.Pay.Date),
-                              Dividend.per.Share = as.numeric(Dividend.per.Share),
-                              Dividend.Yield = as.numeric(Dividend.Yield),
-                              EBITDA = convert_to_numeric(EBITDA),
-                              EPS = as.numeric(EPS),
-                              EPS.Estimate.Current.Year = as.numeric(EPS.Estimate.Current.Year),
-                              EPS.Estimate.Next.Quarter = as.numeric(EPS.Estimate.Next.Quarter),
-                              EPS.Estimate.Next.Year = as.numeric(EPS.Estimate.Next.Year),
-                              Ex.Dividend.Date = lubridate::mdy(Ex.Dividend.Date),
-                              Float.Shares = as.numeric(Float.Shares),
-                              High.52.week = as.numeric(High.52.week),
-                              Last.Trade.Date = lubridate::mdy(Last.Trade.Date),
-                              Last.Trade.Price.Only = as.numeric(Last.Trade.Price.Only),
-                              Last.Trade.Size = as.numeric(Last.Trade.Size),
-                              Last.Trade.With.Time = as.character(Last.Trade.With.Time),
-                              Low.52.week = as.numeric(Low.52.week),
-                              Market.Capitalization = convert_to_numeric(Market.Capitalization),
-                              Moving.Average.200.day = as.numeric(Moving.Average.200.day),
-                              Moving.Average.50.day = as.numeric(Moving.Average.50.day),
-                              Name = as.character(Name),
-                              Open = as.numeric(Open),
-                              PE.Ratio = as.numeric(PE.Ratio),
-                              PEG.Ratio = as.numeric(PEG.Ratio),
-                              Percent.Change.From.200.day.Moving.Average = convert_to_percent(Percent.Change.From.200.day.Moving.Average),
-                              Percent.Change.From.50.day.Moving.Average = convert_to_percent(Percent.Change.From.50.day.Moving.Average),
-                              Percent.Change.From.52.week.High = convert_to_percent(Percent.Change.From.52.week.High),
-                              Percent.Change.From.52.week.Low = convert_to_percent(Percent.Change.From.52.week.Low),
-                              Previous.Close = as.numeric(Previous.Close),
-                              Price.to.Book = as.numeric(Price.to.Book),
-                              Price.to.EPS.Estimate.Current.Year = as.numeric(Price.to.EPS.Estimate.Current.Year),
-                              Price.to.EPS.Estimate.Next.Year = as.numeric(Price.to.EPS.Estimate.Next.Year),
-                              Price.to.Sales = as.numeric(Price.to.Sales),
-                              Range.52.week = as.character(Range.52.week),
-                              Revenue = convert_to_numeric(Revenue),
-                              Shares.Outstanding = as.numeric(Shares.Outstanding),
-                              Short.Ratio = as.numeric(Short.Ratio),
-                              Stock.Exchange = as.character(Stock.Exchange),
-                              Target.Price.1.yr. = as.numeric(Target.Price.1.yr.),
-                              Volume = as.numeric(Volume)
-                )
-        )
-
-        # Sort by column name
-        key_stats_sorted <- key_stats[, order(names(key_stats))]
-
-        # Handling for all NAs
-        if (all(is.na(key_stats_sorted))) {
-            warn <- paste0("x = '", x, "', get = 'key.stats", "': Value is not available.")
-            if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
-            warning(warn, call. = FALSE)
-            return(NA) # Return NA on error
-        }
-
-        return(key_stats_sorted)
-
-    }, error = function(e) {
-
-        warn <- paste0("x = '", x, "', get = 'key.stats", "': ", e)
-        if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
-        warning(warn, call. = FALSE)
-        return(NA) # Return NA on error
-
-    })
-
-}
+# tq_get_util_3 <- function(x, get, complete_cases, map, ...) {
+#
+#     # Check x
+#     if (!is.character(x)) {
+#         stop("x must be a character string in the form of a valid symbol.")
+#     }
+#
+#     # Convert x to uppercase
+#     x <- stringr::str_to_upper(x) %>%
+#         stringr::str_trim(side = "both") %>%
+#         stringr::str_replace_all("[[:punct:]]", "")
+#
+#     tryCatch({
+#
+#         # Download file
+#         tmp <- tempfile()
+#         url_base_1 <- 'http://download.finance.yahoo.com/d/quotes.csv?s='
+#         url_base_2 <- '&f='
+#         url_base_3 <- '&e=.csv'
+#         yahoo_tag_list <- stringr::str_c(yahoo_tags$yahoo.tag, collapse = "")
+#         url <- paste0(url_base_1, x, url_base_2, yahoo_tag_list, url_base_3)
+#
+#         # Try various stock exchanges
+#         download.file(url, destfile = tmp, quiet = TRUE)
+#
+#         # Read data
+#         key_stats_raw <- suppressMessages(
+#             suppressWarnings(
+#                 readr::read_csv(tmp, col_names = FALSE, na = c("", "NA", "N/A", "<NA>"))
+#             )
+#         )
+#
+#         # Unlink tmp
+#         unlink(tmp)
+#
+#         # Format tidy data frame ----
+#
+#         # Names
+#         key_stat_names <- yahoo_tags$yahoo.tag.desc %>%
+#             make.names()
+#         names(key_stats_raw) <- key_stat_names
+#
+#         # Main formatting script
+#         suppressWarnings(
+#             key_stats <- key_stats_raw %>%
+#                 dplyr::mutate(Ask = as.numeric(Ask),
+#                               Ask.Size = as.numeric(Ask.Size),
+#                               Average.Daily.Volume = as.numeric(Average.Daily.Volume),
+#                               Bid = as.numeric(Bid),
+#                               Bid.Size = as.numeric(Bid.Size),
+#                               Book.Value = as.numeric(Book.Value),
+#                               Change = as.numeric(Change),
+#                               Change.From.200.day.Moving.Average = as.numeric(Change.From.200.day.Moving.Average),
+#                               Change.From.50.day.Moving.Average = as.numeric(Change.From.50.day.Moving.Average),
+#                               Change.From.52.week.High = as.numeric(Change.From.52.week.High),
+#                               Change.From.52.week.Low = as.numeric(Change.From.52.week.Low),
+#                               Change.in.Percent = convert_to_percent(Change.in.Percent),
+#                               Currency = as.character(Currency),
+#                               Days.High = as.numeric(Days.High),
+#                               Days.Low = as.numeric(Days.Low),
+#                               Days.Range = as.character(Days.Range),
+#                               Dividend.Pay.Date = lubridate::mdy(Dividend.Pay.Date),
+#                               Dividend.per.Share = as.numeric(Dividend.per.Share),
+#                               Dividend.Yield = as.numeric(Dividend.Yield),
+#                               EBITDA = convert_to_numeric(EBITDA),
+#                               EPS = as.numeric(EPS),
+#                               EPS.Estimate.Current.Year = as.numeric(EPS.Estimate.Current.Year),
+#                               EPS.Estimate.Next.Quarter = as.numeric(EPS.Estimate.Next.Quarter),
+#                               EPS.Estimate.Next.Year = as.numeric(EPS.Estimate.Next.Year),
+#                               Ex.Dividend.Date = lubridate::mdy(Ex.Dividend.Date),
+#                               Float.Shares = as.numeric(Float.Shares),
+#                               High.52.week = as.numeric(High.52.week),
+#                               Last.Trade.Date = lubridate::mdy(Last.Trade.Date),
+#                               Last.Trade.Price.Only = as.numeric(Last.Trade.Price.Only),
+#                               Last.Trade.Size = as.numeric(Last.Trade.Size),
+#                               Last.Trade.With.Time = as.character(Last.Trade.With.Time),
+#                               Low.52.week = as.numeric(Low.52.week),
+#                               Market.Capitalization = convert_to_numeric(Market.Capitalization),
+#                               Moving.Average.200.day = as.numeric(Moving.Average.200.day),
+#                               Moving.Average.50.day = as.numeric(Moving.Average.50.day),
+#                               Name = as.character(Name),
+#                               Open = as.numeric(Open),
+#                               PE.Ratio = as.numeric(PE.Ratio),
+#                               PEG.Ratio = as.numeric(PEG.Ratio),
+#                               Percent.Change.From.200.day.Moving.Average = convert_to_percent(Percent.Change.From.200.day.Moving.Average),
+#                               Percent.Change.From.50.day.Moving.Average = convert_to_percent(Percent.Change.From.50.day.Moving.Average),
+#                               Percent.Change.From.52.week.High = convert_to_percent(Percent.Change.From.52.week.High),
+#                               Percent.Change.From.52.week.Low = convert_to_percent(Percent.Change.From.52.week.Low),
+#                               Previous.Close = as.numeric(Previous.Close),
+#                               Price.to.Book = as.numeric(Price.to.Book),
+#                               Price.to.EPS.Estimate.Current.Year = as.numeric(Price.to.EPS.Estimate.Current.Year),
+#                               Price.to.EPS.Estimate.Next.Year = as.numeric(Price.to.EPS.Estimate.Next.Year),
+#                               Price.to.Sales = as.numeric(Price.to.Sales),
+#                               Range.52.week = as.character(Range.52.week),
+#                               Revenue = convert_to_numeric(Revenue),
+#                               Shares.Outstanding = as.numeric(Shares.Outstanding),
+#                               Short.Ratio = as.numeric(Short.Ratio),
+#                               Stock.Exchange = as.character(Stock.Exchange),
+#                               Target.Price.1.yr. = as.numeric(Target.Price.1.yr.),
+#                               Volume = as.numeric(Volume)
+#                 )
+#         )
+#
+#         # Sort by column name
+#         key_stats_sorted <- key_stats[, order(names(key_stats))]
+#
+#         # Handling for all NAs
+#         if (all(is.na(key_stats_sorted))) {
+#             warn <- paste0("x = '", x, "', get = 'key.stats", "': Value is not available.")
+#             if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
+#             warning(warn, call. = FALSE)
+#             return(NA) # Return NA on error
+#         }
+#
+#         return(key_stats_sorted)
+#
+#     }, error = function(e) {
+#
+#         warn <- paste0("x = '", x, "', get = 'key.stats", "': ", e)
+#         if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
+#         warning(warn, call. = FALSE)
+#         return(NA) # Return NA on error
+#
+#     })
+#
+# }
 
 # Util 4: Quandl -----
 tq_get_util_4 <- function(x, get, type = "raw",  meta = FALSE, order = "asc", complete_cases, map, ...) {
@@ -866,6 +902,93 @@ tq_get_util_5 <- function(x, get, paginate = FALSE, complete_cases, map, ...) {
     }, error = function(e) {
 
         warn <- paste0("x = '", x, "', get = 'quandl.datatable", "': ", e)
+        if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
+        warning(warn, call. = FALSE)
+        return(NA) # Return NA on error
+
+    })
+
+    return(ret)
+
+}
+
+# Util 6: alphavantager -----
+tq_get_util_6 <- function(x, get, av_fun, complete_cases, map, ...) {
+
+    # Check x
+    if (!is.character(x)) {
+        stop("x must be a character string in the form of a valid symbol.")
+    }
+
+    # Check av_fun exists
+    # dots <- list(...)
+    # if (is.null(dots$av_fun)) {
+    #     stop("`av_fun` argument must be present. See Alpha Van")
+    # }
+
+    # Convert x to uppercase
+    x <- stringr::str_to_upper(x) %>%
+        stringr::str_trim(side = "both")
+
+    # Get av_fun
+    # av_fun <- dots$av_fun
+    # other_dots <- dots
+    # other_dots$av_fun <- NULL
+
+    ret <- tryCatch({
+
+        alphavantager::av_get(symbol = x, av_fun = av_fun, ...)
+
+
+    }, error = function(e) {
+
+        warn <- paste0("x = '", x, "', get = 'alphavantager", "': ", e)
+        if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
+        warning(warn, call. = FALSE)
+        return(NA) # Return NA on error
+
+    })
+
+    return(ret)
+
+}
+
+
+# Util: rblpapi -----
+tq_get_rblpapi <- function(x, get, rblpapi_fun = "bdh", complete_cases, map, ...) {
+
+    # Check x
+    if (!is.character(x)) {
+        stop("x must be a character string in the form of a valid symbol.")
+    }
+
+    ret <- tryCatch({
+
+        # Rblpapi argument setup
+        if (rblpapi_fun == "bds") {
+            args <- list(security = x)
+        } else {
+            args <- list(securities = x)
+        }
+        args <- append(args, list(...))
+
+        # Repurpose from and to as start_date and end_date
+        if (!is.null(args$from)) {
+            args$start.date <- as.Date(args$from)
+            args$from <- NULL
+            }
+        if (!is.null(args$to)) {
+            args$end.date   <- as.Date(args$to)
+            args$to <- NULL
+        }
+
+        # Call function
+        do.call(getExportedValue("Rblpapi", rblpapi_fun), args) %>%
+            tibble::as.tibble()
+
+    }, error = function(e) {
+
+        warn <- paste0("x = '", x, "', get = 'Rblpapi", "': ", e)
         if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
         warning(warn, call. = FALSE)
         return(NA) # Return NA on error

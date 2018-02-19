@@ -239,6 +239,14 @@ tq_portfolio_.grouped_df <- function(data, assets_col, returns_col, weights, col
         dplyr::group_by_(.dots = group_names_data)
 }
 
+#' @export
+tq_portfolio_.tbl_time <- function(data, assets_col, returns_col, weights = NULL, col_rename = NULL, ...) {
+    if(!requireNamespace("tibbletime", quietly = TRUE)) {
+        stop("tibbletime must be installed to use a tidyquant function on a tbl_time object.", call. = FALSE)
+    }
+    tibbletime::reconstruct(NextMethod(), data)
+}
+
 # tq_portfolio core function --------------------------------------------------------------------------------
 
 tq_portfolio_base_ <- function(data, assets_col, returns_col, weights, col_rename, map = FALSE, x = NULL, ...) {
