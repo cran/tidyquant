@@ -8,15 +8,11 @@
 #'   \item `"stock.prices"`: Get the open, high, low, close, volume and adjusted
 #'   stock prices for a stock symbol from
 #'   \href{https://finance.yahoo.com/}{Yahoo Finance}. Wrapper for `quantmod::getSymbols()`.
-#'   \item `"stock.prices.google"`: Get the open, high, low, close, and volume
-#'   stock prices for a stock symbol from
-#'   \href{https://finance.google.com/finance}{Google Finance}. Wrapper for `quantmod::getSymbols.google()`.
+#'   \item `"stock.prices.google"`: DISCONTINUED.
 #'   \item `"stock.prices.japan"`: Get the open, high, low, close, volume and adjusted
 #'   stock prices for a stock symbol from
 #'   \href{http://finance.yahoo.co.jp/}{Yahoo Finance Japan}. Wrapper for `quantmod::getSymbols.yahooj()`.
-#'   \item `"financials"`: Get the income, balance sheet, and cash flow
-#'   financial statements for a stock symbol from
-#'   \href{https://www.google.com/finance}{Google Finance}. Wrapper for `quantmod::getFinancials()`.
+#'   \item `"financials"`: DISCONTINUED.
 #'   \item `"key.ratios"`: Get 89 historical growth, profitablity, financial health,
 #'   efficiency, and valuation ratios that span 10-years from
 #'   \href{https://www.morningstar.com}{Morningstar}.
@@ -30,7 +26,7 @@
 #'   \item `"metal.prices"`: Get the metal prices from
 #'   \href{https://www.oanda.com/}{Oanda}. Wrapper for `quantmod::getMetals()`.
 #'   \item `"exchange.rates"`: Get exchange rates from
-#'   \href{https://www.oanda.com/currency/converter/}{Oanda}. Wrapper for `quantmod::getFX()`.
+#'   Oanda. Wrapper for `quantmod::getFX()`.
 #'   \item `"quandl"`: Get data sets from
 #'   \href{https://www.quandl.com/}{Quandl}. Wrapper for `Quandl::Quandl()`.
 #'   See also [quandl_api_key()].
@@ -57,11 +53,11 @@
 #'   \item `from`: Optional for various time series functions in quantmod / quandl packages.
 #'   A character string representing a start date in
 #'   YYYY-MM-DD format. No effect on
-#'   `"financials"`, `"key.ratios"`, or `"key.stats"`.
+#'   `"key.ratios"`, or `"key.stats"`.
 #'   \item `to`: Optional for various time series functions in quantmod / quandl packages.
 #'   A character string representing a end date in
 #'   YYYY-MM-DD format. No effect on
-#'   `get = "financials"`,  `"key.ratios"`, or `"key.stats"`.
+#'   `get = "key.ratios"` or `"key.stats"`.
 #' }
 #'
 #'
@@ -116,7 +112,7 @@
 #'
 #' # Multiple gets
 #' mult_gets <- tq_get("AAPL",
-#'                     get = c("stock.prices", "financials"),
+#'                     get = c("stock.prices", "dividends"),
 #'                     from = "2016-01-01",
 #'                     to   = "2017-01-01")
 
@@ -342,6 +338,20 @@ tq_get_util_1 <-
              to   = as.character(lubridate::today()),
              ...) {
 
+    # google.stock.prices is now defunct (google no longer provides data)
+    if(get == "stockpricesgoogle") {
+      warning("Google Finance stopped providing data in March, 2018. \n",
+              "Use get = 'stock.prices' instead to pull from Yahoo Finance.", call. = FALSE)
+      return(NA)
+    }
+
+    # Google Financials is now defunct (google no longer provides data)
+    if(get == "financial") {
+      warning("Google Finance stopped providing data in March, 2018. \n",
+              "We are currently looking for alternative financial data sources.", call. = FALSE)
+      return(NA)
+    }
+
     # Check x
     if (!is.character(x)) {
         stop("x must be a character string in the form of a valid symbol.")
@@ -368,11 +378,11 @@ tq_get_util_1 <-
                                                 chr_fun    = "quantmod::getSymbols",
                                                 list_names = c("open", "high", "low", "close", "volume", "adjusted"),
                                                 source     = "yahoo"),
-                   stockpricesgoogle     = list(chr_get    = "stock.prices",
-                                                fun        = quantmod::getSymbols,
-                                                chr_fun    = "quantmod::getSymbols.google",
-                                                list_names = c("open", "high", "low", "close", "volume"),
-                                                source     = "google"),
+                   # stockpricesgoogle     = list(chr_get    = "stock.prices",
+                   #                              fun        = quantmod::getSymbols,
+                   #                              chr_fun    = "quantmod::getSymbols.google",
+                   #                              list_names = c("open", "high", "low", "close", "volume"),
+                   #                              source     = "google"),
                    stockpricesjapan      = list(chr_get    = "stock.prices",
                                                 fun        = quantmod::getSymbols,
                                                 chr_fun    = "quantmod::getSymbols.yahooj",
@@ -388,10 +398,10 @@ tq_get_util_1 <-
                                                 chr_fun    = "quantmod::getSplits",
                                                 list_names = "splits",
                                                 source     = "yahoo"),
-                   financial             = list(chr_get    = "financials",
-                                                fun        = quantmod::getFinancials,
-                                                chr_fun    = "quantmod::getFinancials",
-                                                source     = "google"),
+                   # financial             = list(chr_get    = "financials",
+                   #                              fun        = quantmod::getFinancials,
+                   #                              chr_fun    = "quantmod::getFinancials",
+                   #                              source     = "google"),
                    metalprice            = list(chr_get    = "metal.prices",
                                                 fun        = quantmod::getMetals,
                                                 chr_fun    = "quantmod::getMetals",
@@ -489,22 +499,32 @@ tq_get_util_2 <- function(x, get, complete_cases, map, ...) {
 
     # Convert x to uppercase
     x <- stringr::str_to_upper(x) %>%
-        stringr::str_trim(side = "both") %>%
-        stringr::str_replace_all("[[:punct:]]", "")
+        stringr::str_trim(side = "both")
+
+    # If the request has a ':', assume that it is in the form of EXCHANGE:SYMBOL
+    # Allows both forcing a specific exchange source and making requests from non-default exchanges
+    if ( stringr::str_detect(x,":") ) {
+        split_req <- stringr::str_split(x,":",2)
+        stock_exchange <- c(split_req[[1]][1])
+        x <- split_req[[1]][2]
+    } else {
+        stock_exchange <- c("XNAS", "XNYS", "XASE") # mornginstar gets from various exchanges
+    }
+
+    x <- stringr::str_replace_all(x,"[[:punct:]]", "")
 
     tryCatch({
 
         # Download file
-        stock_exchange <- c("XNAS", "XNYS", "XASE") # mornginstar gets from various exchanges
         url_base_1 <- 'http://financials.morningstar.com/finan/ajax/exportKR2CSV.html?&callback=?&t='
         url_base_2 <- '&region=usa&culture=en-US&cur=&order=asc'
         # Three URLs to try
         url <- paste0(url_base_1, stock_exchange, ":", x, url_base_2)
 
         # Try various stock exchanges
-        for(i in 1:3) {
+        for(i in 1:length(url)) {
             text <- httr::RETRY("GET", url[i], times = 5) %>%
-                httr::content()
+                httr::content(type = "text/html", encoding = "UTF-8")
 
             if(!is.null(text)) {
 
@@ -525,7 +545,8 @@ tq_get_util_2 <- function(x, get, complete_cases, map, ...) {
         text <- text %>%
             xml2::as_list() %>%
             unlist() %>%
-            readr::read_lines()
+            strsplit(split = "\n") %>%
+            purrr::flatten_chr()
 
         # Skip rows & setup key ratio categories
 
@@ -603,6 +624,7 @@ tq_get_util_2 <- function(x, get, complete_cases, map, ...) {
             dplyr::mutate(group = as.numeric(group)) %>%
             tidyr::gather(key = date, value = value, -c(group, section, sub.section, category)) %>%
             dplyr::arrange(group) %>%
+            dplyr::mutate(value = ifelse(value == "false", NA, value)) %>%
             dplyr::mutate(date = stringr::str_sub(date, start = 2, end = length(date))) %>%
             dplyr::mutate(date = stringr::str_replace(date, "\\.", "-")) %>%
             dplyr::mutate(date = lubridate::ymd(date, truncated = 2)) %>%
@@ -610,7 +632,30 @@ tq_get_util_2 <- function(x, get, complete_cases, map, ...) {
             dplyr::mutate(value = as.double(value)) %>%
             dplyr::select(section, sub.section, group, category, date, value)
 
-        # Calculate valuations
+        key_ratios <- key_ratios_bind %>%
+            dplyr::group_by(section) %>%
+            tidyr::nest()
+
+    }, warning = function(w) {
+
+        warn <- w
+        if (map == TRUE) warn <- paste0(x, ": ", w)
+        warning(warn, call. = FALSE)
+        return(key_ratios)
+
+    }, error = function(e) {
+
+        warn <- paste0("x = '", x, "', get = 'key.ratios", "': ", e)
+        if (map == TRUE && complete_cases) warn <- paste0(warn, " Removing ", x, ".")
+        warning(warn, call. = FALSE)
+        return(NA) # Return NA on error
+
+    })
+
+
+    # Calculate valuations
+
+    tryCatch({
 
         # Get stock prices
         from = lubridate::today() - lubridate::years(12)
@@ -619,31 +664,77 @@ tq_get_util_2 <- function(x, get, complete_cases, map, ...) {
             dplyr::mutate(year = lubridate::year(date)) %>%
             dplyr::select(year, date, adjusted)
 
+        # Get categories
+        categories <- key_ratios_bind %>%
+            dplyr::filter(section == "Financials") %>%
+            dplyr::pull(category) %>%
+            unique()
+
+        revenue_name      <- categories[[1]]
+        shares_name       <- categories[[9]]
+        eps_name          <- categories[[6]]
+        book_val_name     <- categories[[10]]
+        op_cash_flow_name <- categories[[11]]
+
+        revenue_expr      <- rlang::sym(revenue_name)
+        shares_expr       <- rlang::sym(shares_name)
+        eps_expr          <- rlang::sym(eps_name)
+        book_val_expr     <- rlang::sym(book_val_name)
+        op_cash_flow_expr <- rlang::sym(op_cash_flow_name)
+
+        units <- stringr::str_split(revenue_name, pattern = " ")[[1]][[2]]
+
+        if (units != "USD") {
+            warning("Units of Key Ratios Not Compatible for Valuation Ratios.
+                    Returning key ratios without Valuation Ratios.")
+            return(key_ratios)
+        }
+
+        revenue_per_share_name   <- paste0("Revenue Per Share ", units)
+        cash_flow_per_share_name <- paste0("Cash Flow Per Share ", units)
+
+        revenue_per_share_expr   <- rlang::sym(revenue_per_share_name)
+        cash_flow_per_share_expr <- rlang::sym(cash_flow_per_share_name)
+
         # Get key ratios
         valuations_1 <- key_ratios_bind %>%
             dplyr::filter(section == "Financials") %>%
-            dplyr::filter(category %in% c("Revenue USD Mil",
-                                          "Shares Mil",
-                                          "Earnings Per Share USD",
-                                          "Book Value Per Share * USD",
-                                          "Operating Cash Flow USD Mil")) %>%
+            # dplyr::filter(category %in% c("Revenue USD Mil",
+            #                               "Shares Mil",
+            #                               "Earnings Per Share USD",
+            #                               "Book Value Per Share * USD",
+            #                               "Operating Cash Flow USD Mil")) %>%
+            dplyr::filter(category %in% c(
+                revenue_name, shares_name, eps_name, book_val_name, op_cash_flow_name
+            )) %>%
             dplyr::mutate(year = lubridate::year(date)) %>%
             dplyr::select(year, category, value) %>%
             tidyr::spread(key = category, value = value) %>%
-            dplyr::mutate(`Revenue Per Share USD` = `Revenue USD Mil` / `Shares Mil`,
-                          `Cash Flow Per Share USD` = `Operating Cash Flow USD Mil` / `Shares Mil`) %>%
-            dplyr::select(year,
-                          `Earnings Per Share USD`,
-                          `Revenue Per Share USD`,
-                          `Book Value Per Share * USD`,
-                          `Cash Flow Per Share USD`)
+            # dplyr::mutate(`Revenue Per Share USD` = `Revenue USD Mil` / `Shares Mil`,
+            #               `Cash Flow Per Share USD` = `Operating Cash Flow USD Mil` / `Shares Mil`) %>%
+            dplyr::mutate(
+                !! revenue_per_share_name   := (!! revenue_expr) / (!! shares_expr),
+                !! cash_flow_per_share_name := (!! op_cash_flow_expr) / (!! shares_expr)
+                ) %>%
+            # dplyr::select(year,
+            #               `Earnings Per Share USD`,
+            #               `Revenue Per Share USD`,
+            #               `Book Value Per Share * USD`,
+            #               `Cash Flow Per Share USD`)
+            dplyr::select(
+                year, !! eps_expr, !! revenue_per_share_expr, !! book_val_expr, !! cash_flow_per_share_expr
+            )
 
         # Merge and calculate valuations
         valuation <- dplyr::left_join(valuations_1, valuations_2, by = "year") %>%
-            dplyr::mutate(`Price to Earnings`  = adjusted / `Earnings Per Share USD`,
-                          `Price to Sales`     = adjusted / `Revenue Per Share USD`,
-                          `Price to Book`      = adjusted / `Book Value Per Share * USD`,
-                          `Price to Cash Flow` = adjusted / `Cash Flow Per Share USD`) %>%
+            # dplyr::mutate(`Price to Earnings`  = adjusted / `Earnings Per Share USD`,
+            #               `Price to Sales`     = adjusted / `Revenue Per Share USD`,
+            #               `Price to Book`      = adjusted / `Book Value Per Share * USD`,
+            #               `Price to Cash Flow` = adjusted / `Cash Flow Per Share USD`) %>%
+            dplyr::mutate(`Price to Earnings`  = adjusted / !! eps_expr,
+                          `Price to Sales`     = adjusted / !! revenue_per_share_expr,
+                          `Price to Book`      = adjusted / !! book_val_expr,
+                          `Price to Cash Flow` = adjusted / !! cash_flow_per_share_expr) %>%
             dplyr::select(date,
                           `Price to Earnings`,
                           `Price to Sales`,
@@ -914,6 +1005,10 @@ tq_get_util_5 <- function(x, get, paginate = FALSE, complete_cases, map, ...) {
 
 # Util 6: alphavantager -----
 tq_get_util_6 <- function(x, get, av_fun, complete_cases, map, ...) {
+
+    if(!requireNamespace("alphavantager", quietly = TRUE)) {
+      stop("alphavantager must be installed to use this functionality.", call. = FALSE)
+    }
 
     # Check x
     if (!is.character(x)) {

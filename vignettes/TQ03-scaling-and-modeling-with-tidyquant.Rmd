@@ -94,7 +94,7 @@ tq_index("DOW", use_fallback = TRUE)
 
 ...or, get an exchange.
 
-```{r}
+```{r, eval=FALSE}
 tq_exchange("NYSE")
 ```
 
@@ -107,7 +107,7 @@ tq_index("DOW", use_fallback = TRUE) %>%
     tq_get(get = "stock.prices")
 ```
 
-You can use any applicable "getter" to get data for __every stock in an index or an exchange__! This includes: "stock.prices", "key.ratios", "key.stats", "financials", and more.
+You can use any applicable "getter" to get data for __every stock in an index or an exchange__! This includes: "stock.prices", "key.ratios", "key.stats", and more.
 
 
 ## Method 3: Use purrr to map a function
@@ -126,10 +126,10 @@ In financial analysis, it's very common to need data from various sources to com
 
 ```{r}
 c("AAPL", "GOOG") %>%
-    tq_get(get = c("stock.prices", "financials"))
+    tq_get(get = c("stock.prices", "dividends"))
 ```
 
-This returns the stock prices and financials for each stock as one nested data frame! Any of the `get` options that accept stock symbols can be used in this manner: `"stock.prices"`, `"financials"`, `"key.ratios"`, `"key.stats"`, `"dividends"`, and `"splits"`. 
+This returns the stock prices and dividends for each stock as one nested data frame! Any of the `get` options that accept stock symbols can be used in this manner: `"stock.prices"`, `"key.ratios"`, `"key.stats"`, `"dividends"`, and `"splits"`. 
 
 
 # Scaling the Mutation of Financial Data

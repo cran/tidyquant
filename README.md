@@ -1,58 +1,98 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-tidyquant
-=========
 
-[![Travis-CI Build Status](https://travis-ci.org/business-science/tidyquant.svg?branch=master)](https://travis-ci.org/business-science/tidyquant.svg?branch=master) [![codecov](https://codecov.io/gh/business-science/tidyquant/branch/master/graph/badge.svg)](https://codecov.io/gh/business-science/tidyquant) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/tidyquant)](https://cran.r-project.org/package=tidyquant) ![](http://cranlogs.r-pkg.org/badges/tidyquant?color=brightgreen) ![](http://cranlogs.r-pkg.org/badges/grand-total/tidyquant?color=brightgreen)
+# tidyquant <img src="man/figures/tidyquant-logo.png" width="147" height="170" align="right" />
 
-<!--- <img src="tools/logo.png" width="147" height="170" align="right" /> -->
+<https://travis-ci.org/business-science/tidyquant.svg?branch=master>
+[![codecov](https://codecov.io/gh/business-science/tidyquant/branch/master/graph/badge.svg)](https://codecov.io/gh/business-science/tidyquant)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/tidyquant)](https://cran.r-project.org/package=tidyquant)
+![](http://cranlogs.r-pkg.org/badges/tidyquant?color=brightgreen)
+![](http://cranlogs.r-pkg.org/badges/grand-total/tidyquant?color=brightgreen)
+
 > Bringing financial analysis to the tidyverse
 
-`tidyquant` integrates the best resources for collecting and analyzing financial data, `zoo`, `xts`, `quantmod`, `TTR`, and `PerformanceAnalytics`, with the tidy data infrastructure of the `tidyverse` allowing for seamless interaction between each. You can now perform complete financial analyses in the `tidyverse`.
+`tidyquant` integrates the best resources for collecting and analyzing
+financial data, `zoo`, `xts`, `quantmod`, `TTR`, and
+`PerformanceAnalytics`, with the tidy data infrastructure of the
+`tidyverse` allowing for seamless interaction between each. You can now
+perform complete financial analyses in the `tidyverse`.
 
-Benefits
---------
+## 2-Minutes To Tidyquant
 
--   **A few core functions with a lot of power**
--   **Integrates the quantitative analysis functionality of `zoo`, `xts`, `quantmod`, `TTR`, and *now* `PerformanceAnalytics`**
--   **Designed for modeling and scaling analyses using the the `tidyverse` tools in [*R for Data Science*](http://r4ds.had.co.nz/)**
--   **Implements `ggplot2` functionality for beautiful and meaningful financial visualizations**
--   **User-friendly documentation to get you up to speed quickly!**
+Our short introduction to `tidyquant` on
+[YouTube](https://www.youtube.com/embed/woxJZTL2hok).
 
-One-Stop Shop for Serious Financial Analysis
---------------------------------------------
+<a href="https://www.youtube.com/embed/woxJZTL2hok" target="_blank"><img src="http://img.youtube.com/vi/woxJZTL2hok/0.jpg" alt="Anomalize" width="100%" height="350"/></a>
 
-With `tidyquant` all the benefits add up to one thing: *a one-stop shop for serious financial analysis!*
+Check out our entire [Software Intro
+Series](https://www.youtube.com/watch?v=Gk_HwjhlQJs&list=PLo32uKohmrXsYNhpdwr15W143rX6uMAze)
+on YouTube\!
+
+## Benefits
+
+  - **A few core functions with a lot of power**
+  - **Integrates the quantitative analysis functionality of `zoo`,
+    `xts`, `quantmod`, `TTR`, and *now* `PerformanceAnalytics`**
+  - **Designed for modeling and scaling analyses using the the
+    `tidyverse` tools in [*R for Data
+    Science*](http://r4ds.had.co.nz/)**
+  - **Implements `ggplot2` functionality for beautiful and meaningful
+    financial visualizations**
+  - **User-friendly documentation to get you up to speed quickly\!**
+
+## One-Stop Shop for Serious Financial Analysis
+
+With `tidyquant` all the benefits add up to one thing: *a one-stop shop
+for serious financial analysis\!*
 
 ### Core Functions
 
--   **Getting Financial Data from the web: `tq_get()`**. This is a one-stop shop for getting web-based financial data in a "tidy" data frame format. Get data for daily stock prices (historical), key statistics (real-time), key ratios (historical), financial statements, dividends, splits, economic data from the FRED, FOREX rates from Oanda.
+  - **Getting Financial Data from the web: `tq_get()`**. This is a
+    one-stop shop for getting web-based financial data in a “tidy” data
+    frame format. Get data for daily stock prices (historical), key
+    statistics (real-time), key ratios (historical), financial
+    statements, dividends, splits, economic data from the FRED, FOREX
+    rates from Oanda.
 
--   **Manipulating Financial Data: `tq_transmute()` and `tq_mutate()`**. Integration for many financial functions from `xts`, `zoo`, `quantmod`,`TTR` and `PerformanceAnalytics` packages. `tq_mutate()` is used to add a column to the data frame, and `tq_transmute()` is used to return a new data frame which is necessary for periodicity changes.
+  - **Manipulating Financial Data: `tq_transmute()` and `tq_mutate()`**.
+    Integration for many financial functions from `xts`, `zoo`,
+    `quantmod`,`TTR` and `PerformanceAnalytics` packages. `tq_mutate()`
+    is used to add a column to the data frame, and `tq_transmute()` is
+    used to return a new data frame which is necessary for periodicity
+    changes.
 
--   **Performance Analysis and Portfolio Analysis: `tq_performance()` and `tq_portfolio()`**. The newest additions to the `tidyquant` family integrate `PerformanceAnalytics` functions. `tq_performance()` converts investment returns into performance metrics. `tq_portfolio()` aggregates a group (or multiple groups) of asset returns into one or more portfolios.
+  - **Performance Analysis and Portfolio Analysis: `tq_performance()`
+    and `tq_portfolio()`**. The newest additions to the `tidyquant`
+    family integrate `PerformanceAnalytics` functions.
+    `tq_performance()` converts investment returns into performance
+    metrics. `tq_portfolio()` aggregates a group (or multiple groups) of
+    asset returns into one or more portfolios.
 
 ### Comparing Stock Prices
 
-Visualizing the stock price volatility of four stocks side-by-side is quick and easy...
+Visualizing the stock price volatility of four stocks side-by-side is
+quick and easy…
 
 ### Evaluating Stock Performance
 
-What about stock performance? Quickly visualize how a $10,000 investment in various stocks would perform.
+What about stock performance? Quickly visualize how a $10,000 investment
+in various stocks would perform.
 
 ### Evaluating Portfolio Performance
 
-Ok, stocks are too easy. What about portfolios? With the `PerformanceAnalytics` integration, visualizing blended portfolios are easy too!
+Ok, stocks are too easy. What about portfolios? With the
+`PerformanceAnalytics` integration, visualizing blended portfolios are
+easy too\!
 
--   Portfolio 1: 50% FB, 25% AMZN, 25% NFLX, 0% GOOG
--   Portfolio 2: 0% FB, 50% AMZN, 25% NFLX, 25% GOOG
--   Portfolio 3: 25% FB, 0% AMZN, 50% NFLX, 25% GOOG
--   Portfolio 4: 25% FB, 25% AMZN, 0% NFLX, 50% GOOG
+  - Portfolio 1: 50% FB, 25% AMZN, 25% NFLX, 0% GOOG
+  - Portfolio 2: 0% FB, 50% AMZN, 25% NFLX, 25% GOOG
+  - Portfolio 3: 25% FB, 0% AMZN, 50% NFLX, 25% GOOG
+  - Portfolio 4: 25% FB, 25% AMZN, 0% NFLX, 50% GOOG
 
-This just scratches the surface of `tidyquant`. Here's how to install to get started.
+This just scratches the surface of `tidyquant`. Here’s how to install to
+get started.
 
-Installation
-------------
+## Installation
 
 Development Version with Latest Features:
 
@@ -67,16 +107,18 @@ CRAN Approved Version:
 install.packages("tidyquant")
 ```
 
-Further Information
--------------------
+## Further Information
 
-The `tidyquant` package includes several vignettes to help users get up to speed quickly:
+The `tidyquant` package includes several vignettes to help users get up
+to speed quickly:
 
--   TQ00 - Introduction to `tidyquant`
--   TQ01 - Core Functions in `tidyquant`
--   TQ02 - R Quantitative Analysis Package Integrations in `tidyquant`
--   TQ03 - Scaling and Modeling with `tidyquant`
--   TQ04 - Charting with `tidyquant`
--   TQ05 - Performance Analysis with `tidyquant`
+  - TQ00 - Introduction to `tidyquant`
+  - TQ01 - Core Functions in `tidyquant`
+  - TQ02 - R Quantitative Analysis Package Integrations in `tidyquant`
+  - TQ03 - Scaling and Modeling with `tidyquant`
+  - TQ04 - Charting with `tidyquant`
+  - TQ05 - Performance Analysis with `tidyquant`
 
-See the [`tidyquant` vignettes](https://cran.r-project.org/package=tidyquant) for further details on the package.
+See the [`tidyquant`
+vignettes](https://cran.r-project.org/package=tidyquant) for further
+details on the package.

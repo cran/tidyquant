@@ -18,8 +18,8 @@ tq_index_options()
 ## ---- eval = FALSE-------------------------------------------------------
 #  tq_index("SP500")
 
-## ------------------------------------------------------------------------
-tq_exchange("NASDAQ")
+## ---- eval=FALSE---------------------------------------------------------
+#  tq_exchange("NASDAQ")
 
 ## ------------------------------------------------------------------------
 tq_get_options()
@@ -27,10 +27,6 @@ tq_get_options()
 ## ------------------------------------------------------------------------
 aapl_prices  <- tq_get("AAPL", get = "stock.prices", from = " 1990-01-01")
 aapl_prices 
-
-## ------------------------------------------------------------------------
-aapl_prices_google  <- tq_get("AAPL", get = "stock.prices.google", from = " 1990-01-01")
-aapl_prices_google
 
 ## ---- eval = F-----------------------------------------------------------
 #  x8411T <- tq_get("8411.T", get = "stock.prices.japan", from = "2016-01-01", to  = "2016-12-31")
@@ -44,19 +40,19 @@ aapl_splits <- tq_get("AAPL", get = "splits", from = "1990-01-01")
 aapl_splits
 
 ## ------------------------------------------------------------------------
-aapl_financials <- tq_get("AAPL", get = "financials")
-aapl_financials
+# aapl_financials <- tq_get("AAPL", get = "financials")
+# aapl_financials
 
 ## ------------------------------------------------------------------------
-aapl_financials %>%
-    filter(type == "IS") %>%
-    select(annual) %>%
-    unnest()
+# aapl_financials %>%
+#     filter(type == "IS") %>%
+#     select(annual) %>%
+#     unnest()
 
 ## ------------------------------------------------------------------------
-aapl_financials %>%
-    unnest(quarter) %>% 
-    spread(key = date, value = value)
+# aapl_financials %>%
+#     unnest(quarter) %>% 
+#     spread(key = date, value = value)
 
 ## ------------------------------------------------------------------------
 aapl_key_ratios <- tq_get("AAPL", get = "key.ratios")
@@ -71,9 +67,9 @@ aapl_key_ratios %>%
 aapl_key_ratios %>%
     filter(section == "Valuation Ratios") %>%
     unnest() %>%
-    ggplot(aes(x = date, y = value)) + 
-    geom_line(aes(col = forcats::fct_reorder2(category, date, value)),
-              size = 1) +
+    ggplot(aes(x = date, y = value)) +
+    geom_line(aes(col = factor(category, levels = c("Price to Earnings", "Price to Cash Flow", "Price to Book", "Price to Sales"))), 
+              size = 1)  + 
     labs(title = "10-Year Historical Valuation Ratios for AAPL", x = "", 
          y = "", col = "") +
     theme_tq() +

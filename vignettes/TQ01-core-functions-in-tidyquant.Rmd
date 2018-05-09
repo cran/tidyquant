@@ -70,11 +70,9 @@ The data source is [www.marketvolume.com](http://www.marketvolume.com/indexes_ex
 
 Stock lists for three stock exchanges are available: NASDAQ, NYSE, and AMEX. If you forget, just use `tq_exchange_options()`. We can easily get the full list of stocks on the NASDAQ exchange.
 
-```{r}
+```{r, eval=FALSE}
 tq_exchange("NASDAQ")
 ```
-
-The data source is the [NASDAQ](http://www.nasdaq.com/).
 
 # Get Quantitative Data
 
@@ -91,13 +89,6 @@ The stock prices can be retrieved succinctly using `get = "stock.prices"`. This 
 ```{r}
 aapl_prices  <- tq_get("AAPL", get = "stock.prices", from = " 1990-01-01")
 aapl_prices 
-```
-
-An alternative source is from Google Finance, which can be retrieved using `get = "stock.prices.google"`.  
-
-```{r}
-aapl_prices_google  <- tq_get("AAPL", get = "stock.prices.google", from = " 1990-01-01")
-aapl_prices_google
 ```
 
 Yahoo Japan stock prices can be retrieved using a similar call, `get = "stock.prices.japan"`.
@@ -125,28 +116,30 @@ The data source is [Yahoo Finance](https://finance.yahoo.com/) and [Yahoo Financ
 
 ## Financial Statements
 
+_Google Finance no longer provides access to financial statements_
+
 For any given stock, a total of six financials statements are retrieved as nested tibbles, one for each combination of statement type (Income Statement, Balance Sheet, and Cash Flow) and period (by annual and quarter). 
 
 ```{r}
-aapl_financials <- tq_get("AAPL", get = "financials")
-aapl_financials
+# aapl_financials <- tq_get("AAPL", get = "financials")
+# aapl_financials
 ```
 
 The statement information can be extracted by selecting (`dplyr::select()`) and filtering (`dplyr::filter()`) to the desired statement and unnesting (`tidyr::unnest()`) the results.
 
 ```{r}
-aapl_financials %>%
-    filter(type == "IS") %>%
-    select(annual) %>%
-    unnest()
+# aapl_financials %>%
+#     filter(type == "IS") %>%
+#     select(annual) %>%
+#     unnest()
 ```
 
 A slightly more powerful example is looking at all quarterly statements together. This is easy to do with `unnest` and `spread` from the `tidyr` package.
 
 ```{r}
-aapl_financials %>%
-    unnest(quarter) %>% 
-    spread(key = date, value = value)
+# aapl_financials %>%
+#     unnest(quarter) %>% 
+#     spread(key = date, value = value)
 ```
 
 
@@ -190,9 +183,9 @@ Once we have a section, we can quickly visualize the ratios:
 aapl_key_ratios %>%
     filter(section == "Valuation Ratios") %>%
     unnest() %>%
-    ggplot(aes(x = date, y = value)) + 
-    geom_line(aes(col = forcats::fct_reorder2(category, date, value)),
-              size = 1) +
+    ggplot(aes(x = date, y = value)) +
+    geom_line(aes(col = factor(category, levels = c("Price to Earnings", "Price to Cash Flow", "Price to Book", "Price to Sales"))), 
+              size = 1)  + 
     labs(title = "10-Year Historical Valuation Ratios for AAPL", x = "", 
          y = "", col = "") +
     theme_tq() +
@@ -357,7 +350,7 @@ eur_usd <- tq_get("EUR/USD",
 eur_usd 
 ```
 
-The data source is [Oanda](https://www.oanda.com/), and list of currencies to compare can be found on [Oanda's currency converter](https://www.oanda.com/currency/converter/). It may make more sense to get this data from the FRED (See [Economic Data](#economic-data)) since the max period for Oanda is 180 days.
+The data source is [Oanda](https://www.oanda.com/), and list of currencies to compare can be found on Oanda's currency converter. It may make more sense to get this data from the FRED (See [Economic Data](#economic-data)) since the max period for Oanda is 180 days.
 
 ## Metal Prices
 
