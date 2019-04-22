@@ -55,25 +55,25 @@ aapl_splits
 #     spread(key = date, value = value)
 
 ## ------------------------------------------------------------------------
-aapl_key_ratios <- tq_get("AAPL", get = "key.ratios")
-aapl_key_ratios
+# aapl_key_ratios <- tq_get("AAPL", get = "key.ratios")
+# aapl_key_ratios
 
 ## ------------------------------------------------------------------------
-aapl_key_ratios %>%
-    filter(section == "Valuation Ratios") %>%
-    unnest()
+# aapl_key_ratios %>%
+#     filter(section == "Valuation Ratios") %>%
+#     unnest()
 
 ## ------------------------------------------------------------------------
-aapl_key_ratios %>%
-    filter(section == "Valuation Ratios") %>%
-    unnest() %>%
-    ggplot(aes(x = date, y = value)) +
-    geom_line(aes(col = factor(category, levels = c("Price to Earnings", "Price to Cash Flow", "Price to Book", "Price to Sales"))), 
-              size = 1)  + 
-    labs(title = "10-Year Historical Valuation Ratios for AAPL", x = "", 
-         y = "", col = "") +
-    theme_tq() +
-    scale_color_tq()
+# aapl_key_ratios %>%
+#     filter(section == "Valuation Ratios") %>%
+#     unnest() %>%
+#     ggplot(aes(x = date, y = value)) +
+#     geom_line(aes(col = factor(category, levels = c("Price to Earnings", "Price to Cash Flow", "Price to Book", "Price to Sales"))),
+#               size = 1)  +
+#     labs(title = "10-Year Historical Valuation Ratios for AAPL", x = "",
+#          y = "", col = "") +
+#     theme_tq() +
+#     scale_color_tq()
 
 ## ---- eval = F-----------------------------------------------------------
 #  quandl_api_key("enter-your-api-key-here")
