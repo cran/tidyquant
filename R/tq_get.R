@@ -95,6 +95,7 @@
 #' @examples
 #' # Load libraries
 #' library(tidyquant)
+#' library(dplyr)
 #'
 #' # Get the list of `get` options
 #' tq_get_options()
@@ -200,7 +201,7 @@ tq_get <- function(x, get = "stock.prices", complete_cases = TRUE, ...) {
 
         ret <- tryCatch({
             ret %>%
-                tidyr::unnest()
+                tidyr::unnest(cols = !!get)
         }, error = function(e) {
             warning("Returning as nested data frame.")
             ret

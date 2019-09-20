@@ -10,7 +10,9 @@ library(tidyquant)
 # devtools::load_all() # Travis CI fails on load_all()
 
 ## ---- echo = F-----------------------------------------------------------
+library(tidyverse)
 library(tidyquant)
+
 data("FANG")
 end <- as_date("2017-01-01")
 start <- end - weeks(24)

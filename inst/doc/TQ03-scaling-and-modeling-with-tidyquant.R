@@ -9,7 +9,8 @@ knitr::opts_chunk$set(message = FALSE,
 # devtools::load_all() # Travis CI fails on load_all()
 
 ## ------------------------------------------------------------------------
-# Loads tidyquant, tidyverse, lubridate, xts, quantmod, TTR 
+# Loads tidyquant, lubridate, xts, quantmod, TTR, and PerformanceAnalytics
+library(tidyverse)
 library(tidyquant)  
 
 ## ------------------------------------------------------------------------

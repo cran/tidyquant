@@ -9,8 +9,9 @@ knitr::opts_chunk$set(message = FALSE,
 library(tidyquant)
 # devtools::load_all() # Travis CI fails on load_all()
 
-## ---- eval = F-----------------------------------------------------------
-#  library(tidyquant)
+## ------------------------------------------------------------------------
+library(tidyverse)
+library(tidyquant)
 
 ## ------------------------------------------------------------------------
 Ra <- c("AAPL", "GOOG", "NFLX") %>%

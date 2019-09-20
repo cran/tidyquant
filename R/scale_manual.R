@@ -23,6 +23,8 @@
 #' @examples
 #' # Load libraries
 #' library(tidyquant)
+#' library(dplyr)
+#' library(ggplot2)
 #'
 #' # Get stock prices
 #' stocks <- c("AAPL", "FB", "NFLX") %>%
@@ -52,9 +54,9 @@ NULL
 scale_color_tq <- function(..., theme = "light") {
 
   pal <- switch(theme,
-         "light" = palette_light(),
-         "dark"  = palette_dark(),
-         "green" = palette_green()
+         "light" = unname(palette_light()) %>% rep(100),
+         "dark"  = unname(palette_dark()) %>% rep(100),
+         "green" = unname(palette_green() %>% rep(100))
          )
 
   scale_color_manual(values = pal)
@@ -69,9 +71,9 @@ scale_colour_tq <- scale_color_tq
 scale_fill_tq <- function(..., theme = "light") {
 
   pal <- switch(theme,
-                "light" = palette_light(),
-                "dark"  = palette_dark(),
-                "green" = palette_green()
+                "light" = unname(palette_light()) %>% rep(100),
+                "dark"  = unname(palette_dark()) %>% rep(100),
+                "green" = unname(palette_green()) %>% rep(100)
   )
 
   scale_fill_manual(values = pal)
@@ -92,19 +94,19 @@ NULL
 #' @export
 palette_light <- function() {
   c(
-    "#2c3e50", # blue
-    "#e31a1c", # red
-    "#18BC9C", # green
-    "#CCBE93", # yellow
-    "#a6cee3", # steel_blue
-    "#1f78b4", # navy_blue
-    "#b2df8a", # light_green
-    "#fb9a99", # pink
-    "#fdbf6f", # light_orange
-    "#ff7f00", # orange
-    "#cab2d6", # light_purple
-    "#6a3d9a"  # purple
-  )
+    blue         = "#2c3e50", # blue
+    red          = "#e31a1c", # red
+    green        = "#18BC9C", # green
+    yellow       = "#CCBE93", # yellow
+    steel_blue   = "#a6cee3", # steel_blue
+    navy_blue    = "#1f78b4", # navy_blue
+    light_green  = "#b2df8a", # light_green
+    pink         = "#fb9a99", # pink
+    light_orange = "#fdbf6f", # light_orange
+    orange       = "#ff7f00", # orange
+    light_purple = "#cab2d6", # light_purple
+    purple       = "#6a3d9a"  # purple
+  ) %>% toupper()
 }
 
 #' @rdname palette_tq
@@ -112,19 +114,19 @@ palette_light <- function() {
 palette_dark <- function() {
   # Brighter version of palette_light
   c(
-    "#0055AA", # blue
-    "#C40003", # red
-    "#00C19B", # green
-    "#EAC862", # yellow
-    "#7FD2FF", # steel_blue
-    "#007ED3", # navy_blue
-    "#b2df8a", # light_green
-    "#FFACAA", # pink
-    "#FF9D1E", # light_orange
-    "#C3EF00", # lime_green
-    "#cab2d6", # light_purple
-    "#894FC6"  # purple
-  )
+    blue         = "#0055AA", # blue
+    red          = "#C40003", # red
+    green        = "#00C19B", # green
+    yellow       = "#EAC862", # yellow
+    steel_blue   = "#7FD2FF", # steel_blue
+    navy_blue    = "#007ED3", # navy_blue
+    light_green  = "#b2df8a", # light_green
+    pink         = "#FFACAA", # pink
+    light_orange = "#FF9D1E", # light_orange
+    lime_green   = "#C3EF00", # lime_green
+    light_purple = "#cab2d6", # light_purple
+    purple       = "#894FC6"  # purple
+  ) %>% toupper()
 }
 
 #' @rdname palette_tq
@@ -132,17 +134,17 @@ palette_dark <- function() {
 palette_green <- function() {
   # Green compatible version of palette_light
   c(
-    "#0055AA", # blue
-    "#C40003", # red
-    "#EAC862", # yellow
-    "#7FD2FF", # steel_blue
-    "#007ED3", # navy_blue
-    "#F6F4F3", # creme
-    "#FFACAA", # pink
-    "#FF9D1E", # light_orange
-    "#C3EF00", # lime_green
-    "#cab2d6", # light_purple
-    "#894FC6", # purple
-    "#592E2E"  # brown
-  )
+    blue         = "#0055AA", # blue
+    red          = "#C40003", # red
+    yellow       = "#EAC862", # yellow
+    steel_blue   = "#7FD2FF", # steel_blue
+    navy_blue    = "#007ED3", # navy_blue
+    creme        = "#F6F4F3", # creme
+    pink         = "#FFACAA", # pink
+    light_orange = "#FF9D1E", # light_orange
+    lime_green   = "#C3EF00", # lime_green
+    light_purple = "#cab2d6", # light_purple
+    purple       = "#894FC6", # purple
+    brown        = "#592E2E"  # brown
+  ) %>% toupper()
 }

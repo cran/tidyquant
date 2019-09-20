@@ -1,9 +1,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# tidyquant <img src="man/figures/tidyquant-logo.png" width="147" height="170" align="right" />
+<!-- # tidyquant <img src="man/figures/tidyquant-logo.png" width="147" height="170" align="right" /> -->
 
-<https://travis-ci.org/business-science/tidyquant.svg?branch=master>
+[![Build
+Status](https://travis-ci.org/business-science/tidyquant.svg?branch=master)](https://travis-ci.org/business-science/tidyquant)
 [![codecov](https://codecov.io/gh/business-science/tidyquant/branch/master/graph/badge.svg)](https://codecov.io/gh/business-science/tidyquant)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/tidyquant)](https://cran.r-project.org/package=tidyquant)
 ![](http://cranlogs.r-pkg.org/badges/tidyquant?color=brightgreen)
@@ -122,3 +123,25 @@ to speed quickly:
 See the [`tidyquant`
 vignettes](https://cran.r-project.org/package=tidyquant) for further
 details on the package.
+
+# Want to Learn tidyquant?
+
+  - [Learning Lab
+    \#9:](https://university.business-science.io/p/learning-labs-pro)
+    
+      - **Performance Analysis & Portfolio Optimization with
+        `tidyquant`** - A 1-hour course on `tidyquant` in Learning Labs
+        PRO
+
+  - [Learning Lab
+    \#10:](https://university.business-science.io/p/learning-labs-pro)
+    
+      - **Building an API with `plumber`** - Build a stock optimization
+        API with `plumber` and `tidyquant`
+
+  - [Learning Lab
+    \#16:](https://university.business-science.io/p/learning-labs-pro)
+    
+      - **Stock Portfolio Optimization and Nonlinear Programming** - Use
+        the `ROI` package with `tidyquant` to calculate optimal minimum
+        variance portfolios and develop an efficient frontier.

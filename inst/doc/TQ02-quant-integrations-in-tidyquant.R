@@ -8,7 +8,8 @@ knitr::opts_chunk$set(message = FALSE,
 # devtools::load_all() # Travis CI fails on load_all()
 
 ## ------------------------------------------------------------------------
-# Loads tidyquant, tidyverse, lubridate, xts, quantmod, TTR 
+# Loads tidyquant, lubridate, xts, quantmod, TTR 
+library(tidyverse)
 library(tidyquant)
 
 ## ------------------------------------------------------------------------
@@ -50,13 +51,13 @@ FANG_annual_returns
 ## ---- fig.height = 4.5---------------------------------------------------
 FANG_annual_returns %>%
     ggplot(aes(x = date, y = yearly.returns, fill = symbol)) +
-    geom_bar(stat = "identity") +
+    geom_col() +
     geom_hline(yintercept = 0, color = palette_light()[[1]]) +
     scale_y_continuous(labels = scales::percent) +
     labs(title = "FANG: Annual Returns",
          subtitle = "Get annual returns quickly with tq_transmute!",
          y = "Annual Returns", x = "") + 
-    facet_wrap(~ symbol, ncol = 2) +
+    facet_wrap(~ symbol, ncol = 2, scales = "free_y") +
     theme_tq() + 
     scale_fill_tq()
 

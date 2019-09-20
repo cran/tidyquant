@@ -8,7 +8,8 @@ knitr::opts_chunk$set(message = FALSE,
 # devtools::load_all() # Travis CI fails on load_all()
 
 ## ------------------------------------------------------------------------
-# Loads tidyquant, tidyverse, lubridate, xts, quantmod, TTR 
+# Loads tidyquant, lubridate, xts, quantmod, TTR, and PerformanceAnalytics
+library(tidyverse)
 library(tidyquant)  
 
 ## ------------------------------------------------------------------------
@@ -51,7 +52,7 @@ AAPL %>%
 AAPL %>%
     ggplot(aes(x = date, y = close)) +
     geom_barchart(aes(open = open, high = high, low = low, close = close),
-                     color_up = "darkgreen", color_down = "darkred", size = 1) +
+                     colour_up = "darkgreen", colour_down = "darkred", size = 1) +
     labs(title = "AAPL Bar Chart", 
          subtitle = "Zoomed in, Experimenting with Formatting",
          y = "Closing Price", x = "") + 
@@ -81,7 +82,7 @@ AAPL %>%
 AAPL %>%
     ggplot(aes(x = date, y = close)) +
     geom_candlestick(aes(open = open, high = high, low = low, close = close),
-                        color_up = "darkgreen", color_down = "darkred", 
+                        colour_up = "darkgreen", colour_down = "darkred", 
                         fill_up  = "darkgreen", fill_down  = "darkred") +
     labs(title = "AAPL Candlestick Chart", 
          subtitle = "Zoomed in, Experimenting with Formatting",

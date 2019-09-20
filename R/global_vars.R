@@ -100,7 +100,6 @@ globalVariables(c("A",
                   "symbol",
                   ".",
                   "df_mult",
-                  "group_by_",
                   "is.grouped_df",
                   "left_join",
                   "returns..",
@@ -125,5 +124,6 @@ globalVariables(c("A",
                   "assets",
                   "Weight",
                   "Identifier",
-                  "Shares.Held"
+                  "Shares.Held",
+                  "nested.col"
                   ))
