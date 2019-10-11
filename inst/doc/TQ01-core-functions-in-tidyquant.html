@@ -13,7 +13,7 @@
 
 <meta name="author" content="Matt Dancho" />
 
-<meta name="date" content="2019-09-20" />
+<meta name="date" content="2019-10-11" />
 
 <title>Core Functions in tidyquant</title>
 
@@ -304,7 +304,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Core Functions in tidyquant</h1>
 <h4 class="author">Matt Dancho</h4>
-<h4 class="date">2019-09-20</h4>
+<h4 class="date">2019-10-11</h4>
 
 
 <div id="TOC">
@@ -386,7 +386,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>The stock prices can be retrieved succinctly using <code>get = &quot;stock.prices&quot;</code>. This returns stock price data from Yahoo Finance.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">aapl_prices  &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>, <span class="dt">from =</span> <span class="st">&quot; 1990-01-01&quot;</span>)</a>
 <a class="sourceLine" id="cb8-2" data-line-number="2">aapl_prices </a></code></pre></div>
-<pre><code>## # A tibble: 7,488 x 7
+<pre><code>## # A tibble: 7,503 x 7
 ##    date        open  high   low close   volume adjusted
 ##    &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
 ##  1 1990-01-02  1.26  1.34  1.25  1.33 45799600    1.08 
@@ -399,7 +399,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ##  8 1990-01-11  1.29  1.29  1.23  1.23 52763200    1.00 
 ##  9 1990-01-12  1.22  1.24  1.21  1.23 42974400    1.00 
 ## 10 1990-01-15  1.23  1.28  1.22  1.22 40434800    0.997
-## # … with 7,478 more rows</code></pre>
+## # … with 7,493 more rows</code></pre>
 <p>Yahoo Japan stock prices can be retrieved using a similar call, <code>get = &quot;stock.prices.japan&quot;</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">x8411T &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;8411.T&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;stock.prices.japan&quot;</span>, <span class="dt">from =</span> <span class="st">&quot;2016-01-01&quot;</span>, <span class="dt">to  =</span> <span class="st">&quot;2016-12-31&quot;</span>)</a></code></pre></div>
 <p>Dividends are obtained using <code>get = &quot;dividends&quot;</code>.</p>
@@ -589,7 +589,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>A wealth of economic data can be extracted from the Federal Reserve Economic Data (FRED) database. The <a href="https://fred.stlouisfed.org/series/DCOILWTICO">WTI Crude Oil Prices</a> are shown below.</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1">wti_price_usd &lt;-<span class="st"> </span><span class="kw">tq_get</span>(<span class="st">&quot;DCOILWTICO&quot;</span>, <span class="dt">get =</span> <span class="st">&quot;economic.data&quot;</span>)</a>
 <a class="sourceLine" id="cb30-2" data-line-number="2">wti_price_usd </a></code></pre></div>
-<pre><code>## # A tibble: 2,793 x 2
+<pre><code>## # A tibble: 2,808 x 2
 ##    date       price
 ##    &lt;date&gt;     &lt;dbl&gt;
 ##  1 2009-01-01  NA  
@@ -602,7 +602,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ##  8 2009-01-12  37.6
 ##  9 2009-01-13  37.8
 ## 10 2009-01-14  37.4
-## # … with 2,783 more rows</code></pre>
+## # … with 2,798 more rows</code></pre>
 <p>The FRED contains literally over 10K data sets that are free to use. See the <a href="https://fred.stlouisfed.org/categories">FRED categories</a> to narrow down the data base and to get data codes.</p>
 </div>
 <div id="exchange-rates" class="section level2">
@@ -615,16 +615,16 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## # A tibble: 10 x 2
 ##    date       exchange.rate
 ##    &lt;date&gt;             &lt;dbl&gt;
-##  1 2019-09-10          1.10
-##  2 2019-09-11          1.10
-##  3 2019-09-12          1.10
-##  4 2019-09-13          1.11
-##  5 2019-09-14          1.11
-##  6 2019-09-15          1.11
-##  7 2019-09-16          1.10
-##  8 2019-09-17          1.10
-##  9 2019-09-18          1.11
-## 10 2019-09-19          1.10</code></pre>
+##  1 2019-10-01          1.09
+##  2 2019-10-02          1.09
+##  3 2019-10-03          1.10
+##  4 2019-10-04          1.10
+##  5 2019-10-05          1.10
+##  6 2019-10-06          1.10
+##  7 2019-10-07          1.10
+##  8 2019-10-08          1.10
+##  9 2019-10-09          1.10
+## 10 2019-10-10          1.10</code></pre>
 <p>The data source is <a href="https://www.oanda.com/">Oanda</a>, and list of currencies to compare can be found on Oanda’s currency converter. It may make more sense to get this data from the FRED (See <a href="#economic-data">Economic Data</a>) since the max period for Oanda is 180 days.</p>
 </div>
 <div id="metal-prices" class="section level2">
@@ -637,16 +637,16 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## # A tibble: 10 x 2
 ##    date       price
 ##    &lt;date&gt;     &lt;dbl&gt;
-##  1 2019-09-10  853.
-##  2 2019-09-11  852.
-##  3 2019-09-12  862.
-##  4 2019-09-13  860.
-##  5 2019-09-14  858.
-##  6 2019-09-15  858.
-##  7 2019-09-16  857.
-##  8 2019-09-17  848.
-##  9 2019-09-18  848.
-## 10 2019-09-19  848.</code></pre>
+##  1 2019-10-01  824.
+##  2 2019-10-02  806.
+##  3 2019-10-03  812.
+##  4 2019-10-04  804.
+##  5 2019-10-05  801.
+##  6 2019-10-06  801.
+##  7 2019-10-07  802.
+##  8 2019-10-08  803.
+##  9 2019-10-09  803.
+## 10 2019-10-10  811.</code></pre>
 <p>The data source is <a href="https://www.oanda.com/">Oanda</a>. It may make more sense to get this data from the FRED (See <a href="#economic-data">Economic Data</a>) since the max period for Oanda is 180 days.</p>
 </div>
 </div>
@@ -700,7 +700,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb40-3" data-line-number="3"><span class="st">    </span><span class="kw">tq_transmute</span>(<span class="dt">mutate_fun =</span> to.period,</a>
 <a class="sourceLine" id="cb40-4" data-line-number="4">                 <span class="dt">period =</span> <span class="st">&quot;months&quot;</span>, </a>
 <a class="sourceLine" id="cb40-5" data-line-number="5">                 <span class="dt">col_rename =</span> <span class="st">&quot;WTI Price&quot;</span>)</a></code></pre></div>
-<pre><code>## # A tibble: 129 x 2
+<pre><code>## # A tibble: 130 x 2
 ##    date       `WTI Price`
 ##    &lt;date&gt;           &lt;dbl&gt;
 ##  1 2009-01-30        41.7
@@ -713,7 +713,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ##  8 2009-08-31        70.0
 ##  9 2009-09-30        70.5
 ## 10 2009-10-30        77.0
-## # … with 119 more rows</code></pre>
+## # … with 120 more rows</code></pre>
 </div>
 </div>
 <div id="mutate-quantitative-data-tq_mutate" class="section level2">

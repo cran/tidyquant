@@ -13,7 +13,7 @@
 
 <meta name="author" content="Matt Dancho" />
 
-<meta name="date" content="2019-09-20" />
+<meta name="date" content="2019-10-11" />
 
 <title>Scaling and Modeling with tidyquant</title>
 
@@ -304,7 +304,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Scaling and Modeling with tidyquant</h1>
 <h4 class="author">Matt Dancho</h4>
-<h4 class="date">2019-09-20</h4>
+<h4 class="date">2019-10-11</h4>
 
 
 <div id="TOC">
@@ -430,7 +430,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">tq_index</span>(<span class="st">&quot;DOW&quot;</span>, <span class="dt">use_fallback =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb11-2" data-line-number="2"><span class="st">    </span><span class="kw">slice</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb11-3" data-line-number="3"><span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>)</a></code></pre></div>
-<pre><code>## # A tibble: 8,091 x 12
+<pre><code>## # A tibble: 8,136 x 12
 ##    symbol company weight sector shares_held date        open  high   low
 ##    &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt; &lt;chr&gt;        &lt;dbl&gt; &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
 ##  1 GS     Goldma… 0.0695 Finan…     5288604 2009-01-02  84.0  87.6  82.2
@@ -443,7 +443,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ##  8 GS     Goldma… 0.0695 Finan…     5288604 2009-01-13  74.2  78.9  73.7
 ##  9 GS     Goldma… 0.0695 Finan…     5288604 2009-01-14  75.9  76.9  73.4
 ## 10 GS     Goldma… 0.0695 Finan…     5288604 2009-01-15  75.0  76.2  69  
-## # … with 8,081 more rows, and 3 more variables: close &lt;dbl&gt;, volume &lt;dbl&gt;,
+## # … with 8,126 more rows, and 3 more variables: close &lt;dbl&gt;, volume &lt;dbl&gt;,
 ## #   adjusted &lt;dbl&gt;</code></pre>
 <p>You can use any applicable “getter” to get data for <strong>every stock in an index or an exchange</strong>! This includes: “stock.prices”, “key.ratios”, “key.stats”, and more.</p>
 </div>
@@ -456,10 +456,10 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## # A tibble: 4 x 2
 ##   symbol stock.prices        
 ##   &lt;chr&gt;  &lt;list&gt;              
-## 1 AAPL   &lt;tibble [2,697 × 7]&gt;
-## 2 GOOG   &lt;tibble [2,697 × 7]&gt;
-## 3 AMZN   &lt;tibble [2,697 × 7]&gt;
-## 4 FB     &lt;tibble [1,846 × 7]&gt;</code></pre>
+## 1 AAPL   &lt;tibble [2,712 × 7]&gt;
+## 2 GOOG   &lt;tibble [2,712 × 7]&gt;
+## 3 AMZN   &lt;tibble [2,712 × 7]&gt;
+## 4 FB     &lt;tibble [1,861 × 7]&gt;</code></pre>
 </div>
 <div id="method-4-compound-getters" class="section level2">
 <h2>Method 4: Compound Getters</h2>
@@ -469,8 +469,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## # A tibble: 2 x 3
 ##   symbol stock.prices         dividends        
 ##   &lt;chr&gt;  &lt;list&gt;               &lt;list&gt;           
-## 1 AAPL   &lt;tibble [2,697 × 7]&gt; &lt;tibble [29 × 2]&gt;
-## 2 GOOG   &lt;tibble [2,697 × 7]&gt; &lt;tibble [0 × 2]&gt;</code></pre>
+## 1 AAPL   &lt;tibble [2,712 × 7]&gt; &lt;tibble [29 × 2]&gt;
+## 2 GOOG   &lt;tibble [2,712 × 7]&gt; &lt;tibble [0 × 2]&gt;</code></pre>
 <p>This returns the stock prices and dividends for each stock as one nested data frame! Any of the <code>get</code> options that accept stock symbols can be used in this manner: <code>&quot;stock.prices&quot;</code>, <code>&quot;key.ratios&quot;</code>, <code>&quot;key.stats&quot;</code>, <code>&quot;dividends&quot;</code>, and <code>&quot;splits&quot;</code>.</p>
 </div>
 </div>
@@ -630,7 +630,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ##   symbol company  weight sector shares_held estimate std.error statistic
 ##   &lt;chr&gt;  &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;        &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
 ## 1 CBS    CBS Co… 1.13e-3 Consu…     4263471   0.0468    0.0562     0.833
-## 2 WLTW   Willis… 8.95e-4 Finan…     1476521   0.0189    0.0232     0.815
+## 2 WLTW   Willis… 8.95e-4 Finan…     1476521   0.0176    0.0233     0.754
 ## 3 EXC    Exelon… 1.62e-3 Utili…    10625883   0.0163    0.0297     0.549
 ## 4 HON    Honeyw… 4.89e-3 Indus…     8746874   0.0162    0.0322     0.504
 ## 5 FTI    Techni… 5.97e-4 Energy     5362002  -0.0393    0.0574    -0.685
@@ -668,7 +668,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## BAD APPLE download failed after two attempts. Error message:
 ## HTTP error 400.
 ##  Removing BAD APPLE.</code></pre>
-<pre><code>## # A tibble: 5,394 x 8
+<pre><code>## # A tibble: 5,424 x 8
 ##    symbol date        open  high   low close    volume adjusted
 ##    &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
 ##  1 AAPL   2009-01-02  12.3  13.0  12.2  13.0 186503800     11.3
@@ -681,7 +681,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ##  8 AAPL   2009-01-13  12.6  12.8  12.3  12.5 199599400     10.9
 ##  9 AAPL   2009-01-14  12.3  12.5  12.1  12.2 255416000     10.6
 ## 10 AAPL   2009-01-15  11.5  12.0  11.4  11.9 457908500     10.4
-## # … with 5,384 more rows</code></pre>
+## # … with 5,414 more rows</code></pre>
 <p>Now switching <code>complete_cases = FALSE</code> will retain any errors as <code>NA</code> values in a nested data frame. Notice that the error message and output change. The error message now states that the <code>NA</code> values exist in the output and the return is a “nested” data structure.</p>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1"><span class="kw">c</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="st">&quot;GOOG&quot;</span>, <span class="st">&quot;BAD APPLE&quot;</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb41-2" data-line-number="2"><span class="st">    </span><span class="kw">tq_get</span>(<span class="dt">get =</span> <span class="st">&quot;stock.prices&quot;</span>, <span class="dt">complete_cases =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
@@ -692,8 +692,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## # A tibble: 3 x 2
 ##   symbol    stock.prices        
 ##   &lt;chr&gt;     &lt;list&gt;              
-## 1 AAPL      &lt;tibble [2,697 × 7]&gt;
-## 2 GOOG      &lt;tibble [2,697 × 7]&gt;
+## 1 AAPL      &lt;tibble [2,712 × 7]&gt;
+## 2 GOOG      &lt;tibble [2,712 × 7]&gt;
 ## 3 BAD APPLE &lt;lgl [1]&gt;</code></pre>
 <p>In both cases, the prudent user will review the warnings to determine what happened and whether or not this is acceptable. In the <code>complete_cases = FALSE</code> example, if the user attempts to perform downstream computations at scale, the computations will likely fail grinding the analysis to a hault. But, the advantage is that the user will more easily be able to filter to the problem childs to determine what happened and decide whether this is acceptable or not.</p>
 </div>
