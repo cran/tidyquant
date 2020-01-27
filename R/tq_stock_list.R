@@ -26,9 +26,6 @@
 #' @seealso
 #' [tq_get()] to get stock prices, financials, key stats, etc using the stock symbols.
 #'
-#' @rdname tq_stock_list
-#'
-#' @export
 #'
 #' @examples
 #' # Load libraries
@@ -49,11 +46,13 @@
 #' \dontrun{
 #' tq_exchange("NYSE")
 #' }
-
+#'
+#' @name tq_index
+#' @export
 
 # tq_index -----
 
-#' @rdname tq_stock_list
+#' @rdname tq_index
 #' @export
 tq_index <- function(x, use_fallback = FALSE) {
 
@@ -92,7 +91,7 @@ tq_index <- function(x, use_fallback = FALSE) {
 
 # tq_exchange ----
 
-#' @rdname tq_stock_list
+#' @rdname tq_index
 #' @export
 tq_exchange <- function(x) {
 
@@ -168,7 +167,7 @@ tq_exchange <- function(x) {
 
 }
 
-#' @rdname tq_stock_list
+#' @rdname tq_index
 #' @export
 tq_index_options <- function() {
     c(
@@ -181,7 +180,7 @@ tq_index_options <- function() {
 }
 
 
-#' @rdname tq_stock_list
+#' @rdname tq_index
 #' @export
 tq_exchange_options <- function() {
     c("AMEX", "NASDAQ", "NYSE")

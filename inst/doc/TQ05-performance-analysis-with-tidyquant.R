@@ -1,4 +1,4 @@
-## ---- echo = FALSE, message = FALSE, warning = FALSE---------------------
+## ---- echo = FALSE, message = FALSE, warning = FALSE--------------------------
 knitr::opts_chunk$set(message = FALSE,
                       warning = FALSE,
                       fig.width = 8, 
@@ -9,11 +9,11 @@ knitr::opts_chunk$set(message = FALSE,
 library(tidyquant)
 # devtools::load_all() # Travis CI fails on load_all()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 library(tidyverse)
 library(tidyquant)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 Ra <- c("AAPL", "GOOG", "NFLX") %>%
     tq_get(get  = "stock.prices",
            from = "2010-01-01",
@@ -25,7 +25,7 @@ Ra <- c("AAPL", "GOOG", "NFLX") %>%
                  col_rename = "Ra")
 Ra
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 Rb <- "XLK" %>%
     tq_get(get  = "stock.prices",
            from = "2010-01-01",
@@ -36,32 +36,35 @@ Rb <- "XLK" %>%
                  col_rename = "Rb")
 Rb
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb <- left_join(Ra, Rb, by = c("date" = "date"))
 RaRb
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_capm <- RaRb %>%
     tq_performance(Ra = Ra, 
                    Rb = Rb, 
                    performance_fun = table.CAPM)
 RaRb_capm
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_capm %>%
     select(Alpha, Beta)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
+knitr::include_graphics("perfomance_analysis_workflow.png")
+
+## -----------------------------------------------------------------------------
 args(SharpeRatio)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stock_prices <- c("AAPL", "GOOG", "NFLX") %>%
     tq_get(get  = "stock.prices",
            from = "2010-01-01",
            to   = "2015-12-31")
 stock_prices
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stock_returns_monthly <- stock_prices %>%
     group_by(symbol) %>%
     tq_transmute(select     = adjusted, 
@@ -70,13 +73,13 @@ stock_returns_monthly <- stock_prices %>%
                  col_rename = "Ra")
 stock_returns_monthly
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stock_returns_monthly %>%
     tq_performance(Ra = Ra, 
                    Rb = NULL, 
                    performance_fun = SharpeRatio)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stock_returns_monthly %>%
     tq_performance(Ra = Ra, 
                    Rb = NULL, 
@@ -84,7 +87,7 @@ stock_returns_monthly %>%
                    Rf = 0.03 / 12, 
                    p = 0.99)
 
-## ---- eval = F-----------------------------------------------------------
+## ---- eval = F----------------------------------------------------------------
 #  stock_returns_monthly <- c("AAPL", "GOOG", "NFLX") %>%
 #      tq_get(get  = "stock.prices",
 #             from = "2010-01-01",
@@ -96,12 +99,12 @@ stock_returns_monthly %>%
 #                   col_rename = "Ra")
 #  stock_returns_monthly
 
-## ---- echo = F-----------------------------------------------------------
+## ---- echo = F----------------------------------------------------------------
 # NOT SHOWN
 stock_returns_monthly <- Ra
 stock_returns_monthly
 
-## ---- eval = F-----------------------------------------------------------
+## ---- eval = F----------------------------------------------------------------
 #  baseline_returns_monthly <- "XLK" %>%
 #      tq_get(get  = "stock.prices",
 #             from = "2010-01-01",
@@ -112,12 +115,12 @@ stock_returns_monthly
 #                   col_rename = "Rb")
 #  baseline_returns_monthly
 
-## ---- echo = F-----------------------------------------------------------
+## ---- echo = F----------------------------------------------------------------
 # NOT SHOWN
 baseline_returns_monthly <- Rb
 baseline_returns_monthly
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 wts <- c(0.5, 0.0, 0.5)
 portfolio_returns_monthly <- stock_returns_monthly %>%
     tq_portfolio(assets_col  = symbol, 
@@ -126,31 +129,31 @@ portfolio_returns_monthly <- stock_returns_monthly %>%
                  col_rename  = "Ra")
 portfolio_returns_monthly
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 wts_map <- tibble(
     symbols = c("AAPL", "NFLX"),
     weights = c(0.5, 0.5)
 )
 wts_map
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stock_returns_monthly %>%
     tq_portfolio(assets_col  = symbol, 
                  returns_col = Ra, 
                  weights     = wts_map, 
                  col_rename  = "Ra_using_wts_map")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_single_portfolio <- left_join(portfolio_returns_monthly, 
                                    baseline_returns_monthly,
                                    by = "date")
 RaRb_single_portfolio
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_single_portfolio %>%
     tq_performance(Ra = Ra, Rb = Rb, performance_fun = table.CAPM)
 
-## ---- eval = F-----------------------------------------------------------
+## ---- eval = F----------------------------------------------------------------
 #  stock_returns_monthly <- c("AAPL", "GOOG", "NFLX") %>%
 #      tq_get(get  = "stock.prices",
 #             from = "2010-01-01",
@@ -161,7 +164,7 @@ RaRb_single_portfolio %>%
 #                   period     = "monthly",
 #                   col_rename = "Ra")
 
-## ---- eval = F-----------------------------------------------------------
+## ---- eval = F----------------------------------------------------------------
 #  baseline_returns_monthly <- "XLK" %>%
 #      tq_get(get  = "stock.prices",
 #             from = "2010-01-01",
@@ -171,12 +174,12 @@ RaRb_single_portfolio %>%
 #                   period     = "monthly",
 #                   col_rename = "Rb")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stock_returns_monthly_multi <- stock_returns_monthly %>%
     tq_repeat_df(n = 3)
 stock_returns_monthly_multi
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 weights <- c(
     0.50, 0.25, 0.25,
     0.25, 0.50, 0.25,
@@ -189,7 +192,7 @@ weights_table <-  tibble(stocks) %>%
     group_by(portfolio)
 weights_table
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 portfolio_returns_monthly_multi <- stock_returns_monthly_multi %>%
     tq_portfolio(assets_col  = symbol, 
                  returns_col = Ra, 
@@ -197,71 +200,71 @@ portfolio_returns_monthly_multi <- stock_returns_monthly_multi %>%
                  col_rename  = "Ra")
 portfolio_returns_monthly_multi
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio <- left_join(portfolio_returns_monthly_multi, 
                                      baseline_returns_monthly,
                                      by = "date")
 RaRb_multiple_portfolio
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio %>%
     tq_performance(Ra = Ra, Rb = Rb, performance_fun = table.CAPM)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio %>%
     tq_performance(Ra = Ra, Rb = NULL, performance_fun = SharpeRatio)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 tq_performance_fun_options()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio %>%
     tq_performance(Ra = Ra, Rb = NULL, performance_fun = table.Stats)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio %>%
     tq_performance(Ra = Ra, Rb = Rb, performance_fun = table.CAPM)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio %>%
     tq_performance(Ra = Ra, Rb = NULL, performance_fun = table.AnnualizedReturns)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio %>%
     tq_performance(Ra = Ra, Rb = Rb, performance_fun = table.Correlation)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio %>%
     tq_performance(Ra = Ra, Rb = NULL, performance_fun = table.DownsideRisk)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio %>%
     tq_performance(Ra = Ra, Rb = NULL, performance_fun = table.DownsideRiskRatio)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio %>%
     tq_performance(Ra = Ra, Rb = Rb, performance_fun = table.HigherMoments)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio %>%
     tq_performance(Ra = Ra, Rb = Rb, performance_fun = table.InformationRatio)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio %>%
     tq_performance(Ra = Ra, Rb = NULL, performance_fun = table.Variability)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio %>%
     tq_performance(Ra = Ra, Rb = NULL, performance_fun = VaR)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio %>%
     tq_performance(Ra = Ra, Rb = NULL, performance_fun = SharpeRatio)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 args(Return.portfolio)
 
-## ---- eval=F-------------------------------------------------------------
+## ---- eval=F------------------------------------------------------------------
 #  wts <- c(0.5, 0.0, 0.5)
 #  portfolio_returns_monthly <- stock_returns_monthly %>%
 #      tq_portfolio(assets_col  = symbol,
@@ -269,7 +272,7 @@ args(Return.portfolio)
 #                   weights     = wts,
 #                   col_rename  = "Ra")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 portfolio_returns_monthly %>%
     ggplot(aes(x = date, y = Ra)) +
     geom_bar(stat = "identity", fill = palette_light()[[1]]) +
@@ -282,7 +285,7 @@ portfolio_returns_monthly %>%
     scale_color_tq() +
     scale_y_continuous(labels = scales::percent)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 wts <- c(0.5, 0, 0.5)
 portfolio_growth_monthly <- stock_returns_monthly %>%
     tq_portfolio(assets_col   = symbol, 
@@ -292,7 +295,7 @@ portfolio_growth_monthly <- stock_returns_monthly %>%
                  wealth.index = TRUE) %>%
     mutate(investment.growth = investment.growth * 10000)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 portfolio_growth_monthly %>%
     ggplot(aes(x = date, y = investment.growth)) +
     geom_line(size = 2, color = palette_light()[[1]]) +
@@ -305,7 +308,7 @@ portfolio_growth_monthly %>%
     scale_color_tq() +
     scale_y_continuous(labels = scales::dollar)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 portfolio_growth_monthly_multi <- stock_returns_monthly_multi %>%
     tq_portfolio(assets_col   = symbol, 
                  returns_col  = Ra, 
@@ -314,7 +317,7 @@ portfolio_growth_monthly_multi <- stock_returns_monthly_multi %>%
                  wealth.index = TRUE) %>%
     mutate(investment.growth = investment.growth * 10000)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 portfolio_growth_monthly_multi %>%
     ggplot(aes(x = date, y = investment.growth, color = factor(portfolio))) +
     geom_line(size = 2) +
@@ -328,21 +331,21 @@ portfolio_growth_monthly_multi %>%
     scale_color_tq() +
     scale_y_continuous(labels = scales::dollar)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 args(SharpeRatio)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio %>%
     tq_performance(Ra              = Ra, 
                    performance_fun = SharpeRatio)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio %>%
     tq_performance(Ra              = Ra, 
                    performance_fun = SharpeRatio,
                    Rf              = 0.03 / 12)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RaRb_multiple_portfolio %>%
     tq_performance(Ra              = Ra, 
                    performance_fun = SharpeRatio,

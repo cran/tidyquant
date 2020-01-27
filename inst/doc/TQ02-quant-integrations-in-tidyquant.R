@@ -1,4 +1,4 @@
-## ---- echo = FALSE, message = FALSE, warning = FALSE---------------------
+## ---- echo = FALSE, message = FALSE, warning = FALSE--------------------------
 knitr::opts_chunk$set(message = FALSE,
                       warning = FALSE,
                       fig.width = 8, 
@@ -7,39 +7,39 @@ knitr::opts_chunk$set(message = FALSE,
                       out.width='95%')
 # devtools::load_all() # Travis CI fails on load_all()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Loads tidyquant, lubridate, xts, quantmod, TTR 
 library(tidyverse)
 library(tidyquant)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 tq_transmute_fun_options() %>% str()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Get zoo functions that work with tq_transmute and tq_mutate
 tq_transmute_fun_options()$zoo
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Get xts functions that work with tq_transmute and tq_mutate
 tq_transmute_fun_options()$xts
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Get quantmod functions that work with tq_transmute and tq_mutate
 tq_transmute_fun_options()$quantmod
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Get TTR functions that work with tq_transmute and tq_mutate
 tq_transmute_fun_options()$TTR
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Get PerformanceAnalytics functions that work with tq_transmute and tq_mutate
 tq_transmute_fun_options()$PerformanceAnalytics
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 data(FANG)
 FANG
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 FANG_annual_returns <- FANG %>%
     group_by(symbol) %>%
     tq_transmute(select     = adjusted, 
@@ -48,7 +48,7 @@ FANG_annual_returns <- FANG %>%
                  type       = "arithmetic")
 FANG_annual_returns
 
-## ---- fig.height = 4.5---------------------------------------------------
+## ---- fig.height = 4.5--------------------------------------------------------
 FANG_annual_returns %>%
     ggplot(aes(x = date, y = yearly.returns, fill = symbol)) +
     geom_col() +
@@ -61,7 +61,7 @@ FANG_annual_returns %>%
     theme_tq() + 
     scale_fill_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 FANG_daily_log_returns <- FANG %>%
     group_by(symbol) %>%
     tq_transmute(select     = adjusted, 
@@ -70,7 +70,7 @@ FANG_daily_log_returns <- FANG %>%
                  type       = "log",
                  col_rename = "monthly.returns")
 
-## ---- fig.height = 4.5---------------------------------------------------
+## ---- fig.height = 4.5--------------------------------------------------------
 FANG_daily_log_returns %>%
     ggplot(aes(x = monthly.returns, fill = symbol)) +
     geom_density(alpha = 0.5) +
@@ -80,14 +80,14 @@ FANG_daily_log_returns %>%
     scale_fill_tq() + 
     facet_wrap(~ symbol, ncol = 2)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 FANG %>%
     group_by(symbol) %>%
     tq_transmute(select     = open:volume, 
                  mutate_fun = to.period, 
                  period     = "months")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 FANG_daily <- FANG %>%
     group_by(symbol)
 
@@ -101,7 +101,7 @@ FANG_daily %>%
     theme_tq() + 
     scale_color_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 FANG_monthly <- FANG %>%
     group_by(symbol) %>%
     tq_transmute(select     = adjusted, 
@@ -118,7 +118,7 @@ FANG_monthly %>%
     theme_tq() + 
     scale_color_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Asset Returns
 FANG_returns_monthly <- FANG %>%
     group_by(symbol) %>%
@@ -135,13 +135,13 @@ baseline_returns_monthly <- "XLK" %>%
                  mutate_fun = periodReturn,
                  period     = "monthly")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 returns_joined <- left_join(FANG_returns_monthly, 
                             baseline_returns_monthly,
                             by = "date")
 returns_joined
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 FANG_rolling_corr <- returns_joined %>%
     tq_transmute_xy(x          = monthly.returns.x, 
                     y          = monthly.returns.y,
@@ -149,7 +149,7 @@ FANG_rolling_corr <- returns_joined %>%
                     n          = 6,
                     col_rename = "rolling.corr.6")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 FANG_rolling_corr %>%
     ggplot(aes(x = date, y = rolling.corr.6, color = symbol)) +
     geom_hline(yintercept = 0, color = palette_light()[[1]]) +
@@ -160,7 +160,7 @@ FANG_rolling_corr %>%
     theme_tq() + 
     scale_color_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 FANG_macd <- FANG %>%
     group_by(symbol) %>%
     tq_mutate(select     = close, 
@@ -173,7 +173,7 @@ FANG_macd <- FANG %>%
     select(-(open:volume))
 FANG_macd
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 FANG_macd %>%
     filter(date >= as_date("2016-10-01")) %>%
     ggplot(aes(x = date)) + 
@@ -187,7 +187,7 @@ FANG_macd %>%
     theme_tq() +
     scale_color_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 FANG_max_by_qtr <- FANG %>%
     group_by(symbol) %>%
     tq_transmute(select     = adjusted, 
@@ -198,7 +198,7 @@ FANG_max_by_qtr <- FANG %>%
     select(-date)
 FANG_max_by_qtr
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 FANG_min_by_qtr <- FANG %>%
     group_by(symbol) %>%
     tq_transmute(select     = adjusted, 
@@ -213,7 +213,7 @@ FANG_by_qtr <- left_join(FANG_max_by_qtr, FANG_min_by_qtr,
                                 "year.qtr" = "year.qtr"))
 FANG_by_qtr
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 FANG_by_qtr %>%
     ggplot(aes(x = year.qtr, color = symbol)) +
     geom_segment(aes(xend = year.qtr, y = min.close, yend = max.close),
@@ -229,7 +229,7 @@ FANG_by_qtr %>%
     theme(axis.text.x = element_text(angle = 90, hjust = 1),
           axis.title.x = element_blank())
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Get stock pairs
 stock_prices <- c("MA", "V") %>%
     tq_get(get  = "stock.prices",
@@ -245,7 +245,7 @@ stock_pairs <- stock_prices %>%
                  col_rename = "returns") %>%
     spread(key = symbol, value = returns)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stock_pairs %>%
     ggplot(aes(x = V, y = MA)) +
     geom_point(color = palette_light()[[1]], alpha = 0.5) +
@@ -253,16 +253,16 @@ stock_pairs %>%
     labs(title = "Visualizing Returns Relationship of Stock Pairs") +
     theme_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 lm(MA ~ V, data = stock_pairs) %>%
     summary()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 regr_fun <- function(data) {
     coef(lm(MA ~ V, data = timetk::tk_tbl(data, silent = TRUE)))
 }
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stock_pairs <- stock_pairs %>%
          tq_mutate(mutate_fun = rollapply,
                    width      = 90,
@@ -271,7 +271,7 @@ stock_pairs <- stock_pairs %>%
                    col_rename = c("coef.0", "coef.1"))
 stock_pairs
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stock_pairs %>%
     ggplot(aes(x = date, y = coef.1)) +
     geom_line(size = 1, color = palette_light()[[1]]) +
@@ -279,7 +279,7 @@ stock_pairs %>%
     labs(title = "MA ~ V: Visualizing Rolling Regression Coefficient", x = "") +
     theme_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stock_prices %>%
     tq_transmute(adjusted, 
                  periodReturn, 
@@ -293,7 +293,7 @@ stock_prices %>%
     theme_tq() + 
     scale_color_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 FANG %>%
     group_by(symbol) %>%
     tq_transmute(adjusted, periodReturn, period = "daily") %>%

@@ -1,4 +1,4 @@
-## ---- echo = FALSE, message = FALSE, warning = FALSE---------------------
+## ---- echo = FALSE, message = FALSE, warning = FALSE--------------------------
 knitr::opts_chunk$set(message = FALSE,
                       warning = FALSE,
                       fig.width = 8, 
@@ -9,7 +9,7 @@ knitr::opts_chunk$set(message = FALSE,
 library(tidyquant)
 # devtools::load_all() # Travis CI fails on load_all()
 
-## ---- echo = F-----------------------------------------------------------
+## ---- echo = F----------------------------------------------------------------
 library(tidyverse)
 library(tidyquant)
 

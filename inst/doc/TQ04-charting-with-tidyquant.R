@@ -1,4 +1,4 @@
-## ---- echo = FALSE, message = FALSE, warning = FALSE---------------------
+## ---- echo = FALSE, message = FALSE, warning = FALSE--------------------------
 knitr::opts_chunk$set(message = FALSE,
                       warning = FALSE,
                       fig.width = 8, 
@@ -7,12 +7,12 @@ knitr::opts_chunk$set(message = FALSE,
                       out.width='95%')
 # devtools::load_all() # Travis CI fails on load_all()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Loads tidyquant, lubridate, xts, quantmod, TTR, and PerformanceAnalytics
 library(tidyverse)
 library(tidyquant)  
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Use FANG data set
 data("FANG") 
 
@@ -20,24 +20,24 @@ data("FANG")
 AAPL <- tq_get("AAPL", get = "stock.prices", from = "2015-09-01", to = "2016-12-31")
 AMZN <- tq_get("AMZN", get = "stock.prices", from = "2000-01-01", to = "2016-12-31")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 end <- as_date("2016-12-31")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 AAPL %>%
     ggplot(aes(x = date, y = close)) +
     geom_line() +
     labs(title = "AAPL Line Chart", y = "Closing Price", x = "") + 
     theme_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 AAPL %>%
     ggplot(aes(x = date, y = close)) +
     geom_barchart(aes(open = open, high = high, low = low, close = close)) +
     labs(title = "AAPL Bar Chart", y = "Closing Price", x = "") + 
     theme_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 AAPL %>%
     ggplot(aes(x = date, y = close)) +
     geom_barchart(aes(open = open, high = high, low = low, close = close)) +
@@ -48,7 +48,7 @@ AAPL %>%
                  ylim = c(100, 120)) + 
     theme_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 AAPL %>%
     ggplot(aes(x = date, y = close)) +
     geom_barchart(aes(open = open, high = high, low = low, close = close),
@@ -60,14 +60,14 @@ AAPL %>%
                  ylim = c(100, 120)) + 
     theme_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 AAPL %>%
     ggplot(aes(x = date, y = close)) +
     geom_candlestick(aes(open = open, high = high, low = low, close = close)) +
     labs(title = "AAPL Candlestick Chart", y = "Closing Price", x = "") +
     theme_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 AAPL %>%
     ggplot(aes(x = date, y = close)) +
     geom_candlestick(aes(open = open, high = high, low = low, close = close)) +
@@ -78,7 +78,7 @@ AAPL %>%
                  ylim = c(100, 120)) + 
     theme_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 AAPL %>%
     ggplot(aes(x = date, y = close)) +
     geom_candlestick(aes(open = open, high = high, low = low, close = close),
@@ -91,7 +91,7 @@ AAPL %>%
                  ylim = c(100, 120)) + 
     theme_tq()
 
-## ---- fig.height=5-------------------------------------------------------
+## ---- fig.height=5------------------------------------------------------------
 start <- end - weeks(6)
 FANG %>%
     filter(date >= start - days(2 * 15)) %>%
@@ -104,7 +104,7 @@ FANG %>%
     facet_wrap(~ symbol, ncol = 2, scale = "free_y") + 
     theme_tq()
 
-## ---- fig.height=5-------------------------------------------------------
+## ---- fig.height=5------------------------------------------------------------
 start <- end - weeks(6)
 FANG %>%
     filter(date >= start - days(2 * 15)) %>%
@@ -118,7 +118,7 @@ FANG %>%
     facet_wrap(~ symbol, ncol = 2, scale = "free_y") +
     theme_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 AAPL %>%
     ggplot(aes(x = date, y = close)) +
     geom_candlestick(aes(open = open, high = high, low = low, close = close)) +
@@ -131,7 +131,7 @@ AAPL %>%
                  ylim = c(100, 120)) + 
     theme_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 AAPL %>%
     ggplot(aes(x = date, y = close)) +
     geom_barchart(aes(open = open, high = high, low = low, close = close)) +
@@ -144,7 +144,7 @@ AAPL %>%
                  ylim = c(100, 120)) +
     theme_tq()
 
-## ---- fig.height=5-------------------------------------------------------
+## ---- fig.height=5------------------------------------------------------------
 start <- end - weeks(6)
 FANG %>%
     filter(date >= start - days(2 * 50)) %>%
@@ -159,7 +159,7 @@ FANG %>%
     facet_wrap(~ symbol, ncol = 2, scales = "free_y") + 
     theme_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 AAPL %>%
     ggplot(aes(x = date, y = close, open = open,
                high = high, low = low, close = close)) +
@@ -172,7 +172,7 @@ AAPL %>%
                  ylim = c(100, 120)) + 
     theme_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 AAPL %>%
     ggplot(aes(x = date, y = close, open = open,
                high = high, low = low, close = close)) +
@@ -189,7 +189,7 @@ AAPL %>%
                  ylim = c(100, 120)) + 
     theme_tq()
 
-## ---- fig.height=5-------------------------------------------------------
+## ---- fig.height=5------------------------------------------------------------
 start <- end - weeks(24)
 FANG %>%
     filter(date >= start - days(2 * 20)) %>%
@@ -205,7 +205,7 @@ FANG %>%
     facet_wrap(~ symbol, ncol = 2, scales = "free_y") + 
     theme_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 AMZN %>%
     ggplot(aes(x = date, y = adjusted)) +
     geom_line(color = palette_light()[[1]]) + 
@@ -215,7 +215,7 @@ AMZN %>%
          y = "Closing Price", x = "") + 
     theme_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 AMZN %>%
     ggplot(aes(x = date, y = adjusted)) +
     geom_line(color = palette_light()[[1]]) + 
@@ -225,7 +225,7 @@ AMZN %>%
          y = "Closing Price", x = "") + 
     theme_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 AMZN %>%
     ggplot(aes(x = date, y = adjusted)) +
     geom_line(color = palette_light()[[1]]) + 
@@ -236,7 +236,7 @@ AMZN %>%
          y = "Adjusted Closing Price", x = "") + 
     theme_tq()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 AMZN %>%
     ggplot(aes(x = date, y = volume)) +
     geom_segment(aes(xend = date, yend = 0, color = volume)) + 
@@ -247,7 +247,7 @@ AMZN %>%
     theme_tq() +
     theme(legend.position = "none") 
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 start <- end - weeks(24)
 AMZN %>%
     filter(date >= start - days(50)) %>%
@@ -262,7 +262,7 @@ AMZN %>%
     theme_tq() + 
     theme(legend.position = "none") 
 
-## ---- fig.height = 6-----------------------------------------------------
+## ---- fig.height = 6----------------------------------------------------------
 n_mavg <- 50 # Number of periods (days) for moving average
 FANG %>%
     filter(date >= start - days(2 * n_mavg)) %>%

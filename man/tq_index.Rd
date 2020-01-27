@@ -63,6 +63,7 @@ tq_exchange_options()
 \dontrun{
 tq_exchange("NYSE")
 }
+
 }
 \seealso{
 \code{\link[=tq_get]{tq_get()}} to get stock prices, financials, key stats, etc using the stock symbols.
