@@ -27,26 +27,17 @@ stock_list %>%
     tq_get(get = "stock.prices", from = "2016-01-01", to = "2017-01-01")
 
 ## -----------------------------------------------------------------------------
-tq_index("DOW", use_fallback = TRUE)
+tq_index("DOW")
 
 ## ---- eval=FALSE--------------------------------------------------------------
 #  tq_exchange("NYSE")
 
 ## -----------------------------------------------------------------------------
-tq_index("DOW", use_fallback = TRUE) %>%
+tq_index("DOW") %>%
     slice(1:3) %>%
     tq_get(get = "stock.prices")
 
 ## -----------------------------------------------------------------------------
-tibble(symbol = c("AAPL", "GOOG", "AMZN", "FB")) %>%
-    mutate(stock.prices = map(.x = symbol, ~ tq_get(.x, get = "stock.prices")))
-
-## -----------------------------------------------------------------------------
-c("AAPL", "GOOG") %>%
-    tq_get(get = c("stock.prices", "dividends"))
-
-## -----------------------------------------------------------------------------
-data("FANG")
 FANG
 
 ## -----------------------------------------------------------------------------
@@ -65,15 +56,17 @@ FANG_returns_yearly %>%
          subtitle = "Mutating at scale is quick and easy!",
          y = "Returns", x = "", color = "") +
     scale_y_continuous(labels = scales::percent) +
+    coord_flip() +
     theme_tq() +
     scale_fill_tq()
 
 ## -----------------------------------------------------------------------------
-get_annual_returns <- function(stock.symbol) {
-    stock.symbol %>%
-        tq_get(get  = "stock.prices",
-               from = "2007-01-01",
-               to   = "2016-12-31") %>%
+AAPL <- tq_get("AAPL", from = "2007-01-01", to = "2016-12-31")
+AAPL
+
+## -----------------------------------------------------------------------------
+get_annual_returns <- function(stock.returns) {
+    stock.returns %>%
         tq_transmute(select     = adjusted, 
                      mutate_fun = periodReturn, 
                      type       = "log", 
@@ -81,7 +74,7 @@ get_annual_returns <- function(stock.symbol) {
 }
 
 ## -----------------------------------------------------------------------------
-AAPL_annual_log_returns <- get_annual_returns("AAPL")
+AAPL_annual_log_returns <- get_annual_returns(AAPL)
 AAPL_annual_log_returns
 
 ## -----------------------------------------------------------------------------
@@ -104,28 +97,39 @@ library(broom)
 tidy(mod)
 
 ## -----------------------------------------------------------------------------
-get_model <- function(stock.symbol) {
-    annual_returns <- get_annual_returns(stock.symbol)
+get_model <- function(stock_data) {
+    annual_returns <- get_annual_returns(stock_data)
     mod <- lm(yearly.returns ~ year(date), data = annual_returns)
     tidy(mod)
 }
 
 ## -----------------------------------------------------------------------------
-get_model("AAPL")
+get_model(AAPL)
 
 ## -----------------------------------------------------------------------------
 set.seed(10)
-stocks <- tq_index("SP500", use_fallback = TRUE) %>%
-    sample_n(5)
-stocks
+stocks_tbl <- tq_index("SP500") %>%
+    sample_n(5) 
+stocks_tbl
 
 ## -----------------------------------------------------------------------------
-stocks_model_stats <- stocks %>%
-    mutate(model = map(symbol, get_model)) %>%
-    unnest() %>%
+stocks_model_stats <- stocks_tbl %>%
+    select(symbol, company) %>%
+    tq_get(from = "2007-01-01", to = "2016-12-31") %>%
+    
+    # Nest 
+    group_by(symbol, company) %>%
+    nest() %>%
+    
+    # Apply the get_model() function to the new "nested" data column
+    mutate(model = map(data, get_model)) %>%
+    
+    # Unnest and collect slope
+    unnest(model) %>%
     filter(term == "year(date)") %>%
     arrange(desc(estimate)) %>%
     select(-term)
+
 stocks_model_stats
 
 ## -----------------------------------------------------------------------------

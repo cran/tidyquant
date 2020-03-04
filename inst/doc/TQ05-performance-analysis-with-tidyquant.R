@@ -48,8 +48,7 @@ RaRb_capm <- RaRb %>%
 RaRb_capm
 
 ## -----------------------------------------------------------------------------
-RaRb_capm %>%
-    select(Alpha, Beta)
+RaRb_capm %>% select(symbol, Alpha, Beta)
 
 ## -----------------------------------------------------------------------------
 knitr::include_graphics("perfomance_analysis_workflow.png")
@@ -75,17 +74,21 @@ stock_returns_monthly
 
 ## -----------------------------------------------------------------------------
 stock_returns_monthly %>%
-    tq_performance(Ra = Ra, 
-                   Rb = NULL, 
-                   performance_fun = SharpeRatio)
+    tq_performance(
+        Ra = Ra, 
+        Rb = NULL, 
+        performance_fun = SharpeRatio
+    )
 
 ## -----------------------------------------------------------------------------
 stock_returns_monthly %>%
-    tq_performance(Ra = Ra, 
-                   Rb = NULL, 
-                   performance_fun = SharpeRatio, 
-                   Rf = 0.03 / 12, 
-                   p = 0.99)
+    tq_performance(
+        Ra = Ra, 
+        Rb = NULL, 
+        performance_fun = SharpeRatio, 
+        Rf = 0.03 / 12, 
+        p  = 0.99
+    )
 
 ## ---- eval = F----------------------------------------------------------------
 #  stock_returns_monthly <- c("AAPL", "GOOG", "NFLX") %>%

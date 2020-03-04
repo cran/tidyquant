@@ -125,5 +125,17 @@ globalVariables(c("A",
                   "Weight",
                   "Identifier",
                   "Shares.Held",
-                  "nested.col"
+                  "nested.col",
+                  "comma_loc",
+                  "count_parenthesis",
+                  "holidays",
+                  "is_function",
+                  "key",
+                  "var_text",
+                  "weekday",
+                  "adjClose",
+                  "high",
+                  "low",
+                  "ticker",
+                  "volume"
                   ))

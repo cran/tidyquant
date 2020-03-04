@@ -33,51 +33,11 @@ aapl_prices
 #  x8411T <- tq_get("8411.T", get = "stock.prices.japan", from = "2016-01-01", to  = "2016-12-31")
 
 ## -----------------------------------------------------------------------------
-aapl_divs <- tq_get("AAPL", get = "dividends", from = "1990-01-01")
-aapl_divs
-
-## -----------------------------------------------------------------------------
-aapl_splits <- tq_get("AAPL", get = "splits", from = "1990-01-01")
-aapl_splits
-
-## -----------------------------------------------------------------------------
-# aapl_financials <- tq_get("AAPL", get = "financials")
-# aapl_financials
-
-## -----------------------------------------------------------------------------
-# aapl_financials %>%
-#     filter(type == "IS") %>%
-#     select(annual) %>%
-#     unnest()
-
-## -----------------------------------------------------------------------------
-# aapl_financials %>%
-#     unnest(quarter) %>% 
-#     spread(key = date, value = value)
-
-## -----------------------------------------------------------------------------
-# aapl_key_ratios <- tq_get("AAPL", get = "key.ratios")
-# aapl_key_ratios
-
-## -----------------------------------------------------------------------------
-# aapl_key_ratios %>%
-#     filter(section == "Valuation Ratios") %>%
-#     unnest()
-
-## -----------------------------------------------------------------------------
-# aapl_key_ratios %>%
-#     filter(section == "Valuation Ratios") %>%
-#     unnest() %>%
-#     ggplot(aes(x = date, y = value)) +
-#     geom_line(aes(col = factor(category, levels = c("Price to Earnings", "Price to Cash Flow", "Price to Book", "Price to Sales"))),
-#               size = 1)  +
-#     labs(title = "10-Year Historical Valuation Ratios for AAPL", x = "",
-#          y = "", col = "") +
-#     theme_tq() +
-#     scale_color_tq()
+wti_price_usd <- tq_get("DCOILWTICO", get = "economic.data")
+wti_price_usd 
 
 ## ---- eval = F----------------------------------------------------------------
-#  quandl_api_key("enter-your-api-key-here")
+#  quandl_api_key("<your-api-key>")
 
 ## ---- eval = F----------------------------------------------------------------
 #  quandl_search(query = "Oil", database_code = "NSE", per_page = 3)
@@ -105,13 +65,34 @@ aapl_splits
 #  tq_get("ZACKS/MKTV", get = "quandl.datatable") # Zacks Market Value Supplement
 #  tq_get("ZACKS/SHRS", get = "quandl.datatable") # Zacks Shares Out Supplement
 
+## ---- eval=FALSE--------------------------------------------------------------
+#  tiingo_api_key('<your-api-key>')
+
+## ---- eval=F------------------------------------------------------------------
+#  # Tiingo Prices (Free alternative to Yahoo Finance!)
+#  tq_get(c("AAPL", "GOOG"), get = "tiingo", from = "2010-01-01")
+#  
+#  # Sub-daily prices from IEX ----
+#  tq_get(c("AAPL", "GOOG"),
+#         get = "tiingo.iex",
+#         from   = "2020-01-01",
+#         to     = "2020-01-15",
+#         resample_frequency = "5min")
+#  
+#  # Tiingo Bitcoin in USD ----
+#  tq_get(c("btcusd"),
+#         get    = "tiingo.crypto",
+#         from   = "2020-01-01",
+#         to     = "2020-01-15",
+#         resample_frequency = "5min")
+
 ## ---- eval = F----------------------------------------------------------------
-#  av_api_key("enter-your-api-key-here")
+#  av_api_key("<your-api-key>")
 
 ## ---- eval = F----------------------------------------------------------------
 #  # Scaling is as simple as supplying multiple symbols
-#  my_intraday_data <- c("FB", "MSFT") %>%
-#      tq_get(get = "alphavantager", av_fun = "TIME_SERIES_INTRADAY", interval = "5min")
+#  c("FB", "MSFT") %>%
+#      tq_get(get = "alphavantage", av_fun = "TIME_SERIES_INTRADAY", interval = "5min")
 
 ## ---- eval = F----------------------------------------------------------------
 #  blpConnect()
@@ -127,23 +108,6 @@ aapl_splits
 #             to          = "2016-12-31")
 
 ## -----------------------------------------------------------------------------
-wti_price_usd <- tq_get("DCOILWTICO", get = "economic.data")
-wti_price_usd 
-
-## -----------------------------------------------------------------------------
-eur_usd <- tq_get("EUR/USD", 
-                  get = "exchange.rates", 
-                  from = Sys.Date() - lubridate::days(10))
-eur_usd 
-
-## -----------------------------------------------------------------------------
-plat_price_eur <- tq_get("plat", get = "metal.prices", 
-                         from = Sys.Date() - lubridate::days(10),
-                         base.currency = "EUR")
-plat_price_eur 
-
-## -----------------------------------------------------------------------------
-data(FANG)
 FANG
 
 ## -----------------------------------------------------------------------------
@@ -153,9 +117,10 @@ FANG %>%
 
 ## ---- message=FALSE, warning=FALSE--------------------------------------------
 wti_prices <- tq_get("DCOILWTICO", get = "economic.data") 
+
 wti_prices %>%    
     tq_transmute(mutate_fun = to.period,
-                 period = "months", 
+                 period     = "months", 
                  col_rename = "WTI Price")
 
 ## -----------------------------------------------------------------------------

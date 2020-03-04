@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<!-- # tidyquant <img src="man/figures/tidyquant-logo.png" width="147" height="170" align="right" /> -->
+# tidyquant <!-- <img src="man/figures/tidyquant-logo.png" width="147" height="170" align="right" /> -->
 
 [![Build
 Status](https://travis-ci.org/business-science/tidyquant.svg?branch=master)](https://travis-ci.org/business-science/tidyquant)
@@ -10,7 +10,25 @@ Status](https://travis-ci.org/business-science/tidyquant.svg?branch=master)](htt
 ![](http://cranlogs.r-pkg.org/badges/tidyquant?color=brightgreen)
 ![](http://cranlogs.r-pkg.org/badges/grand-total/tidyquant?color=brightgreen)
 
-> Bringing financial analysis to the tidyverse
+> Bringing financial and business analysis to the tidyverse
+
+# Features of Tidyquant
+
+### Bringing Excel to R in tidyquant 1.0.0
+
+> NEW: Tidyquant 1.0.0 is the *“R for Excel Users”* release. My aim is
+> to build functionality that helps users coming from an **Excel
+> Background** (background I came from). It’s important to have these
+> users feel at home. I have a full suite of functionality to accomplish
+> your Excel-to-R transition.
+> 
+> \-Matt
+
+Details on the **Excel integrations** are covered in the blog article,
+[*“Excel in R - Pivot Tables, VLOOKUPs, and
+more”*](https://www.business-science.io/finance/2020/02/26/r-for-excel-users.html).
+
+### Bringing Financial Analysis to the tidyverse
 
 `tidyquant` integrates the best resources for collecting and analyzing
 financial data, `zoo`, `xts`, `quantmod`, `TTR`, and
@@ -119,6 +137,8 @@ to speed quickly:
   - TQ03 - Scaling and Modeling with `tidyquant`
   - TQ04 - Charting with `tidyquant`
   - TQ05 - Performance Analysis with `tidyquant`
+  - [Blog Article: Excel in R - Pivot Tables, VLOOKUPs, and
+    more\!](https://www.business-science.io/finance/2020/02/26/r-for-excel-users.html)
 
 See the [`tidyquant`
 vignettes](https://cran.r-project.org/package=tidyquant) for further
