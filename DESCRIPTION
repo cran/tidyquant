@@ -1,8 +1,7 @@
 Package: tidyquant
 Type: Package
 Title: Tidy Quantitative Financial Analysis
-Version: 1.0.0
-Date: 2020-03-04
+Version: 1.0.1
 Authors@R: c(
     person("Matt", "Dancho", email = "mdancho@business-science.io", role = c("aut", "cre")),
     person("Davis", "Vaughan", email = "dvaughan@business-science.io", role = c("aut"))
@@ -24,15 +23,15 @@ Depends: R (>= 3.0.0), lubridate, PerformanceAnalytics, quantmod (>=
         0.4-13)
 Imports: dplyr (>= 0.8.3), ggplot2, httr, lazyeval, magrittr, purrr,
         Quandl, riingo, alphavantager (>= 0.1.2), stringr, tibble,
-        tidyr (>= 1.0.0), timetk, timeDate, TTR, xml2, xts, rlang,
+        tidyr (>= 1.0.0), timetk (>= 2.0.0), timeDate, TTR, xts, rlang,
         tidyselect, rstudioapi, crayon, cli
 Suggests: tidyverse, forcats, broom, knitr, rmarkdown, testthat (>=
         2.1.0), tibbletime, scales, Rblpapi, readxl
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2020-03-04 12:23:01 UTC; mdancho
+Packaged: 2020-07-02 10:49:06 UTC; mdancho
 Author: Matt Dancho [aut, cre],
   Davis Vaughan [aut]
 Repository: CRAN
-Date/Publication: 2020-03-04 12:50:04 UTC
+Date/Publication: 2020-07-02 11:30:03 UTC

@@ -2,7 +2,7 @@
 #'
 #' Bollinger Bands plot a range around a moving average typically two standard deviations up and down.
 #' The `geom_bbands()` function enables plotting Bollinger Bands quickly using various moving average functions.
-#' The moving average functions used are specified in [TTR::SMA()]
+#' The moving average functions used are specified in `TTR::SMA()`
 #' from the TTR package. Use [coord_x_date()] to zoom into specific plot regions.
 #' The following moving averages are available:
 #' \itemize{
@@ -50,13 +50,13 @@
 #'
 #' @seealso See individual modeling functions for underlying parameters:
 #' \itemize{
-#'    \item [TTR::SMA()] for simple moving averages
-#'    \item [TTR::EMA()] for exponential moving averages
-#'    \item [TTR::WMA()] for weighted moving averages
-#'    \item [TTR::DEMA()] for double exponential moving averages
-#'    \item [TTR::ZLEMA()] for zero-lag exponential moving averages
-#'    \item [TTR::VWMA()] for volume-weighted moving averages
-#'    \item [TTR::EVWMA()] for elastic, volume-weighted moving averages
+#'    \item `TTR::SMA()` for simple moving averages
+#'    \item `TTR::EMA()` for exponential moving averages
+#'    \item `TTR::WMA()` for weighted moving averages
+#'    \item `TTR::DEMA()` for double exponential moving averages
+#'    \item `TTR::ZLEMA()` for zero-lag exponential moving averages
+#'    \item `TTR::VWMA()` for volume-weighted moving averages
+#'    \item `TTR::EVWMA()` for elastic, volume-weighted moving averages
 #'    \item [coord_x_date()] for zooming into specific regions of a plot
 #' }
 #'

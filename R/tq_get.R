@@ -8,6 +8,10 @@
 #'   \item `"stock.prices"`: Get the open, high, low, close, volume and adjusted
 #'   stock prices for a stock symbol from
 #'   \href{https://finance.yahoo.com/}{Yahoo Finance}. Wrapper for `quantmod::getSymbols()`.
+#'   \item `"dividends"`: Get the dividends for a stock symbol from
+#'   \href{https://finance.yahoo.com/}{Yahoo Finance}. Wrapper for `quantmod::getDividends()`.
+#'   \item `"splits"`: Get the split ratio for a stock symbol from
+#'   \href{https://finance.yahoo.com/}{Yahoo Finance}. Wrapper for `quantmod::getSplits()`.
 #'   \item `"stock.prices.japan"`: Get the open, high, low, close, volume and adjusted
 #'   stock prices for a stock symbol from
 #'   \href{http://finance.yahoo.co.jp/}{Yahoo Finance Japan}. Wrapper for `quantmod::getSymbols.yahooj()`.
@@ -202,8 +206,8 @@ tq_get <- function(x, get = "stock.prices", complete_cases = TRUE, ...) {
 
     # Discontinue key.stats
     if("key.stats" %in% get) stop("Yahoo Key Statistics has been discontinued.", call. = FALSE)
-    if("dividends" %in% get) stop("Yahoo Dividends has been discontinued.", call. = FALSE)
-    if("splits" %in% get) stop("Yahoo Splits has been discontinued.", call. = FALSE)
+    # if("dividends" %in% get) stop("Yahoo Dividends has been discontinued.", call. = FALSE)
+    # if("splits" %in% get) stop("Yahoo Splits has been discontinued.", call. = FALSE)
     if("stock.prices.google" %in% get) stop("Google Finance has been discontinued.", call. = FALSE)
 
     # API SPECIAL CASES
@@ -260,10 +264,9 @@ tq_get <- function(x, get = "stock.prices", complete_cases = TRUE, ...) {
 
     # Unnest if only 1 get option
     if (length(get) == 1 && (length(x) > 1 || is.data.frame(x))) {
-
         ret <- tryCatch({
             ret %>%
-                tidyr::unnest(cols = !!get)
+                tidyr::unnest(cols = dplyr::one_of(get))
         }, error = function(e) {
             warning("Returning as nested data frame.")
             ret
@@ -338,8 +341,8 @@ tq_get_base <- function(x, get, ...) {
                   stockprice        = tq_get_util_1(x, get, ...),
                   # stockpricesgoogle = tq_get_util_1(x, get, ...),
                   stockpricesjapan  = tq_get_util_1(x, get, ...),
-                  # dividend          = tq_get_util_1(x, get, ...),
-                  # split             = tq_get_util_1(x, get, ...),
+                  dividend          = tq_get_util_1(x, get, ...),
+                  split             = tq_get_util_1(x, get, ...),
                   # financial         = tq_get_util_1(x, get, ...),
                   # keyratio          = tq_get_util_2(x, get, ...),
                   # metalprice        = tq_get_util_1(x, get, ...),
@@ -368,8 +371,8 @@ tq_get_options <- function() {
       "stock.prices.japan",
       # "financials",
       # "key.ratios",
-      # "dividends",
-      # "splits",
+      "dividends",
+      "splits",
       "economic.data",
       # "exchange.rates",
       # "metal.prices",
@@ -452,12 +455,12 @@ tq_get_util_1 <-
                    dividend              = list(chr_get    = "dividends",
                                                 fun        = quantmod::getDividends,
                                                 chr_fun    = "quantmod::getDividends",
-                                                list_names = "dividends",
+                                                list_names = "value",
                                                 source     = "yahoo"),
                    split                 = list(chr_get    = "splits",
                                                 fun        = quantmod::getSplits,
                                                 chr_fun    = "quantmod::getSplits",
-                                                list_names = "splits",
+                                                list_names = "value",
                                                 source     = "yahoo"),
                    # financial             = list(chr_get    = "financials",
                    #                              fun        = quantmod::getFinancials,

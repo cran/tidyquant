@@ -1,6 +1,6 @@
 #' Plot moving averages
 #'
-#' The underlying moving average functions used are specified in [TTR::SMA()]
+#' The underlying moving average functions used are specified in `TTR::SMA()`
 #' from the TTR package. Use [coord_x_date()] to zoom into specific plot regions.
 #' The following moving averages are available:
 #' \itemize{
@@ -54,7 +54,7 @@
 #'
 #' @param ma_fun The function used to calculate the moving average. Seven options are
 #' available including: SMA, EMA, WMA, DEMA, ZLEMA, VWMA, and EVWMA. The default is
-#' `SMA`. See [TTR::SMA()] for underlying functions.
+#' `SMA`. See `TTR::SMA()` for underlying functions.
 #'
 #' @inheritParams ggplot2::layer
 #' @inheritParams ggplot2::geom_line
@@ -77,13 +77,13 @@
 #'
 #' @seealso See individual modeling functions for underlying parameters:
 #' \itemize{
-#'    \item [TTR::SMA()] for simple moving averages
-#'    \item [TTR::EMA()] for exponential moving averages
-#'    \item [TTR::WMA()] for weighted moving averages
-#'    \item [TTR::DEMA()] for double exponential moving averages
-#'    \item [TTR::ZLEMA()] for zero-lag exponential moving averages
-#'    \item [TTR::VWMA()] for volume-weighted moving averages
-#'    \item [TTR::EVWMA()] for elastic, volume-weighted moving averages
+#'    \item `TTR::SMA()` for simple moving averages
+#'    \item `TTR::EMA()` for exponential moving averages
+#'    \item `TTR::WMA()` for weighted moving averages
+#'    \item `TTR::DEMA()` for double exponential moving averages
+#'    \item `TTR::ZLEMA()` for zero-lag exponential moving averages
+#'    \item `TTR::VWMA()` for volume-weighted moving averages
+#'    \item `TTR::EVWMA()` for elastic, volume-weighted moving averages
 #'    \item [coord_x_date()] for zooming into specific regions of a plot
 #' }
 #'

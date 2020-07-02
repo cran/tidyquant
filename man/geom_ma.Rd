@@ -75,7 +75,7 @@ the default plot specification, e.g. \code{\link[ggplot2:borders]{ggplot2::borde
 
 \item{ma_fun}{The function used to calculate the moving average. Seven options are
 available including: SMA, EMA, WMA, DEMA, ZLEMA, VWMA, and EVWMA. The default is
-\code{SMA}. See \code{\link[TTR:SMA]{TTR::SMA()}} for underlying functions.}
+\code{SMA}. See \code{TTR::SMA()} for underlying functions.}
 
 \item{n}{Number of periods to average over. Must be between 1 and
 \code{nrow(x)}, inclusive.}
@@ -97,7 +97,7 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 to the paired geom/stat.}
 }
 \description{
-The underlying moving average functions used are specified in \code{\link[TTR:SMA]{TTR::SMA()}}
+The underlying moving average functions used are specified in \code{TTR::SMA()}
 from the TTR package. Use \code{\link[=coord_x_date]{coord_x_date()}} to zoom into specific plot regions.
 The following moving averages are available:
 \itemize{
@@ -161,13 +161,13 @@ AAPL \%>\%
 \seealso{
 See individual modeling functions for underlying parameters:
 \itemize{
-\item \code{\link[TTR:SMA]{TTR::SMA()}} for simple moving averages
-\item \code{\link[TTR:EMA]{TTR::EMA()}} for exponential moving averages
-\item \code{\link[TTR:WMA]{TTR::WMA()}} for weighted moving averages
-\item \code{\link[TTR:DEMA]{TTR::DEMA()}} for double exponential moving averages
-\item \code{\link[TTR:ZLEMA]{TTR::ZLEMA()}} for zero-lag exponential moving averages
-\item \code{\link[TTR:VWMA]{TTR::VWMA()}} for volume-weighted moving averages
-\item \code{\link[TTR:EVWMA]{TTR::EVWMA()}} for elastic, volume-weighted moving averages
+\item \code{TTR::SMA()} for simple moving averages
+\item \code{TTR::EMA()} for exponential moving averages
+\item \code{TTR::WMA()} for weighted moving averages
+\item \code{TTR::DEMA()} for double exponential moving averages
+\item \code{TTR::ZLEMA()} for zero-lag exponential moving averages
+\item \code{TTR::VWMA()} for volume-weighted moving averages
+\item \code{TTR::EVWMA()} for elastic, volume-weighted moving averages
 \item \code{\link[=coord_x_date]{coord_x_date()}} for zooming into specific regions of a plot
 }
 }

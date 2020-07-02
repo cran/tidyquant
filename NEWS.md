@@ -1,4 +1,33 @@
-## tidyquant 1.0.0.9000
+<!--
+### TODO
+  - Tsibble compatability
+  - Add tests for Excel Functionality
+  - Add tests for dividends and splits 
+  - Add manual documentation for Excel Financial Functionality
+  - Update vignettes
+  - New book for Financial Modeling & Excel
+-->
+
+
+
+## tidyquant 1.0.1
+
+### Improvements
+
+* `tq_get()` - Add `"dividends"` and `"splits"` get options, which have been fixed in `quantmod` 0.4-16. Issue 150.
+
+### Bug Fixes
+
+* Issue 157 - Error on package load with `rstudioapi::getThemeInfo()` returns `NULL`. 
+* `pivot_table` - Fix issues with `tidyverse` functions not being found.
+
+### Deprecation
+
+* `summarise_by_time()` - This function has moved to `timetk::summarise_by_time()`
+
+
+
+## tidyquant 1.0.0
 
 > This is the _"R for Excel Users"_ release. My aim is to build functionality that helps users coming from an __Excel Background__ (background I came from). It's important to have these users feel at home. I have a full suite of functionality to accomplish your Excel-to-R transition. 
 >
