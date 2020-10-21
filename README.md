@@ -1,9 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# tidyquant
-
-<!-- <img src="man/figures/tidyquant-logo.png" width="147" height="170" align="right" /> -->
+# tidyquant <img src="man/figures/tidyquant-logo.png" width="147" height="170" align="right" />
 
 [![Build
 Status](https://travis-ci.org/business-science/tidyquant.svg?branch=master)](https://travis-ci.org/business-science/tidyquant)
@@ -34,7 +32,7 @@ perform complete financial analyses in the `tidyverse`.
     `xts`, `quantmod`, `TTR`, and *now* `PerformanceAnalytics`**
   - **Designed for modeling and scaling analyses using the the
     `tidyverse` tools in [*R for Data
-    Science*](http://r4ds.had.co.nz/)**
+    Science*](https://r4ds.had.co.nz/)**
   - **Implements `ggplot2` functionality for beautiful and meaningful
     financial visualizations**
   - **User-friendly documentation to get you up to speed quickly\!**
@@ -87,10 +85,14 @@ for serious financial analysis\!*
 Visualizing the stock price volatility of four stocks side-by-side is
 quick and easy…
 
+<img src="man/figures/sample_img_1_volatility.png" width="100%" />
+
 ### Evaluating Stock Performance
 
 What about stock performance? Quickly visualize how a $10,000 investment
 in various stocks would perform.
+
+<img src="man/figures/sample_img_2_stock_returns.png" width="100%" />
 
 ### Evaluating Portfolio Performance
 
@@ -102,6 +104,8 @@ easy too\!
   - Portfolio 2: 0% FB, 50% AMZN, 25% NFLX, 25% GOOG
   - Portfolio 3: 25% FB, 0% AMZN, 50% NFLX, 25% GOOG
   - Portfolio 4: 25% FB, 25% AMZN, 0% NFLX, 50% GOOG
+
+<img src="man/figures/sample_img_3_portfolio_returns.png" width="100%" />
 
 This just scratches the surface of `tidyquant`. Here’s how to install to
 get started.
