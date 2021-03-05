@@ -1,4 +1,10 @@
 
+## tidyquant 1.0.3
+
+### Fixes
+
+- `tq_exchange()`: Switch to new NASDAQ website. 
+
 ## tidyquant 1.0.2 
 
 ### Fixes
