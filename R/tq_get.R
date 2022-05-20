@@ -7,21 +7,21 @@
 #' \itemize{
 #'   \item `"stock.prices"`: Get the open, high, low, close, volume and adjusted
 #'   stock prices for a stock symbol from
-#'   \href{https://finance.yahoo.com/}{Yahoo Finance}. Wrapper for `quantmod::getSymbols()`.
+#'   Yahoo Finance (https://finance.yahoo.com/). Wrapper for `quantmod::getSymbols()`.
 #'   \item `"dividends"`: Get the dividends for a stock symbol from
-#'   \href{https://finance.yahoo.com/}{Yahoo Finance}. Wrapper for `quantmod::getDividends()`.
+#'   Yahoo Finance (https://finance.yahoo.com/). Wrapper for `quantmod::getDividends()`.
 #'   \item `"splits"`: Get the split ratio for a stock symbol from
-#'   \href{https://finance.yahoo.com/}{Yahoo Finance}. Wrapper for `quantmod::getSplits()`.
+#'   Yahoo Finance (https://finance.yahoo.com/). Wrapper for `quantmod::getSplits()`.
 #'   \item `"stock.prices.japan"`: Get the open, high, low, close, volume and adjusted
 #'   stock prices for a stock symbol from
-#'   \href{https://finance.yahoo.co.jp/}{Yahoo Finance Japan}. Wrapper for `quantmod::getSymbols.yahooj()`.
+#'   Yahoo Finance Japan (https://finance.yahoo.co.jp/). Wrapper for `quantmod::getSymbols.yahooj()`.
 #'   \item `"economic.data"`: Get economic data from
 #'   \href{https://fred.stlouisfed.org/}{FRED}. rapper for `quantmod::getSymbols.FRED()`.
 #'   \item `"quandl"`: Get data sets from
-#'   \href{https://www.quandl.com/}{Quandl}. Wrapper for `Quandl::Quandl()`.
+#'   \href{https://data.nasdaq.com/}{Quandl}. Wrapper for `Quandl::Quandl()`.
 #'   See also [quandl_api_key()].
 #'   \item `"quandl.datatable"`: Get data tables from
-#'   \href{https://www.quandl.com/}{Quandl}. Wrapper for `Quandl::Quandl.datatable()`.
+#'   \href{https://data.nasdaq.com/}{Quandl}. Wrapper for `Quandl::Quandl.datatable()`.
 #'   See also [quandl_api_key()].
 #'   \item `"tiingo"`: Get data sets from
 #'   \href{https://api.tiingo.com/}{Tiingo}. Wrapper for `riingo::riingo_prices()`.
@@ -502,7 +502,7 @@ tq_get_util_1 <-
     })
 
     # coerce financials to tibble
-    if (identical(get, "financial") && class(ret) == "financials") {
+    if (identical(get, "financial") && inherits(ret, "financials")) {
 
         # Tidy a single financial statement
         tidy_fin <- function(x) {

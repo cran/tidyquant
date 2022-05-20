@@ -12,7 +12,7 @@
 
 <meta name="author" content="Matt Dancho" />
 
-<meta name="date" content="2021-03-04" />
+<meta name="date" content="2022-05-20" />
 
 <title>Core Functions in tidyquant</title>
 
@@ -26,6 +26,7 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
+
 
 
 <style type="text/css">
@@ -141,7 +142,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">Core Functions in tidyquant</h1>
 <h4 class="author">Matt Dancho</h4>
-<h4 class="date">2021-03-04</h4>
+<h4 class="date">2022-05-20</h4>
 
 
 <div id="TOC">
@@ -157,7 +158,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li><a href="#yahoo-finance">2.1 Yahoo! Finance</a></li>
 <li><a href="#fred-economic-data">2.2 FRED Economic Data</a></li>
-<li><a href="#quandl-api">2.3 Quandl API</a></li>
+<li><a href="#nasdaq-data-link-quandl-api">2.3 Nasdaq Data Link (Quandl) API</a></li>
 <li><a href="#tiingo-api">2.4 Tiingo API</a></li>
 <li><a href="#alpha-vantage-api">2.5 Alpha Vantage API</a></li>
 <li><a href="#bloomberg">2.6 Bloomberg</a></li>
@@ -231,20 +232,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>The stock prices can be retrieved succinctly using <code>get = &quot;stock.prices&quot;</code>. This returns stock price data from Yahoo Finance.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>aapl_prices  <span class="ot">&lt;-</span> <span class="fu">tq_get</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="at">get =</span> <span class="st">&quot;stock.prices&quot;</span>, <span class="at">from =</span> <span class="st">&quot; 1990-01-01&quot;</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>aapl_prices </span></code></pre></div>
-<pre><code>## # A tibble: 7,853 x 8
+<pre><code>## # A tibble: 8,160 x 8
 ##    symbol date        open  high   low close    volume adjusted
 ##    &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-##  1 AAPL   1990-01-02 0.315 0.335 0.312 0.333 183198400    0.268
-##  2 AAPL   1990-01-03 0.339 0.339 0.335 0.335 207995200    0.269
-##  3 AAPL   1990-01-04 0.342 0.346 0.333 0.336 221513600    0.270
-##  4 AAPL   1990-01-05 0.337 0.342 0.330 0.337 123312000    0.271
-##  5 AAPL   1990-01-08 0.335 0.339 0.330 0.339 101572800    0.273
-##  6 AAPL   1990-01-09 0.339 0.339 0.330 0.336  86139200    0.270
-##  7 AAPL   1990-01-10 0.336 0.336 0.319 0.321 199718400    0.259
-##  8 AAPL   1990-01-11 0.324 0.324 0.308 0.308 211052800    0.248
-##  9 AAPL   1990-01-12 0.306 0.310 0.301 0.308 171897600    0.248
-## 10 AAPL   1990-01-15 0.308 0.319 0.306 0.306 161739200    0.246
-## # … with 7,843 more rows</code></pre>
+##  1 AAPL   1990-01-02 0.315 0.335 0.312 0.333 183198400    0.266
+##  2 AAPL   1990-01-03 0.339 0.339 0.335 0.335 207995200    0.267
+##  3 AAPL   1990-01-04 0.342 0.346 0.333 0.336 221513600    0.268
+##  4 AAPL   1990-01-05 0.337 0.342 0.330 0.337 123312000    0.269
+##  5 AAPL   1990-01-08 0.335 0.339 0.330 0.339 101572800    0.271
+##  6 AAPL   1990-01-09 0.339 0.339 0.330 0.336  86139200    0.268
+##  7 AAPL   1990-01-10 0.336 0.336 0.319 0.321 199718400    0.257
+##  8 AAPL   1990-01-11 0.324 0.324 0.308 0.308 211052800    0.246
+##  9 AAPL   1990-01-12 0.306 0.310 0.301 0.308 171897600    0.246
+## 10 AAPL   1990-01-15 0.308 0.319 0.306 0.306 161739200    0.244
+## # ... with 8,150 more rows</code></pre>
 <p>Yahoo Japan stock prices can be retrieved using a similar call, <code>get = &quot;stock.prices.japan&quot;</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>x8411T <span class="ot">&lt;-</span> <span class="fu">tq_get</span>(<span class="st">&quot;8411.T&quot;</span>, <span class="at">get =</span> <span class="st">&quot;stock.prices.japan&quot;</span>, <span class="at">from =</span> <span class="st">&quot;2016-01-01&quot;</span>, <span class="at">to  =</span> <span class="st">&quot;2016-12-31&quot;</span>)</span></code></pre></div>
 <p>The data source is <a href="https://finance.yahoo.com/">Yahoo Finance</a> and <a href="https://finance.yahoo.co.jp/">Yahoo Finance Japan</a>.</p>
@@ -254,24 +255,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>A wealth of economic data can be extracted from the Federal Reserve Economic Data (FRED) database. The FRED contains over 10K data sets that are free to use. See the <a href="https://fred.stlouisfed.org/categories">FRED categories</a> to narrow down the data base and to get data codes. The <a href="https://fred.stlouisfed.org/series/DCOILWTICO">WTI Crude Oil Prices</a> are shown below.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>wti_price_usd <span class="ot">&lt;-</span> <span class="fu">tq_get</span>(<span class="st">&quot;DCOILWTICO&quot;</span>, <span class="at">get =</span> <span class="st">&quot;economic.data&quot;</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>wti_price_usd </span></code></pre></div>
-<pre><code>## # A tibble: 2,651 x 3
+<pre><code>## # A tibble: 2,706 x 3
 ##    symbol     date       price
 ##    &lt;chr&gt;      &lt;date&gt;     &lt;dbl&gt;
-##  1 DCOILWTICO 2011-01-03  91.6
-##  2 DCOILWTICO 2011-01-04  89.4
-##  3 DCOILWTICO 2011-01-05  90.3
-##  4 DCOILWTICO 2011-01-06  88.4
-##  5 DCOILWTICO 2011-01-07  88.1
-##  6 DCOILWTICO 2011-01-10  89.2
-##  7 DCOILWTICO 2011-01-11  91.1
-##  8 DCOILWTICO 2011-01-12  91.8
-##  9 DCOILWTICO 2011-01-13  91.4
-## 10 DCOILWTICO 2011-01-14  91.5
-## # … with 2,641 more rows</code></pre>
+##  1 DCOILWTICO 2012-01-02  NA  
+##  2 DCOILWTICO 2012-01-03 103. 
+##  3 DCOILWTICO 2012-01-04 103. 
+##  4 DCOILWTICO 2012-01-05 102. 
+##  5 DCOILWTICO 2012-01-06 102. 
+##  6 DCOILWTICO 2012-01-09 101. 
+##  7 DCOILWTICO 2012-01-10 102. 
+##  8 DCOILWTICO 2012-01-11 101. 
+##  9 DCOILWTICO 2012-01-12  99.0
+## 10 DCOILWTICO 2012-01-13  98.7
+## # ... with 2,696 more rows</code></pre>
 </div>
-<div id="quandl-api" class="section level2">
-<h2>2.3 Quandl API</h2>
-<p><a href="https://www.quandl.com/">Quandl</a> provides access to a vast number of financial and economic databases. The <code>Quandl</code> package has been integrated into <code>tidyquant</code> as follows.</p>
+<div id="nasdaq-data-link-quandl-api" class="section level2">
+<h2>2.3 Nasdaq Data Link (Quandl) API</h2>
+<p><a href="https://data.nasdaq.com/">Quandl</a> provides access to a vast number of financial and economic databases. The <code>Quandl</code> package has been integrated into <code>tidyquant</code> as follows.</p>
 <div id="authentication" class="section level3">
 <h3>Authentication</h3>
 <p>To make full use of the integration we recommend you set your api key. To do this create or sign into your Quandl account and go to your account api key page.</p>
@@ -279,7 +280,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="search" class="section level3">
 <h3>Search</h3>
-<p>Searching Quandl from within the R console is possible with <code>quandl_search()</code>, a wrapper for <code>Quandl::Quandl.search()</code>. An example search is shown below. The only required argument is <code>query</code>. You can also visit the <a href="https://www.quandl.com/search">Quandl Search</a> webpage to search for available database codes.</p>
+<p>Searching Quandl from within the R console is possible with <code>quandl_search()</code>, a wrapper for <code>Quandl::Quandl.search()</code>. An example search is shown below. The only required argument is <code>query</code>. You can also visit the <a href="https://data.nasdaq.com/search">Quandl Search</a> webpage to search for available database codes.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quandl_search</span>(<span class="at">query =</span> <span class="st">&quot;Oil&quot;</span>, <span class="at">database_code =</span> <span class="st">&quot;NSE&quot;</span>, <span class="at">per_page =</span> <span class="dv">3</span>)</span></code></pre></div>
 </div>
 <div id="getting-quandl-data" class="section level3">
@@ -312,7 +313,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">collapse     =</span> <span class="st">&quot;annual&quot;</span>,      </span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">transform    =</span> <span class="st">&quot;rdiff&quot;</span>)       </span></code></pre></div>
 <p>Datatables are larger data sets. These can be downloaded using <code>get = &quot;quandl.datatable&quot;</code>. Note that the time series arguments do not work with data tables.</p>
-<p>Here’s several examples of <a href="https://www.quandl.com/databases/ZFB/documentation/about">Zacks Fundamentals Collection B</a></p>
+<p>Here’s several examples of <a href="https://data.nasdaq.com/databases/ZFB/documentation/about">Zacks Fundamentals Collection B</a></p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Zacks Fundamentals Collection B (DOW 30 Available to non subscribers)</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tq_get</span>(<span class="st">&quot;ZACKS/FC&quot;</span>, <span class="at">get =</span> <span class="st">&quot;quandl.datatable&quot;</span>)   <span class="co"># Zacks Fundamentals Condensed</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tq_get</span>(<span class="st">&quot;ZACKS/FR&quot;</span>, <span class="at">get =</span> <span class="st">&quot;quandl.datatable&quot;</span>)   <span class="co"># Zacks Fundamental Ratios</span></span>
@@ -419,7 +420,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##  8 FB     2013-01-11  31.3  32.0  31.1  31.7  89598000     31.7
 ##  9 FB     2013-01-14  32.1  32.2  30.6  31.0  98892800     31.0
 ## 10 FB     2013-01-15  30.6  31.7  29.9  30.1 173242600     30.1
-## # … with 4,022 more rows</code></pre>
+## # ... with 4,022 more rows</code></pre>
 <p>For a detailed walkthrough of the compatible functions, see the next vignette in the series, <a href="TQ02-quant-integrations-in-tidyquant.html">R Quantitative Analysis Package Integrations in tidyquant</a>.</p>
 <div id="transmute-quantitative-data-tq_transmute" class="section level2">
 <h2>3.1 Transmute Quantitative Data, tq_transmute</h2>
@@ -441,7 +442,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##  8 FB     2013-08-31     41.3
 ##  9 FB     2013-09-30     50.2
 ## 10 FB     2013-10-31     50.2
-## # … with 182 more rows</code></pre>
+## # ... with 182 more rows</code></pre>
 <p>Let’s go through what happened. <code>select</code> allows you to easily choose what columns get passed to <code>mutate_fun</code>. In example above, <code>adjusted</code> selects the “adjusted” column from <code>data</code>, and sends it to the mutate function, <code>to.monthly</code>, which mutates the periodicity from daily to monthly. Additional arguments can be passed to the <code>mutate_fun</code> by way of <code>...</code>. We are passing the <code>indexAt</code> argument to return a date that matches the first date in the period.</p>
 <div id="working-with-non-ohlc-data" class="section level3">
 <h3>Working with non-OHLC data</h3>
@@ -452,20 +453,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tq_transmute</span>(<span class="at">mutate_fun =</span> to.period,</span>
 <span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">period     =</span> <span class="st">&quot;months&quot;</span>, </span>
 <span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">col_rename =</span> <span class="st">&quot;WTI Price&quot;</span>)</span></code></pre></div>
-<pre><code>## # A tibble: 123 x 2
+<pre><code>## # A tibble: 125 x 2
 ##    date       `WTI Price`
 ##    &lt;date&gt;           &lt;dbl&gt;
-##  1 2011-01-31        91.0
-##  2 2011-02-28        97.1
-##  3 2011-03-31       106. 
-##  4 2011-04-29       113. 
-##  5 2011-05-31       103. 
-##  6 2011-06-30        95.3
-##  7 2011-07-29        95.7
-##  8 2011-08-31        88.8
-##  9 2011-09-30        78.9
-## 10 2011-10-31        93.2
-## # … with 113 more rows</code></pre>
+##  1 2012-01-31        98.5
+##  2 2012-02-29       107. 
+##  3 2012-03-30       103. 
+##  4 2012-04-30       105. 
+##  5 2012-05-31        86.5
+##  6 2012-06-29        85.0
+##  7 2012-07-31        88.1
+##  8 2012-08-31        96.5
+##  9 2012-09-28        92.2
+## 10 2012-10-31        86.2
+## # ... with 115 more rows</code></pre>
 </div>
 </div>
 <div id="mutate-quantitative-data-tq_mutate" class="section level2">
@@ -490,7 +491,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##  8 FB     2013-01-11  31.3  32.0  31.1  31.7  89598000     31.7    NA     NA
 ##  9 FB     2013-01-14  32.1  32.2  30.6  31.0  98892800     31.0    NA     NA
 ## 10 FB     2013-01-15  30.6  31.7  29.9  30.1 173242600     30.1    NA     NA
-## # … with 4,022 more rows</code></pre>
+## # ... with 4,022 more rows</code></pre>
 <p>Note that a mutation can occur if, and only if, the mutation has the same structure of the original tibble. In other words, the calculation must have the same number of rows and row.names (or date fields), otherwise the mutation cannot be performed.</p>
 <div id="mutate-rolling-regressions-with-rollapply" class="section level3">
 <h3>Mutate rolling regressions with rollapply</h3>
@@ -523,7 +524,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##  8 2016-02-26    0.0320      0.0148 
 ##  9 2016-03-04    0.00436     0.0281 
 ## 10 2016-03-11    0.00941     0.0106 
-## # … with 42 more rows</code></pre>
+## # ... with 42 more rows</code></pre>
 <p><em>Step 2: Create a custom function</em></p>
 <p>Next, create a custom regression function, which will be used to apply over the rolling window in Step 3. An important point is that the “data” will be passed to the regression function as an <code>xts</code> object. The <code>timetk::tk_tbl</code> function takes care of converting to a data frame for the <code>lm</code> function to work properly with the columns “fb.returns” and “xlk.returns”.</p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>regr_fun <span class="ot">&lt;-</span> <span class="cf">function</span>(data) {</span>
@@ -550,7 +551,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##  8 2016-02-26    0.0320      0.0148      NA     NA
 ##  9 2016-03-04    0.00436     0.0281      NA     NA
 ## 10 2016-03-11    0.00941     0.0106      NA     NA
-## # … with 42 more rows</code></pre>
+## # ... with 42 more rows</code></pre>
 <div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>returns_combined</span></code></pre></div>
 <pre><code>## # A tibble: 52 x 3
 ##    date       fb.returns xlk.returns
@@ -565,7 +566,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##  8 2016-02-26    0.0320      0.0148 
 ##  9 2016-03-04    0.00436     0.0281 
 ## 10 2016-03-11    0.00941     0.0106 
-## # … with 42 more rows</code></pre>
+## # ... with 42 more rows</code></pre>
 <p>As shown above, the rolling regression coefficients were added to the data frame.</p>
 </div>
 </div>
@@ -593,7 +594,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##  8 FB     2013-01-11  31.3  32.0  31.1  31.7  89598000     31.7  NA  
 ##  9 FB     2013-01-14  32.1  32.2  30.6  31.0  98892800     31.0  NA  
 ## 10 FB     2013-01-15  30.6  31.7  29.9  30.1 173242600     30.1  30.1
-## # … with 4,022 more rows</code></pre>
+## # ... with 4,022 more rows</code></pre>
 </div>
 </div>
 </div>
