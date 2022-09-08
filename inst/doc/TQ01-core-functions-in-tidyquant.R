@@ -43,13 +43,13 @@ wti_price_usd
 #  quandl_search(query = "Oil", database_code = "NSE", per_page = 3)
 
 ## ---- eval = F----------------------------------------------------------------
-#  c("WIKI/FB", "WIKI/AAPL") %>%
+#  c("WIKI/AAPL") %>%
 #      tq_get(get  = "quandl",
 #             from = "2016-01-01",
 #             to   = "2016-12-31")
 
 ## ---- eval = F----------------------------------------------------------------
-#  c("WIKI/FB", "WIKI/AAPL") %>%
+#  "WIKI/AAPL" %>%
 #      tq_get(get          = "quandl",
 #             from         = "2007-01-01",
 #             to           = "2016-12-31",
@@ -91,7 +91,7 @@ wti_price_usd
 
 ## ---- eval = F----------------------------------------------------------------
 #  # Scaling is as simple as supplying multiple symbols
-#  c("FB", "MSFT") %>%
+#  c("META", "MSFT") %>%
 #      tq_get(get = "alphavantage", av_fun = "TIME_SERIES_INTRADAY", interval = "5min")
 
 ## ---- eval = F----------------------------------------------------------------
@@ -133,7 +133,7 @@ FANG %>%
               col_rename = c("MACD", "Signal"))
 
 ## -----------------------------------------------------------------------------
-fb_returns <- tq_get("FB", get  = "stock.prices", from = "2016-01-01", to   = "2016-12-31") %>%
+fb_returns <- tq_get("META", get  = "stock.prices", from = "2016-01-01", to   = "2016-12-31") %>%
     tq_transmute(adjusted, periodReturn, period = "weekly", col_rename = "fb.returns")
 
 xlk_returns <- tq_get("XLK", from = "2016-01-01", to = "2016-12-31") %>%

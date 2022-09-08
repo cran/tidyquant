@@ -23,6 +23,18 @@ AMZN <- tq_get("AMZN", get = "stock.prices", from = "2000-01-01", to = "2016-12-
 ## -----------------------------------------------------------------------------
 end <- as_date("2016-12-31")
 
+end
+
+## -----------------------------------------------------------------------------
+aapl_range_60_tbl <- AAPL %>%
+    tail(60) %>%
+    summarise(
+        max_high = max(high),
+        min_low  = min(low)
+    )
+
+aapl_range_60_tbl
+
 ## -----------------------------------------------------------------------------
 AAPL %>%
     ggplot(aes(x = date, y = close)) +
@@ -45,7 +57,7 @@ AAPL %>%
          subtitle = "Zoomed in using coord_x_date",
          y = "Closing Price", x = "") + 
     coord_x_date(xlim = c(end - weeks(6), end),
-                 ylim = c(100, 120)) + 
+                 ylim = c(aapl_range_60_tbl$min_low, aapl_range_60_tbl$max_high)) +
     theme_tq()
 
 ## -----------------------------------------------------------------------------
@@ -57,7 +69,7 @@ AAPL %>%
          subtitle = "Zoomed in, Experimenting with Formatting",
          y = "Closing Price", x = "") + 
     coord_x_date(xlim = c(end - weeks(6), end),
-                 ylim = c(100, 120)) + 
+                 c(aapl_range_60_tbl$min_low, aapl_range_60_tbl$max_high)) + 
     theme_tq()
 
 ## -----------------------------------------------------------------------------
@@ -75,7 +87,7 @@ AAPL %>%
          subtitle = "Zoomed in using coord_x_date",
          y = "Closing Price", x = "") + 
     coord_x_date(xlim = c(end - weeks(6), end),
-                 ylim = c(100, 120)) + 
+                 c(aapl_range_60_tbl$min_low, aapl_range_60_tbl$max_high)) + 
     theme_tq()
 
 ## -----------------------------------------------------------------------------
@@ -88,7 +100,7 @@ AAPL %>%
          subtitle = "Zoomed in, Experimenting with Formatting",
          y = "Closing Price", x = "") + 
     coord_x_date(xlim = c(end - weeks(6), end),
-                 ylim = c(100, 120)) + 
+                 c(aapl_range_60_tbl$min_low, aapl_range_60_tbl$max_high)) + 
     theme_tq()
 
 ## ---- fig.height=5------------------------------------------------------------
@@ -128,7 +140,7 @@ AAPL %>%
          subtitle = "50 and 200-Day SMA", 
          y = "Closing Price", x = "") + 
     coord_x_date(xlim = c(end - weeks(24), end),
-                 ylim = c(100, 120)) + 
+                 c(aapl_range_60_tbl$min_low * 0.9, aapl_range_60_tbl$max_high)) + 
     theme_tq()
 
 ## -----------------------------------------------------------------------------
@@ -141,7 +153,7 @@ AAPL %>%
          subtitle = "50 and 200-Day EMA", 
          y = "Closing Price", x = "") + 
     coord_x_date(xlim = c(end - weeks(24), end),
-                 ylim = c(100, 120)) +
+                 c(aapl_range_60_tbl$min_low * 0.9, aapl_range_60_tbl$max_high)) +
     theme_tq()
 
 ## ---- fig.height=5------------------------------------------------------------
@@ -169,7 +181,8 @@ AAPL %>%
          subtitle = "BBands with SMA Applied", 
          y = "Closing Price", x = "") + 
     coord_x_date(xlim = c(end - weeks(24), end),
-                 ylim = c(100, 120)) + 
+                 ylim = c(aapl_range_60_tbl$min_low * 0.85, 
+                          aapl_range_60_tbl$max_high) * 1.05) + 
     theme_tq()
 
 ## -----------------------------------------------------------------------------
@@ -186,7 +199,8 @@ AAPL %>%
          subtitle = "BBands with SMA Applied, Experimenting with Formatting", 
          y = "Closing Price", x = "") + 
     coord_x_date(xlim = c(end - weeks(24), end),
-                 ylim = c(100, 120)) + 
+                 ylim = c(aapl_range_60_tbl$min_low * 0.85, 
+                          aapl_range_60_tbl$max_high) * 1.05) + 
     theme_tq()
 
 ## ---- fig.height=5------------------------------------------------------------
