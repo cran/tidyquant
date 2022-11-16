@@ -1,6 +1,14 @@
+# tidyquant 1.0.6
+
+- Fix tq_performance test failure under PerformanceAnalytics 2.0.6 #223
+- Fix failed r-devel test identified by CRAN
+- Remove deprecated `spread_()` function
+- Move `readxl` to imports. #222
+
 # tidyquant 1.0.5
 
-- FIXES: FB to META name change
+- FIX: FB to META name change
+- IMPROVEMENT: `sp_index()` to convert symbols from "BRK.B" to "BRK-B" to work with Yahoo Finance
 
 # tidyquant 1.0.4
 

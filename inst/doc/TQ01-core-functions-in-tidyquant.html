@@ -12,7 +12,7 @@
 
 <meta name="author" content="Matt Dancho" />
 
-<meta name="date" content="2022-09-08" />
+<meta name="date" content="2022-11-15" />
 
 <title>Core Functions in tidyquant</title>
 
@@ -31,23 +31,23 @@ document.addEventListener('DOMContentLoaded', function(e) {
 </script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
 
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
@@ -65,55 +65,54 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {   }
+{ }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -341,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Core Functions in tidyquant</h1>
 <h4 class="author">Matt Dancho</h4>
-<h4 class="date">2022-09-08</h4>
+<h4 class="date">2022-11-15</h4>
 
 
 <div id="TOC">
@@ -473,20 +472,20 @@ required.</li>
 Yahoo Finance.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>aapl_prices  <span class="ot">&lt;-</span> <span class="fu">tq_get</span>(<span class="st">&quot;AAPL&quot;</span>, <span class="at">get =</span> <span class="st">&quot;stock.prices&quot;</span>, <span class="at">from =</span> <span class="st">&quot; 1990-01-01&quot;</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>aapl_prices </span></code></pre></div>
-<pre><code>## # A tibble: 8,235 × 8
+<pre><code>## # A tibble: 8,283 × 8
 ##    symbol date        open  high   low close    volume adjusted
 ##    &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
 ##  1 AAPL   1990-01-02 0.315 0.335 0.312 0.333 183198400    0.265
 ##  2 AAPL   1990-01-03 0.339 0.339 0.335 0.335 207995200    0.267
 ##  3 AAPL   1990-01-04 0.342 0.346 0.333 0.336 221513600    0.268
-##  4 AAPL   1990-01-05 0.337 0.342 0.330 0.337 123312000    0.269
-##  5 AAPL   1990-01-08 0.335 0.339 0.330 0.339 101572800    0.271
+##  4 AAPL   1990-01-05 0.337 0.342 0.330 0.337 123312000    0.268
+##  5 AAPL   1990-01-08 0.335 0.339 0.330 0.339 101572800    0.270
 ##  6 AAPL   1990-01-09 0.339 0.339 0.330 0.336  86139200    0.268
 ##  7 AAPL   1990-01-10 0.336 0.336 0.319 0.321 199718400    0.256
-##  8 AAPL   1990-01-11 0.324 0.324 0.308 0.308 211052800    0.246
-##  9 AAPL   1990-01-12 0.306 0.310 0.301 0.308 171897600    0.246
+##  8 AAPL   1990-01-11 0.324 0.324 0.308 0.308 211052800    0.245
+##  9 AAPL   1990-01-12 0.306 0.310 0.301 0.308 171897600    0.245
 ## 10 AAPL   1990-01-15 0.308 0.319 0.306 0.306 161739200    0.244
-## # … with 8,225 more rows</code></pre>
+## # … with 8,273 more rows</code></pre>
 <p>Yahoo Japan stock prices can be retrieved using a similar call,
 <code>get = &quot;stock.prices.japan&quot;</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>x8411T <span class="ot">&lt;-</span> <span class="fu">tq_get</span>(<span class="st">&quot;8411.T&quot;</span>, <span class="at">get =</span> <span class="st">&quot;stock.prices.japan&quot;</span>, <span class="at">from =</span> <span class="st">&quot;2016-01-01&quot;</span>, <span class="at">to  =</span> <span class="st">&quot;2016-12-31&quot;</span>)</span></code></pre></div>
@@ -503,7 +502,7 @@ narrow down the data base and to get data codes. The <a href="https://fred.stlou
 Prices</a> are shown below.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>wti_price_usd <span class="ot">&lt;-</span> <span class="fu">tq_get</span>(<span class="st">&quot;DCOILWTICO&quot;</span>, <span class="at">get =</span> <span class="st">&quot;economic.data&quot;</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>wti_price_usd </span></code></pre></div>
-<pre><code>## # A tibble: 2,787 × 3
+<pre><code>## # A tibble: 2,831 × 3
 ##    symbol     date       price
 ##    &lt;chr&gt;      &lt;date&gt;     &lt;dbl&gt;
 ##  1 DCOILWTICO 2012-01-02  NA  
@@ -516,7 +515,7 @@ Prices</a> are shown below.</p>
 ##  8 DCOILWTICO 2012-01-11 101. 
 ##  9 DCOILWTICO 2012-01-12  99.0
 ## 10 DCOILWTICO 2012-01-13  98.7
-## # … with 2,777 more rows</code></pre>
+## # … with 2,821 more rows</code></pre>
 </div>
 <div id="nasdaq-data-link-quandl-api" class="section level2">
 <h2>2.3 Nasdaq Data Link (Quandl) API</h2>
@@ -798,7 +797,7 @@ price column to the <code>to.period</code> mutate function.</p>
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tq_transmute</span>(<span class="at">mutate_fun =</span> to.period,</span>
 <span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">period     =</span> <span class="st">&quot;months&quot;</span>, </span>
 <span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">col_rename =</span> <span class="st">&quot;WTI Price&quot;</span>)</span></code></pre></div>
-<pre><code>## # A tibble: 129 × 2
+<pre><code>## # A tibble: 131 × 2
 ##    date       `WTI Price`
 ##    &lt;date&gt;           &lt;dbl&gt;
 ##  1 2012-01-31        98.5
@@ -811,7 +810,7 @@ price column to the <code>to.period</code> mutate function.</p>
 ##  8 2012-08-31        96.5
 ##  9 2012-09-28        92.2
 ## 10 2012-10-31        86.2
-## # … with 119 more rows</code></pre>
+## # … with 121 more rows</code></pre>
 </div>
 </div>
 <div id="mutate-quantitative-data-tq_mutate" class="section level2">
