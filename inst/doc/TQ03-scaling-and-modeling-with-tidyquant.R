@@ -1,4 +1,4 @@
-## ---- echo = FALSE, message = FALSE, warning = FALSE--------------------------
+## ----echo = FALSE, message = FALSE, warning = FALSE---------------------------
 knitr::opts_chunk$set(message = FALSE,
                       warning = FALSE,
                       fig.width = 8, 
@@ -8,13 +8,17 @@ knitr::opts_chunk$set(message = FALSE,
                       dpi = 200)
 # devtools::load_all() # Travis CI fails on load_all()
 
-## -----------------------------------------------------------------------------
-# Loads tidyquant, lubridate, xts, quantmod, TTR, and PerformanceAnalytics
-library(tidyverse)
+## ----include=FALSE------------------------------------------------------------
+# Loads packages for R CMD CHECK
+library(lubridate)
+library(dplyr)
+library(purrr)
+library(ggplot2)
+library(tidyr)
 library(tidyquant)  
 
 ## -----------------------------------------------------------------------------
-c("AAPL", "GOOG", "FB") %>%
+c("AAPL", "GOOG", "META") %>%
     tq_get(get = "stock.prices", from = "2016-01-01", to = "2017-01-01")
 
 ## -----------------------------------------------------------------------------
@@ -29,7 +33,7 @@ stock_list %>%
 ## -----------------------------------------------------------------------------
 tq_index("DOW")
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  tq_exchange("NYSE")
 
 ## -----------------------------------------------------------------------------
@@ -38,8 +42,6 @@ tq_index("DOW") %>%
     tq_get(get = "stock.prices")
 
 ## -----------------------------------------------------------------------------
-data("FANG")
-
 FANG
 
 ## -----------------------------------------------------------------------------
@@ -84,7 +86,7 @@ AAPL_annual_log_returns %>%
     ggplot(aes(x = year(date), y = yearly.returns)) + 
     geom_hline(yintercept = 0, color = palette_light()[[1]]) +
     geom_point(size = 2, color = palette_light()[[3]]) +
-    geom_line(size = 1, color = palette_light()[[3]]) + 
+    geom_line(linewidth = 1, color = palette_light()[[3]]) + 
     geom_smooth(method = "lm", se = FALSE) +
     labs(title = "AAPL: Visualizing Trends in Annual Returns",
          x = "", y = "Annual Returns", color = "") +
@@ -137,11 +139,11 @@ stocks_model_stats
 ## -----------------------------------------------------------------------------
 tq_get("XYZ", "stock.prices")
 
-## ---- warning = TRUE----------------------------------------------------------
+## ----warning = TRUE-----------------------------------------------------------
 c("AAPL", "GOOG", "BAD APPLE") %>%
     tq_get(get = "stock.prices", complete_cases = TRUE)
 
-## ---- warning = TRUE----------------------------------------------------------
+## ----warning = TRUE-----------------------------------------------------------
 c("AAPL", "GOOG", "BAD APPLE") %>%
     tq_get(get = "stock.prices", complete_cases = FALSE)
 

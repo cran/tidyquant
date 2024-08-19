@@ -1,4 +1,4 @@
-## ---- echo = FALSE, message = FALSE, warning = FALSE--------------------------
+## ----echo = FALSE, message = FALSE, warning = FALSE---------------------------
 knitr::opts_chunk$set(message = FALSE,
                       warning = FALSE,
                       fig.width = 8, 
@@ -6,20 +6,20 @@ knitr::opts_chunk$set(message = FALSE,
                       fig.align = 'center',
                       out.width='95%', 
                       dpi = 200)
-# devtools::load_all() # Travis CI fails on load_all()
 
-## -----------------------------------------------------------------------------
-# Loads tidyquant, lubridate, xts, quantmod, TTR 
-library(tidyverse)
+## ----include=FALSE------------------------------------------------------------
+# Load for R CMD CHECK
+library(dplyr)
+library(lubridate)
 library(tidyquant)
 
 ## -----------------------------------------------------------------------------
 tq_index_options()
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  tq_index("SP500")
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  tq_exchange("NASDAQ")
 
 ## -----------------------------------------------------------------------------
@@ -29,26 +29,26 @@ tq_get_options()
 aapl_prices  <- tq_get("AAPL", get = "stock.prices", from = " 1990-01-01")
 aapl_prices 
 
-## ---- eval = F----------------------------------------------------------------
+## ----eval = F-----------------------------------------------------------------
 #  x8411T <- tq_get("8411.T", get = "stock.prices.japan", from = "2016-01-01", to  = "2016-12-31")
 
 ## -----------------------------------------------------------------------------
 wti_price_usd <- tq_get("DCOILWTICO", get = "economic.data")
 wti_price_usd 
 
-## ---- eval = F----------------------------------------------------------------
+## ----eval = F-----------------------------------------------------------------
 #  quandl_api_key("<your-api-key>")
 
-## ---- eval = F----------------------------------------------------------------
+## ----eval = F-----------------------------------------------------------------
 #  quandl_search(query = "Oil", database_code = "NSE", per_page = 3)
 
-## ---- eval = F----------------------------------------------------------------
+## ----eval = F-----------------------------------------------------------------
 #  c("WIKI/AAPL") %>%
 #      tq_get(get  = "quandl",
 #             from = "2016-01-01",
 #             to   = "2016-12-31")
 
-## ---- eval = F----------------------------------------------------------------
+## ----eval = F-----------------------------------------------------------------
 #  "WIKI/AAPL" %>%
 #      tq_get(get          = "quandl",
 #             from         = "2007-01-01",
@@ -57,7 +57,7 @@ wti_price_usd
 #             collapse     = "annual",
 #             transform    = "rdiff")
 
-## ---- eval = F----------------------------------------------------------------
+## ----eval = F-----------------------------------------------------------------
 #  # Zacks Fundamentals Collection B (DOW 30 Available to non subscribers)
 #  tq_get("ZACKS/FC", get = "quandl.datatable")   # Zacks Fundamentals Condensed
 #  tq_get("ZACKS/FR", get = "quandl.datatable")   # Zacks Fundamental Ratios
@@ -65,10 +65,10 @@ wti_price_usd
 #  tq_get("ZACKS/MKTV", get = "quandl.datatable") # Zacks Market Value Supplement
 #  tq_get("ZACKS/SHRS", get = "quandl.datatable") # Zacks Shares Out Supplement
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  tiingo_api_key('<your-api-key>')
 
-## ---- eval=F------------------------------------------------------------------
+## ----eval=F-------------------------------------------------------------------
 #  # Tiingo Prices (Free alternative to Yahoo Finance!)
 #  tq_get(c("AAPL", "GOOG"), get = "tiingo", from = "2010-01-01")
 #  
@@ -86,18 +86,20 @@ wti_price_usd
 #         to     = "2020-01-15",
 #         resample_frequency = "5min")
 
-## ---- eval = F----------------------------------------------------------------
+## ----eval = F-----------------------------------------------------------------
+#  # install.packages("alphavantager")
 #  av_api_key("<your-api-key>")
 
-## ---- eval = F----------------------------------------------------------------
+## ----eval = F-----------------------------------------------------------------
 #  # Scaling is as simple as supplying multiple symbols
 #  c("META", "MSFT") %>%
 #      tq_get(get = "alphavantage", av_fun = "TIME_SERIES_INTRADAY", interval = "5min")
 
-## ---- eval = F----------------------------------------------------------------
-#  blpConnect()
+## ----eval = F-----------------------------------------------------------------
+#  # install.packages("Rblpapi")
+#  Rblpapi::blpConnect()
 
-## ---- eval = F----------------------------------------------------------------
+## ----eval = F-----------------------------------------------------------------
 #  # Get Bloomberg data in a tidy data frame
 #  my_bloomberg_data <- c('SPX Index','ODMAX Equity') %>%
 #      tq_get(get         = "Rblpapi",
@@ -108,8 +110,6 @@ wti_price_usd
 #             to          = "2016-12-31")
 
 ## -----------------------------------------------------------------------------
-data("FANG")
-
 FANG
 
 ## -----------------------------------------------------------------------------
@@ -117,7 +117,7 @@ FANG %>%
     group_by(symbol) %>%
     tq_transmute(select = adjusted, mutate_fun = to.monthly, indexAt = "lastof")
 
-## ---- message=FALSE, warning=FALSE--------------------------------------------
+## ----message=FALSE, warning=FALSE---------------------------------------------
 wti_prices <- tq_get("DCOILWTICO", get = "economic.data") 
 
 wti_prices %>%    
@@ -156,7 +156,7 @@ returns_combined %>%
               col_rename = c("coef.0", "coef.1"))
 returns_combined
 
-## ---- message=FALSE, warning=FALSE--------------------------------------------
+## ----message=FALSE, warning=FALSE---------------------------------------------
 FANG %>%
     group_by(symbol) %>%
     tq_mutate_xy(x = close, y = volume, 

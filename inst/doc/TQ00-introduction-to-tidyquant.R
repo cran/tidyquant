@@ -1,4 +1,4 @@
-## ---- echo = FALSE, message = FALSE, warning = FALSE--------------------------
+## ----echo = FALSE, message = FALSE, warning = FALSE---------------------------
 knitr::opts_chunk$set(message = FALSE,
                       warning = FALSE,
                       fig.width = 8, 
@@ -8,14 +8,13 @@ knitr::opts_chunk$set(message = FALSE,
                       dpi = 200)
 
 library(tidyquant)
+library(lubridate)
+library(dplyr)
+library(ggplot2)
 # devtools::load_all() # Travis CI fails on load_all()
 
-## ---- echo = F----------------------------------------------------------------
-library(tidyverse)
-library(tidyquant)
-
-data("FANG")
-end <- as_date("2017-01-01")
+## ----echo = F-----------------------------------------------------------------
+end <- lubridate::as_date("2017-01-01")
 start <- end - weeks(24)
 FANG %>%
     filter(date >= start - days(2 * 20)) %>%

@@ -65,11 +65,9 @@
 #' @export
 #'
 #' @examples
-#' # Load libraries
-#' library(tidyquant)
 #' library(dplyr)
 #' library(ggplot2)
-#'
+#' library(lubridate)
 #'
 #' AAPL <- tq_get("AAPL", from = "2013-01-01", to = "2016-12-31")
 #'
@@ -79,7 +77,7 @@
 #'     geom_line() +           # Plot stock price
 #'     geom_bbands(aes(high = high, low = low, close = close), ma_fun = SMA, n = 50) +
 #'     coord_x_date(xlim = c(as_date("2016-12-31") - dyears(1), as_date("2016-12-31")),
-#'                  ylim = c(75, 125))
+#'                  ylim = c(20, 35))
 #'
 #'
 #' # EMA
@@ -89,7 +87,7 @@
 #'    geom_bbands(aes(high = high, low = low, close = close),
 #'                   ma_fun = EMA, wilder = TRUE, ratio = NULL, n = 50) +
 #'    coord_x_date(xlim = c(as_date("2016-12-31") - dyears(1), as_date("2016-12-31")),
-#'                 ylim = c(75, 125))
+#'                 ylim = c(20, 35))
 #'
 #'
 #' # VWMA
@@ -99,7 +97,7 @@
 #'     geom_bbands(aes(high = high, low = low, close = close, volume = volume),
 #'                    ma_fun = VWMA, n = 50) +
 #'     coord_x_date(xlim = c(as_date("2016-12-31") - dyears(1), as_date("2016-12-31")),
-#'                 ylim = c(75, 125))
+#'                 ylim = c(20, 35))
 
 
 #' @rdname geom_bbands
@@ -168,7 +166,7 @@ geom_bbands_ <- function(mapping = NULL, data = NULL,
 
 StatBBandsRibbon <- ggplot2::ggproto("StatBBandsRibbon", ggplot2::Stat,
                             required_aes = c("x", "high", "low", "close"),
-
+                            dropped_aes = c("high", "low", "close", "y"),
                             compute_group = function(data, scales, params,
                                                      n = 10, ma_fun = SMA, sd = 2,
                                                      wilder = FALSE, ratio = NULL,
@@ -194,7 +192,7 @@ StatBBandsRibbon <- ggplot2::ggproto("StatBBandsRibbon", ggplot2::Stat,
 
 StatBBandsMA <- ggplot2::ggproto("StatBBandsMA", ggplot2::Stat,
                                  required_aes = c("x", "high", "low", "close"),
-
+                                 dropped_aes = c("high", "low", "close", "y"),
                                  compute_group = function(data, scales, params,
                                                           ma_fun = "SMA", n = 20, sd = 2,
                                                           wilder = FALSE, ratio = NULL,
@@ -219,7 +217,7 @@ StatBBandsMA <- ggplot2::ggproto("StatBBandsMA", ggplot2::Stat,
 
 StatBBandsRibbon_vol <- ggplot2::ggproto("StatBBandsRibbon", ggplot2::Stat,
                                          required_aes = c("x", "high", "low", "close", "volume"),
-
+                                         dropped_aes = c("high", "low", "close", "volume", "y"),
                                          compute_group = function(data, scales, params,
                                                                   ma_fun = "SMA", n = 10, sd = 2,
                                                                   wilder = FALSE, ratio = NULL,
@@ -246,7 +244,7 @@ StatBBandsRibbon_vol <- ggplot2::ggproto("StatBBandsRibbon", ggplot2::Stat,
 
 StatBBandsMA_vol <- ggplot2::ggproto("StatBBandsMA", ggplot2::Stat,
                                  required_aes = c("x", "high", "low", "close", "volume"),
-
+                                 dropped_aes = c("high", "low", "close", "volume", "y"),
                                  compute_group = function(data, scales, params,
                                                           n = 20, ma_fun = SMA, sd = 2,
                                                           wilder = FALSE, ratio = NULL,
@@ -276,7 +274,7 @@ StatBBandsMA_vol <- ggplot2::ggproto("StatBBandsMA", ggplot2::Stat,
 GeomBBandsRibbon <- ggplot2::ggproto("GeomBBandsRibbon", ggplot2::GeomRibbon,
                             default_aes = ggplot2::aes(colour = "red",
                                               fill = "grey20",
-                                              size = 0.5,
+                                              linewidth = 0.5,
                                               linetype = 2,
                                               alpha = 0.15)
 )
@@ -284,7 +282,7 @@ GeomBBandsRibbon <- ggplot2::ggproto("GeomBBandsRibbon", ggplot2::GeomRibbon,
 GeomBBandsMA <- ggplot2::ggproto("GeomBBandsMA", ggplot2::GeomLine,
                         default_aes = ggplot2::aes(colour = "darkblue",
                                           linetype = 2,
-                                          size = 0.5,
+                                          linewidth = 0.5,
                                           alpha = NA)
 )
 

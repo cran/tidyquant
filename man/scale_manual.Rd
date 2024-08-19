@@ -14,7 +14,7 @@ scale_colour_tq(..., theme = "light")
 scale_fill_tq(..., theme = "light")
 }
 \arguments{
-\item{...}{common discrete scale parameters: \code{name}, \code{breaks}, \code{labels}, \code{na.value}, \code{limits} and \code{guide}. See \code{\link[=discrete_scale]{discrete_scale()}} for more details}
+\item{...}{common parameters for \code{scale_color_manual()} or \code{scale_fill_manual()}: \code{name}, \code{breaks}, \code{labels}, \code{na.value}, \code{limits} and \code{guide}.}
 
 \item{theme}{one of "light", "dark", or "green". This should match the \code{theme_tq()} that is used with it.}
 }
@@ -33,12 +33,11 @@ For use when \code{fill} is specified as an \code{aes()} in a ggplot.}
 }
 \examples{
 # Load libraries
-library(tidyquant)
 library(dplyr)
 library(ggplot2)
 
 # Get stock prices
-stocks <- c("AAPL", "FB", "NFLX") \%>\%
+stocks <- c("AAPL", "META", "NFLX") \%>\%
     tq_get(from = "2013-01-01",
            to   = "2017-01-01")
 

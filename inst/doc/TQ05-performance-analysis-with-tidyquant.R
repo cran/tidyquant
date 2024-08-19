@@ -1,4 +1,4 @@
-## ---- echo = FALSE, message = FALSE, warning = FALSE--------------------------
+## ----echo = FALSE, message = FALSE, warning = FALSE---------------------------
 knitr::opts_chunk$set(message = FALSE,
                       warning = FALSE,
                       fig.width = 8, 
@@ -6,11 +6,12 @@ knitr::opts_chunk$set(message = FALSE,
                       fig.align = 'center',
                       out.width='95%', 
                       dpi = 200)
-library(tidyquant)
 # devtools::load_all() # Travis CI fails on load_all()
 
-## -----------------------------------------------------------------------------
-library(tidyverse)
+## ----include=FALSE------------------------------------------------------------
+library(dplyr)
+library(ggplot2)
+library(lubridate)
 library(tidyquant)
 
 ## -----------------------------------------------------------------------------
@@ -87,7 +88,7 @@ stock_returns_monthly %>%
         p  = 0.99
     )
 
-## ---- eval = F----------------------------------------------------------------
+## ----eval = F-----------------------------------------------------------------
 #  stock_returns_monthly <- c("AAPL", "GOOG", "NFLX") %>%
 #      tq_get(get  = "stock.prices",
 #             from = "2010-01-01",
@@ -99,12 +100,12 @@ stock_returns_monthly %>%
 #                   col_rename = "Ra")
 #  stock_returns_monthly
 
-## ---- echo = F----------------------------------------------------------------
+## ----echo = F-----------------------------------------------------------------
 # NOT SHOWN
 stock_returns_monthly <- Ra
 stock_returns_monthly
 
-## ---- eval = F----------------------------------------------------------------
+## ----eval = F-----------------------------------------------------------------
 #  baseline_returns_monthly <- "XLK" %>%
 #      tq_get(get  = "stock.prices",
 #             from = "2010-01-01",
@@ -115,7 +116,7 @@ stock_returns_monthly
 #                   col_rename = "Rb")
 #  baseline_returns_monthly
 
-## ---- echo = F----------------------------------------------------------------
+## ----echo = F-----------------------------------------------------------------
 # NOT SHOWN
 baseline_returns_monthly <- Rb
 baseline_returns_monthly
@@ -153,7 +154,7 @@ RaRb_single_portfolio
 RaRb_single_portfolio %>%
     tq_performance(Ra = Ra, Rb = Rb, performance_fun = table.CAPM)
 
-## ---- eval = F----------------------------------------------------------------
+## ----eval = F-----------------------------------------------------------------
 #  stock_returns_monthly <- c("AAPL", "GOOG", "NFLX") %>%
 #      tq_get(get  = "stock.prices",
 #             from = "2010-01-01",
@@ -164,7 +165,7 @@ RaRb_single_portfolio %>%
 #                   period     = "monthly",
 #                   col_rename = "Ra")
 
-## ---- eval = F----------------------------------------------------------------
+## ----eval = F-----------------------------------------------------------------
 #  baseline_returns_monthly <- "XLK" %>%
 #      tq_get(get  = "stock.prices",
 #             from = "2010-01-01",
@@ -264,7 +265,7 @@ RaRb_multiple_portfolio %>%
 ## -----------------------------------------------------------------------------
 args(Return.portfolio)
 
-## ---- eval=F------------------------------------------------------------------
+## ----eval=F-------------------------------------------------------------------
 #  wts <- c(0.5, 0.0, 0.5)
 #  portfolio_returns_monthly <- stock_returns_monthly %>%
 #      tq_portfolio(assets_col  = symbol,
@@ -298,7 +299,7 @@ portfolio_growth_monthly <- stock_returns_monthly %>%
 ## -----------------------------------------------------------------------------
 portfolio_growth_monthly %>%
     ggplot(aes(x = date, y = investment.growth)) +
-    geom_line(size = 2, color = palette_light()[[1]]) +
+    geom_line(linewidth = 2, color = palette_light()[[1]]) +
     labs(title = "Portfolio Growth",
          subtitle = "50% AAPL, 0% GOOG, and 50% NFLX",
          caption = "Now we can really visualize performance!",
@@ -320,7 +321,7 @@ portfolio_growth_monthly_multi <- stock_returns_monthly_multi %>%
 ## -----------------------------------------------------------------------------
 portfolio_growth_monthly_multi %>%
     ggplot(aes(x = date, y = investment.growth, color = factor(portfolio))) +
-    geom_line(size = 2) +
+    geom_line(linewidth = 2) +
     labs(title = "Portfolio Growth",
          subtitle = "Comparing Multiple Portfolios",
          caption = "Portfolio 3 is a Standout!",

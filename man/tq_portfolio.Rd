@@ -40,7 +40,7 @@ and weights in second column.}
 \item{col_rename}{A string or character vector containing names that can be used
 to quickly rename columns.}
 
-\item{...}{Additional parameters passed to \code{PerformanceAnalytics::Returns.portfolio}}
+\item{...}{Additional parameters passed to \code{PerformanceAnalytics::Return.portfolio}}
 
 \item{n}{Number of times to repeat a data frame row-wise.}
 
@@ -53,7 +53,7 @@ Returns data in the form of a \code{tibble} object.
 Aggregates a group of returns by asset into portfolio returns
 }
 \details{
-\code{tq_portfolio} is a wrapper for \code{PerformanceAnalytics::Returns.portfolio}.
+\code{tq_portfolio} is a wrapper for \code{PerformanceAnalytics::Return.portfolio}.
 The main advantage is the results are returned as a \code{tibble} and the
 function can be used with the \code{tidyverse}.
 
@@ -82,11 +82,9 @@ is a useful precursor to \code{tq_portfolio}.
 }
 \examples{
 # Load libraries
-library(tidyquant)
 library(dplyr)
 
 # Use FANG data set
-data(FANG)
 
 # Get returns for individual stock components
 monthly_returns_stocks <- FANG \%>\%
@@ -109,7 +107,7 @@ tq_portfolio(data = monthly_returns_stocks,
 
 # Note that GOOG's weighting is zero in Method 1. In Method 2,
 # GOOG is not added and same result is achieved.
-weights_df <- tibble(symbol = c("FB", "AMZN", "NFLX"),
+weights_df <- tibble(symbol = c("META", "AMZN", "NFLX"),
                      weights = c(0.50, 0.25, 0.25))
 tq_portfolio(data = monthly_returns_stocks,
              assets_col = symbol,
@@ -128,7 +126,7 @@ weights <- c(0.50, 0.25, 0.25, 0.00,
              0.00, 0.50, 0.25, 0.25,
              0.25, 0.00, 0.50, 0.25,
              0.25, 0.25, 0.00, 0.50)
-stocks <- c("FB", "AMZN", "NFLX", "GOOG")
+stocks <- c("META", "AMZN", "NFLX", "GOOG")
 weights_table <- tibble(stocks) \%>\%
     tq_repeat_df(n = 4) \%>\%
     bind_cols(tibble(weights)) \%>\%

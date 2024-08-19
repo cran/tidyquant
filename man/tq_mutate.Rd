@@ -118,13 +118,12 @@ respectively.
 }
 \examples{
 # Load libraries
-library(tidyquant)
 library(dplyr)
 
 ##### Basic Functionality
 
-fb_stock_prices  <- FANG \%>\%
-    filter(symbol == "FB") \%>\%
+fb_stock_prices  <- tidyquant::FANG \%>\%
+    filter(symbol == "META") \%>\%
         filter(
             date >= "2016-01-01",
             date <= "2016-12-31"

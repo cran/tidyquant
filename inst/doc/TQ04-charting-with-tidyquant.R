@@ -1,4 +1,4 @@
-## ---- echo = FALSE, message = FALSE, warning = FALSE--------------------------
+## ----echo = FALSE, message = FALSE, warning = FALSE---------------------------
 knitr::opts_chunk$set(message = FALSE,
                       warning = FALSE,
                       fig.width = 8, 
@@ -7,21 +7,21 @@ knitr::opts_chunk$set(message = FALSE,
                       out.width='95%')
 # devtools::load_all() # Travis CI fails on load_all()
 
-## -----------------------------------------------------------------------------
-# Loads tidyquant, lubridate, xts, quantmod, TTR, and PerformanceAnalytics
-library(tidyverse)
+## ----include=FALSE------------------------------------------------------------
+# Loads tidyquant, xts, quantmod, TTR, and PerformanceAnalytics
+library(lubridate)
+library(dplyr)
+library(ggplot2)
 library(tidyquant)  
 
 ## -----------------------------------------------------------------------------
 # Use FANG data set
-data("FANG") 
-
 # Get AAPL and AMZN Stock Prices
 AAPL <- tq_get("AAPL", get = "stock.prices", from = "2015-09-01", to = "2016-12-31")
 AMZN <- tq_get("AMZN", get = "stock.prices", from = "2000-01-01", to = "2016-12-31")
 
 ## -----------------------------------------------------------------------------
-end <- as_date("2016-12-31")
+end <- lubridate::as_date("2016-12-31")
 
 end
 
@@ -68,7 +68,7 @@ AAPL %>%
     labs(title = "AAPL Bar Chart", 
          subtitle = "Zoomed in, Experimenting with Formatting",
          y = "Closing Price", x = "") + 
-    coord_x_date(xlim = c(end - weeks(6), end),
+    coord_x_date(xlim = c(end - lubridate::weeks(6), end),
                  c(aapl_range_60_tbl$min_low, aapl_range_60_tbl$max_high)) + 
     theme_tq()
 
@@ -103,28 +103,28 @@ AAPL %>%
                  c(aapl_range_60_tbl$min_low, aapl_range_60_tbl$max_high)) + 
     theme_tq()
 
-## ---- fig.height=5------------------------------------------------------------
+## ----fig.height=5-------------------------------------------------------------
 start <- end - weeks(6)
 FANG %>%
-    filter(date >= start - days(2 * 15)) %>%
+    dplyr::filter(date >= start - days(2 * 15)) %>%
     ggplot(aes(x = date, y = close, group = symbol)) +
     geom_candlestick(aes(open = open, high = high, low = low, close = close)) +
     labs(title = "FANG Candlestick Chart", 
-         subtitle = "Experimenting with Mulitple Stocks",
+         subtitle = "Experimenting with Multiple Stocks",
          y = "Closing Price", x = "") + 
     coord_x_date(xlim = c(start, end)) +
     facet_wrap(~ symbol, ncol = 2, scale = "free_y") + 
     theme_tq()
 
-## ---- fig.height=5------------------------------------------------------------
+## ----fig.height=5-------------------------------------------------------------
 start <- end - weeks(6)
 FANG %>%
-    filter(date >= start - days(2 * 15)) %>%
+    dplyr::filter(date >= start - days(2 * 15)) %>%
     ggplot(aes(x = date, y = close, group = symbol)) +
     geom_candlestick(aes(open = open, high = high, low = low, close = close)) +
     geom_ma(ma_fun = SMA, n = 15, color = "darkblue", size = 1) +
     labs(title = "FANG Candlestick Chart", 
-         subtitle = "Experimenting with Mulitple Stocks",
+         subtitle = "Experimenting with Multiple Stocks",
          y = "Closing Price", x = "") + 
     coord_x_date(xlim = c(start, end)) +
     facet_wrap(~ symbol, ncol = 2, scale = "free_y") +
@@ -156,10 +156,10 @@ AAPL %>%
                  c(aapl_range_60_tbl$min_low * 0.9, aapl_range_60_tbl$max_high)) +
     theme_tq()
 
-## ---- fig.height=5------------------------------------------------------------
+## ----fig.height=5-------------------------------------------------------------
 start <- end - weeks(6)
 FANG %>%
-    filter(date >= start - days(2 * 50)) %>%
+    dplyr::filter(date >= start - days(2 * 50)) %>%
     ggplot(aes(x = date, y = close, volume = volume, group = symbol)) +
     geom_candlestick(aes(open = open, high = high, low = low, close = close)) +
     geom_ma(ma_fun = VWMA, n = 15, wilder = TRUE, linetype = 5) +
@@ -203,10 +203,10 @@ AAPL %>%
                           aapl_range_60_tbl$max_high) * 1.05) + 
     theme_tq()
 
-## ---- fig.height=5------------------------------------------------------------
+## ----fig.height=5-------------------------------------------------------------
 start <- end - weeks(24)
 FANG %>%
-    filter(date >= start - days(2 * 20)) %>%
+    dplyr::filter(date >= start - days(2 * 20)) %>%
     ggplot(aes(x = date, y = close, 
                open = open, high = high, low = low, close = close, 
                group = symbol)) +
@@ -264,7 +264,7 @@ AMZN %>%
 ## -----------------------------------------------------------------------------
 start <- end - weeks(24)
 AMZN %>%
-    filter(date >= start - days(50)) %>%
+    dplyr::filter(date >= start - days(50)) %>%
     ggplot(aes(x = date, y = volume)) +
     geom_segment(aes(xend = date, yend = 0, color = volume)) +
     geom_smooth(method = "loess", se = FALSE) +
@@ -276,12 +276,12 @@ AMZN %>%
     theme_tq() + 
     theme(legend.position = "none") 
 
-## ---- fig.height = 6----------------------------------------------------------
+## ----fig.height = 6-----------------------------------------------------------
 n_mavg <- 50 # Number of periods (days) for moving average
 FANG %>%
-    filter(date >= start - days(2 * n_mavg)) %>%
+    dplyr::filter(date >= start - days(2 * n_mavg)) %>%
     ggplot(aes(x = date, y = close, color = symbol)) +
-    geom_line(size = 1) +
+    geom_line(linewidth = 1) +
     geom_ma(n = 15, color = "darkblue", size = 1) + 
     geom_ma(n = n_mavg, color = "red", size = 1) +
     labs(title = "Dark Theme",
@@ -290,5 +290,5 @@ FANG %>%
     facet_wrap(~ symbol, scales = "free_y") +
     theme_tq_dark() +
     scale_color_tq(theme = "dark") +
-    scale_y_continuous(labels = scales::dollar)
+    scale_y_continuous(labels = scales::label_dollar())
 

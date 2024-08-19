@@ -22,7 +22,6 @@ The \code{theme_tq()} function creates a custom theme using tidyquant colors.
 }
 \examples{
 # Load libraries
-library(tidyquant)
 library(dplyr)
 library(ggplot2)
 
@@ -38,7 +37,7 @@ AAPL \%>\% ggplot(aes(x = date, y = close)) +
                    ratio = NULL,
                    n = 50) +
        coord_x_date(xlim = c("2016-01-01", "2016-12-31"),
-                 ylim = c(75, 125)) +
+                 ylim = c(20, 35)) +
        labs(title = "Apple BBands",
             x = "Date",
             y = "Price") +

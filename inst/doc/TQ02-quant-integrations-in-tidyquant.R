@@ -1,4 +1,4 @@
-## ---- echo = FALSE, message = FALSE, warning = FALSE--------------------------
+## ----echo = FALSE, message = FALSE, warning = FALSE---------------------------
 knitr::opts_chunk$set(message = FALSE,
                       warning = FALSE,
                       fig.width = 8, 
@@ -7,10 +7,13 @@ knitr::opts_chunk$set(message = FALSE,
                       out.width='95%')
 # devtools::load_all() # Travis CI fails on load_all()
 
-## -----------------------------------------------------------------------------
-# Loads tidyquant, lubridate, xts, quantmod, TTR 
-library(tidyverse)
+## ----include=FALSE------------------------------------------------------------
+# Loads packages individually for R CMD CHECK
 library(tidyquant)
+library(lubridate)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 
 ## -----------------------------------------------------------------------------
 tq_transmute_fun_options() %>% str()
@@ -36,8 +39,6 @@ tq_transmute_fun_options()$TTR
 tq_transmute_fun_options()$PerformanceAnalytics
 
 ## -----------------------------------------------------------------------------
-data("FANG")
-
 FANG
 
 ## -----------------------------------------------------------------------------
@@ -49,7 +50,7 @@ FANG_annual_returns <- FANG %>%
                  type       = "arithmetic")
 FANG_annual_returns
 
-## ---- fig.height = 4.5--------------------------------------------------------
+## ----fig.height = 4.5---------------------------------------------------------
 FANG_annual_returns %>%
     ggplot(aes(x = date, y = yearly.returns, fill = symbol)) +
     geom_col() +
@@ -69,14 +70,14 @@ FANG_daily_log_returns <- FANG %>%
                  mutate_fun = periodReturn, 
                  period     = "daily", 
                  type       = "log",
-                 col_rename = "monthly.returns")
+                 col_rename = "daily.returns")
 
-## ---- fig.height = 4.5--------------------------------------------------------
+## ----fig.height = 4.5---------------------------------------------------------
 FANG_daily_log_returns %>%
-    ggplot(aes(x = monthly.returns, fill = symbol)) +
+    ggplot(aes(x = daily.returns, fill = symbol)) +
     geom_density(alpha = 0.5) +
     labs(title = "FANG: Charting the Daily Log Returns",
-         x = "Monthly Returns", y = "Density") +
+         x = "Daily Returns", y = "Density") +
     theme_tq() +
     scale_fill_tq() + 
     facet_wrap(~ symbol, ncol = 2)
@@ -94,7 +95,7 @@ FANG_daily <- FANG %>%
 
 FANG_daily %>%
     ggplot(aes(x = date, y = adjusted, color = symbol)) +
-    geom_line(size = 1) +
+    geom_line(linewidth = 1) +
     labs(title = "Daily Stock Prices",
          x = "", y = "Adjusted Prices", color = "") +
     facet_wrap(~ symbol, ncol = 2, scales = "free_y") +
@@ -111,7 +112,7 @@ FANG_monthly <- FANG %>%
 
 FANG_monthly %>%
     ggplot(aes(x = date, y = adjusted, color = symbol)) +
-    geom_line(size = 1) +
+    geom_line(linewidth = 1) +
     labs(title = "Monthly Stock Prices",
          x = "", y = "Adjusted Prices", color = "") +
     facet_wrap(~ symbol, ncol = 2, scales = "free_y") +
@@ -122,7 +123,7 @@ FANG_monthly %>%
 ## -----------------------------------------------------------------------------
 # Asset Returns
 FANG_returns_monthly <- FANG %>%
-    group_by(symbol) %>%
+    dplyr::group_by(symbol) %>%
     tq_transmute(select     = adjusted, 
                  mutate_fun = periodReturn,
                  period     = "monthly")
@@ -154,7 +155,7 @@ FANG_rolling_corr <- returns_joined %>%
 FANG_rolling_corr %>%
     ggplot(aes(x = date, y = rolling.corr.6, color = symbol)) +
     geom_hline(yintercept = 0, color = palette_light()[[1]]) +
-    geom_line(size = 1) +
+    geom_line(linewidth = 1) +
     labs(title = "FANG: Six Month Rolling Correlation to XLK",
          x = "", y = "Correlation", color = "") +
     facet_wrap(~ symbol, ncol = 2) +
@@ -218,7 +219,7 @@ FANG_by_qtr
 FANG_by_qtr %>%
     ggplot(aes(x = year.qtr, color = symbol)) +
     geom_segment(aes(xend = year.qtr, y = min.close, yend = max.close),
-                 size = 1) +
+                 linewidth = 1) +
     geom_point(aes(y = max.close), size = 2) +
     geom_point(aes(y = min.close), size = 2) +
     facet_wrap(~ symbol, ncol = 2, scale = "free_y") +
@@ -275,8 +276,8 @@ stock_pairs
 ## -----------------------------------------------------------------------------
 stock_pairs %>%
     ggplot(aes(x = date, y = coef.1)) +
-    geom_line(size = 1, color = palette_light()[[1]]) +
-    geom_hline(yintercept = 0.8134, size = 1, color = palette_light()[[2]]) +
+    geom_line(linewidth = 1, color = palette_light()[[1]]) +
+    geom_hline(yintercept = 0.8134, linewidth = 1, color = palette_light()[[2]]) +
     labs(title = "MA ~ V: Visualizing Rolling Regression Coefficient", x = "") +
     theme_tq()
 
@@ -289,7 +290,7 @@ stock_prices %>%
                  col_rename = "returns") %>%
     mutate(wealth.index = 100 * cumprod(1 + returns)) %>%
     ggplot(aes(x = date, y = wealth.index, color = symbol)) +
-    geom_line(size = 1) +
+    geom_line(linewidth = 1) +
     labs(title = "MA and V: Stock Prices") +
     theme_tq() + 
     scale_color_tq()

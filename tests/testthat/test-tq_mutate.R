@@ -1,10 +1,11 @@
-library(tidyquant)
-library(tidyverse)
 context("Testing tq_mutate()")
 
 #### Setup ----
 AAPL <- tq_get("AAPL", get = "stock.prices", from = "2010-01-01", to = "2015-01-01")
 
+if (nrow(AAPL) == 0) {
+    skip("Could not load AAPL")
+}
 # Test 1: tq_mutate piping test
 test1 <- AAPL %>%
     tq_mutate(close, MACD) %>%
@@ -25,16 +26,16 @@ test1.1_names <- c("symbol", "date", "open", "high", "low", "close", "volume", "
                    "up", "pctB", "dn..1", "mavg..1", "up..1", "pctB..1")
 
 # Test 1.2: Grouped_df test
-grouped_df <- tibble(symbol = c("META", "AMZN")) %>%
+grouped_df <- dplyr::tibble(symbol = c("META", "AMZN")) %>%
     tq_get(
         get  = "stock.prices",
         from = "2015-01-01",
         to   = "2016-01-01"
     ) %>%
-    group_by(symbol)
+    dplyr::group_by(symbol)
 
 
-test1.2a  <- mutate(grouped_df, V1 = runSD(adjusted))
+test1.2a  <- dplyr::mutate(grouped_df, V1 = runSD(adjusted))
 
 test1.2b <- tq_mutate(grouped_df, adjusted, runSD, col_rename = "V1")
 
@@ -56,14 +57,14 @@ test3 <- hourly_data %>%
     tq_mutate_xy(x = value, mutate_fun = MACD)
 
 # Test 4: Bind hourly data with tq_mutate_xy
-test4 <- tibble(time_index, value) %>%
+test4 <- dplyr::tibble(time_index, value) %>%
     tq_mutate_xy(x = value, mutate_fun = MACD)
 
 # Test 5:
 test5 <- c("AAPL", "META") %>%
     tq_get(from = "2016-01-01",
            to   = "2017-01-01") %>%
-    group_by(symbol)
+    dplyr::group_by(symbol)
 my_lm_fun <- function(data) {
     coef(lm(close ~ open, data = as.data.frame(data)))
 }
@@ -78,7 +79,7 @@ test5 <- test5 %>%
 
 test_that("Test 1 returns tibble with correct rows and columns.", {
     # Tibble
-    expect_is(test1, "tbl")
+    expect_s3_class(test1, "tbl_df")
     # Rows
     expect_equal(nrow(test1), 1258)
     # Columns
@@ -152,12 +153,12 @@ test_that("Test error on invalid data inputs.", {
 
     # No date columns
     expect_error(
-        tibble(a = seq(1:100)) %>%
+        dplyr::tibble(a = seq(1:100)) %>%
             tq_mutate(select = NULL, mutate_fun = to.monthly),
         "No date or POSIXct column found in `data`."
     )
     expect_error(
-        tibble(a = seq(1:100)) %>%
+        dplyr::tibble(a = seq(1:100)) %>%
             tq_mutate_xy(x = a, mutate_fun = to.monthly),
         "No date or POSIXct column found in `data`."
     )

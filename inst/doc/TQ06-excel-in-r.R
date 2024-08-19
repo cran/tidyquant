@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -6,6 +6,6 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 
-## ---- echo=FALSE, out.width="100%"--------------------------------------------
+## ----echo=FALSE, out.width="100%"---------------------------------------------
 knitr::include_graphics("r-for-excel-users.jpg")
 

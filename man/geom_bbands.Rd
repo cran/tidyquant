@@ -66,10 +66,18 @@ A \code{function} will be called with a single argument,
 the plot data. The return value must be a \code{data.frame.}, and
 will be used as the layer data.}
 
-\item{position}{Position adjustment, either as a string naming the adjustment
-(e.g. \code{"jitter"} to use \code{position_jitter}), or the result of a call to a
-position adjustment function. Use the latter if you need to change the
-settings of the adjustment.}
+\item{position}{A position adjustment to use on the data for this layer. This
+can be used in various ways, including to prevent overplotting and
+improving the display. The \code{position} argument accepts the following:
+\itemize{
+\item The result of calling a position function, such as \code{position_jitter()}.
+This method allows for passing extra arguments to the position.
+\item A string naming the position adjustment. To give the position as a
+string, strip the function name of the \code{position_} prefix. For example,
+to use \code{position_jitter()}, give the position as \code{"jitter"}.
+\item For more information and other ways to specify the position, see the
+\link[ggplot2:layer_positions]{layer position} documentation.
+}}
 
 \item{na.rm}{If \code{TRUE}, silently removes \code{NA} values, which
 typically desired for moving averages.}
@@ -82,7 +90,7 @@ display.}
 
 \item{inherit.aes}{If \code{FALSE}, overrides the default aesthetics,
 rather than combining with them. This is most useful for helper functions
-that define both data and aesthetics and shouldn't inherit behaviour from
+that define both data and aesthetics and shouldn't inherit behavior from
 the default plot specification, e.g. \code{\link[ggplot2:borders]{ggplot2::borders()}}.}
 
 \item{ma_fun}{The function used to calculate the moving average. Seven options are
@@ -98,7 +106,7 @@ available including: SMA, EMA, WMA, DEMA, ZLEMA, VWMA, and EVWMA. The default is
 calculated; see notes.}
 
 \item{ratio}{A smoothing/decay ratio.  \code{ratio} overrides \code{wilder}
-in \code{EMA}, and provides additional smoothing in \code{VMA}.}
+in \code{EMA}.}
 
 \item{v}{The 'volume factor' (a number in [0,1]).  See Notes.}
 
@@ -160,11 +168,9 @@ The following aesthetics are understood (required are in bold):
 }
 
 \examples{
-# Load libraries
-library(tidyquant)
 library(dplyr)
 library(ggplot2)
-
+library(lubridate)
 
 AAPL <- tq_get("AAPL", from = "2013-01-01", to = "2016-12-31")
 
@@ -174,7 +180,7 @@ AAPL \%>\%
     geom_line() +           # Plot stock price
     geom_bbands(aes(high = high, low = low, close = close), ma_fun = SMA, n = 50) +
     coord_x_date(xlim = c(as_date("2016-12-31") - dyears(1), as_date("2016-12-31")),
-                 ylim = c(75, 125))
+                 ylim = c(20, 35))
 
 
 # EMA
@@ -184,7 +190,7 @@ AAPL \%>\%
    geom_bbands(aes(high = high, low = low, close = close),
                   ma_fun = EMA, wilder = TRUE, ratio = NULL, n = 50) +
    coord_x_date(xlim = c(as_date("2016-12-31") - dyears(1), as_date("2016-12-31")),
-                ylim = c(75, 125))
+                ylim = c(20, 35))
 
 
 # VWMA
@@ -194,7 +200,7 @@ AAPL \%>\%
     geom_bbands(aes(high = high, low = low, close = close, volume = volume),
                    ma_fun = VWMA, n = 50) +
     coord_x_date(xlim = c(as_date("2016-12-31") - dyears(1), as_date("2016-12-31")),
-                ylim = c(75, 125))
+                ylim = c(20, 35))
 }
 \seealso{
 See individual modeling functions for underlying parameters:

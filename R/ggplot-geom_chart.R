@@ -11,12 +11,12 @@
 #' @inheritParams geom_ma
 #' @inheritParams ggplot2::geom_linerange
 #' @param colour_up,colour_down Select colors to be applied based on price movement
-#' from open to close. If close >= open, `colour_up` is used. Otherwise,
-#' `colour_down` is used. The default is "darkblue" and "red", respectively.
+#' from open to close. If `close >= open`, `colour_up` is used. Otherwise,
+#' `colour_down` is used. The default is `"darkblue"` and `"red"`, respectively.
 #' @param fill_up,fill_down Select fills to be applied based on price movement
 #' from open to close. If close >= open, `fill_up` is used. Otherwise,
-#' `fill_down` is used. The default is "darkblue" and "red", respectively.
-#' Only affects `geom_candlestick`.
+#' `fill_down` is used. The default is `"darkblue"` and "red", respectively.
+#' Only affects `geom_candlestick()`.
 #'
 #' @section Aesthetics:
 #' The following aesthetics are understood (required are in bold):
@@ -44,10 +44,9 @@
 #' @export
 #'
 #' @examples
-#' # Load libraries
-#' library(tidyquant)
 #' library(dplyr)
 #' library(ggplot2)
+#' library(lubridate)
 #'
 #' AAPL <- tq_get("AAPL", from = "2013-01-01", to = "2016-12-31")
 #'
@@ -57,7 +56,7 @@
 #'     geom_barchart(aes(open = open, high = high, low = low, close = close)) +
 #'     geom_ma(color = "darkgreen") +
 #'     coord_x_date(xlim = c("2016-01-01", "2016-12-31"),
-#'                  ylim = c(75, 125))
+#'                  ylim = c(20, 30))
 #'
 #' # Candlestick Chart
 #' AAPL %>%
@@ -65,7 +64,7 @@
 #'     geom_candlestick(aes(open = open, high = high, low = low, close = close)) +
 #'     geom_ma(color = "darkgreen") +
 #'     coord_x_date(xlim = c("2016-01-01", "2016-12-31"),
-#'                  ylim = c(75, 125))
+#'                  ylim = c(20, 30))
 
 # Bar Chart -----
 
@@ -106,7 +105,7 @@ geom_barchart <- function(mapping = NULL, data = NULL, stat = "identity",
 
 StatLinerangeBC <- ggplot2::ggproto("StatLinerangeBC", ggplot2::Stat,
                                     required_aes = c("x", "open", "high", "low", "close"),
-
+                                    dropped_aes = c("open", "high", "low", "close", "y"),
                                     compute_group = function(data, scales, params,
                                                              fill_up, fill_down,
                                                              colour_up, colour_down) {
@@ -123,7 +122,7 @@ StatLinerangeBC <- ggplot2::ggproto("StatLinerangeBC", ggplot2::Stat,
 
 StatSegmentLeftBC <- ggplot2::ggproto("StatSegmentLeftBC", ggplot2::Stat,
                                     required_aes = c("x", "open", "high", "low", "close"),
-
+                                    dropped_aes = c("open", "high", "low", "close"),
                                     compute_group = function(data, scales, params,
                                                              fill_up, fill_down,
                                                              colour_up, colour_down) {
@@ -142,7 +141,7 @@ StatSegmentLeftBC <- ggplot2::ggproto("StatSegmentLeftBC", ggplot2::Stat,
 
 StatSegmentRightBC <- ggplot2::ggproto("StatSegmentRightBC", ggplot2::Stat,
                                       required_aes = c("x", "open", "high", "low", "close"),
-
+                                      dropped_aes = c("open", "high", "low", "close"),
                                       compute_group = function(data, scales, params,
                                                                fill_up, fill_down,
                                                                colour_up, colour_down) {
@@ -159,13 +158,15 @@ StatSegmentRightBC <- ggplot2::ggproto("StatSegmentRightBC", ggplot2::Stat,
 )
 
 GeomLinerangeBC <- ggplot2::ggproto("GeomLinerangeBC", ggplot2::GeomLinerange,
-                           default_aes = ggplot2::aes(size = 0.5,
+                           default_aes = ggplot2::aes(
+                                                      linewidth = 0.5,
                                              linetype = 1,
                                              alpha = NA)
 )
 
 GeomSegmentBC <- ggplot2::ggproto("GeomSegmentBC", ggplot2::GeomSegment,
-                       default_aes = ggplot2::aes(size = 0.5,
+                       default_aes = ggplot2::aes(
+                                                  linewidth = 0.5,
                                          linetype = 1,
                                          alpha = NA)
 )
@@ -203,7 +204,7 @@ geom_candlestick <- function(mapping = NULL, data = NULL, stat = "identity",
 
 StatRectCS <- ggplot2::ggproto("StatRectCS", ggplot2::Stat,
                                 required_aes = c("x", "open", "high", "low", "close"),
-
+                                dropped_aes = c("open", "high", "low", "close", "x", "y"),
                                 compute_group = function(data, scales, params,
                                                          fill_up, fill_down,
                                                          colour_up, colour_down) {
@@ -227,7 +228,7 @@ StatRectCS <- ggplot2::ggproto("StatRectCS", ggplot2::Stat,
 
 GeomRectCS <- ggplot2::ggproto("GeomRectCS", ggplot2::GeomRect,
                       default_aes = ggplot2::aes(colour = NA,
-                                        size = 0.5,
+                                        linewidth = 0.5,
                                         linetype = 1,
                                         alpha = NA)
 )

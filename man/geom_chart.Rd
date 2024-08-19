@@ -55,15 +55,31 @@ A \code{function} will be called with a single argument,
 the plot data. The return value must be a \code{data.frame.}, and
 will be used as the layer data.}
 
-\item{stat}{The statistical transformation to use on the data for this
-layer, either as a \code{ggproto} \code{Geom} subclass or as a string naming the
-stat stripped of the \code{stat_} prefix (e.g. \code{"count"} rather than
-\code{"stat_count"})}
+\item{stat}{The statistical transformation to use on the data for this layer.
+When using a \verb{geom_*()} function to construct a layer, the \code{stat}
+argument can be used the override the default coupling between geoms and
+stats. The \code{stat} argument accepts the following:
+\itemize{
+\item A \code{Stat} ggproto subclass, for example \code{StatCount}.
+\item A string naming the stat. To give the stat as a string, strip the
+function name of the \code{stat_} prefix. For example, to use \code{stat_count()},
+give the stat as \code{"count"}.
+\item For more information and other ways to specify the stat, see the
+\link[ggplot2:layer_stats]{layer stat} documentation.
+}}
 
-\item{position}{Position adjustment, either as a string naming the adjustment
-(e.g. \code{"jitter"} to use \code{position_jitter}), or the result of a call to a
-position adjustment function. Use the latter if you need to change the
-settings of the adjustment.}
+\item{position}{A position adjustment to use on the data for this layer. This
+can be used in various ways, including to prevent overplotting and
+improving the display. The \code{position} argument accepts the following:
+\itemize{
+\item The result of calling a position function, such as \code{position_jitter()}.
+This method allows for passing extra arguments to the position.
+\item A string naming the position adjustment. To give the position as a
+string, strip the function name of the \code{position_} prefix. For example,
+to use \code{position_jitter()}, give the position as \code{"jitter"}.
+\item For more information and other ways to specify the position, see the
+\link[ggplot2:layer_positions]{layer position} documentation.
+}}
 
 \item{na.rm}{If \code{TRUE}, silently removes \code{NA} values, which
 typically desired for moving averages.}
@@ -76,17 +92,17 @@ display.}
 
 \item{inherit.aes}{If \code{FALSE}, overrides the default aesthetics,
 rather than combining with them. This is most useful for helper functions
-that define both data and aesthetics and shouldn't inherit behaviour from
+that define both data and aesthetics and shouldn't inherit behavior from
 the default plot specification, e.g. \code{\link[ggplot2:borders]{ggplot2::borders()}}.}
 
 \item{colour_up, colour_down}{Select colors to be applied based on price movement
-from open to close. If close >= open, \code{colour_up} is used. Otherwise,
-\code{colour_down} is used. The default is "darkblue" and "red", respectively.}
+from open to close. If \code{close >= open}, \code{colour_up} is used. Otherwise,
+\code{colour_down} is used. The default is \code{"darkblue"} and \code{"red"}, respectively.}
 
 \item{fill_up, fill_down}{Select fills to be applied based on price movement
 from open to close. If close >= open, \code{fill_up} is used. Otherwise,
-\code{fill_down} is used. The default is "darkblue" and "red", respectively.
-Only affects \code{geom_candlestick}.}
+\code{fill_down} is used. The default is \code{"darkblue"} and "red", respectively.
+Only affects \code{geom_candlestick()}.}
 
 \item{...}{Other arguments passed on to \code{\link[ggplot2:layer]{ggplot2::layer()}}. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
@@ -119,10 +135,9 @@ The following aesthetics are understood (required are in bold):
 }
 
 \examples{
-# Load libraries
-library(tidyquant)
 library(dplyr)
 library(ggplot2)
+library(lubridate)
 
 AAPL <- tq_get("AAPL", from = "2013-01-01", to = "2016-12-31")
 
@@ -132,7 +147,7 @@ AAPL \%>\%
     geom_barchart(aes(open = open, high = high, low = low, close = close)) +
     geom_ma(color = "darkgreen") +
     coord_x_date(xlim = c("2016-01-01", "2016-12-31"),
-                 ylim = c(75, 125))
+                 ylim = c(20, 30))
 
 # Candlestick Chart
 AAPL \%>\%
@@ -140,7 +155,7 @@ AAPL \%>\%
     geom_candlestick(aes(open = open, high = high, low = low, close = close)) +
     geom_ma(color = "darkgreen") +
     coord_x_date(xlim = c("2016-01-01", "2016-12-31"),
-                 ylim = c(75, 125))
+                 ylim = c(20, 30))
 }
 \seealso{
 See individual modeling functions for underlying parameters:
