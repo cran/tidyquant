@@ -5,7 +5,7 @@ knitr::opts_chunk$set(message = FALSE,
                       fig.height = 4.5,
                       fig.align = 'center',
                       out.width='95%', 
-                      dpi = 200)
+                      dpi = 150)
 
 ## ----include=FALSE------------------------------------------------------------
 # Load for R CMD CHECK
@@ -28,6 +28,12 @@ tq_get_options()
 ## -----------------------------------------------------------------------------
 aapl_prices  <- tq_get("AAPL", get = "stock.prices", from = " 1990-01-01")
 aapl_prices 
+
+## -----------------------------------------------------------------------------
+stocks <- c("AAPL", "META", "NFLX") %>%
+    tq_get(from = "2013-01-01",
+           to   = "2017-01-01")
+stocks
 
 ## ----eval = F-----------------------------------------------------------------
 #  x8411T <- tq_get("8411.T", get = "stock.prices.japan", from = "2016-01-01", to  = "2016-12-31")
